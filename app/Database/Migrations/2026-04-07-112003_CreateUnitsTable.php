@@ -24,9 +24,11 @@ class CreateUnitsTable extends Migration
                 'type' => 'VARCHAR',
                 'constraint' => 255
             ],
-            'unit_supervisor' => [
-                'type' => 'VARCHAR',
-                'constraint' => 255
+            'unit_supervisor_id' => [
+                'type' => 'MEDIUMINT',
+                'constraint' => 8,
+                'unsigned' => true,
+                'null' => true
             ],
             'created_at' => [
                 'type' => 'DATETIME',
@@ -42,6 +44,7 @@ class CreateUnitsTable extends Migration
             ]
         ]);
         $this->forge->addKey('unit_id', true);
+        $this->forge->addForeignKey('unit_supervisor_id', 'users', 'user_id', 'CASCADE', 'CASCADE');
         $this->forge->addForeignKey('division_id', 'divisions', 'division_id', 'CASCADE', 'CASCADE');
         $this->forge->createTable('units');
 

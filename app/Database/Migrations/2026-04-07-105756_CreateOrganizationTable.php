@@ -4,7 +4,7 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class OrganizationTable extends Migration
+class CreateOrganizationTable extends Migration
 {
     public function up()
     {
@@ -19,10 +19,11 @@ class OrganizationTable extends Migration
                 'type' => 'VARCHAR',
                 'constraint' => 255     
             ],
-            'user_id' => [
+            'organization_user_id' => [
                 'type' => 'MEDIUMINT',
                 'constraint' => 8,
-                'unsigned' => true
+                'unsigned' => true,
+                'null' => true
             ],
             'created_at' => [
                 'type' => 'DATETIME',
@@ -38,7 +39,7 @@ class OrganizationTable extends Migration
             ]   
         ]);
         $this->forge->addKey('organization_id', true);
-        $this->forge->addForeignKey('user_id', 'users', 'user_id', 'CASCADE', 'CASCADE');
+        $this->forge->addForeignKey('organization_user_id', 'users', 'user_id', 'CASCADE', 'CASCADE');
         $this->forge->createTable('organization');
     }
 

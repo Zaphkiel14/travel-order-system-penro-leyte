@@ -24,10 +24,11 @@ class CreateDivisionsTable extends Migration
                 'type' => 'VARCHAR',
                 'constraint' => 255
             ],
-            'user_id' => [
+            'division_head_id' => [
                 'type' => 'MEDIUMINT',
                 'constraint' => 8,
-                'unsigned' => true
+                'unsigned' => true,
+                'null' => true
             ],
             'created_at' => [
                 'type' => 'DATETIME',
@@ -43,7 +44,7 @@ class CreateDivisionsTable extends Migration
             ]
         ]);
         $this->forge->addKey('division_id', true);
-        $this->forge->addForeignKey('user_id', 'users', 'user_id', 'CASCADE', 'CASCADE');
+        $this->forge->addForeignKey('division_head_id', 'users', 'user_id', 'CASCADE', 'CASCADE');
         $this->forge->addForeignKey('organization_id', 'organization', 'organization_id', 'CASCADE', 'CASCADE');
         $this->forge->createTable('divisions');
 
