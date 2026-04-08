@@ -15,7 +15,7 @@ class CreateOrganizationTable extends Migration
                 'unsigned' => true,
                 'auto_increment' => true
             ],
-            'organization_head' => [
+            'organization_name' => [
                 'type' => 'VARCHAR',
                 'constraint' => 255     
             ],
