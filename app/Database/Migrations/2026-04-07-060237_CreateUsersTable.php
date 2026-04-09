@@ -40,11 +40,6 @@ class CreateUsersTable extends Migration
                 'constraint' => ['employee', 'supervisor', 'division_head', 'penro', 'records'],
                 'default' => 'employee'
             ],
-            'field_office_id' => [
-                'type' => 'MEDIUMINT',
-                'constraint' => 8,
-                'unsigned' => true
-            ],
             'created_at' => [
                 'type' => 'DATETIME',
                 'null' => true
