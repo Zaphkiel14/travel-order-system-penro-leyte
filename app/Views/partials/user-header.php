@@ -10,10 +10,6 @@
                 </li>
 
                 <li class="nav-item d-none d-md-block">
-                    <span class="nav-link">
-
-                        Field Office: <b><?= session('field_office_name') ?? ''  ?></b>
-                    </span>
                 </li>
             </ul>
             <!--end::Start Navbar Links-->
@@ -42,13 +38,6 @@
                     </a>
                 </li>
                 <!--end::Fullscreen Toggle-->
-                <!-- begin:: QR Quick Scan -->
-                <li class="nav-item">
-                    <button class="nav-link" data-bs-toggle="modal" data-bs-target="#qrScannerModal">
-                        <i class="bi bi-qr-code-scan"></i>
-                    </button>
-                </li>
-                <!--end::QR Quick Scan-->
                 <!--begin::User Menu Dropdown-->
 
 
@@ -114,91 +103,3 @@
     </nav>
 
 
-    <div class="modal fade" id="qrScannerModal">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-
-                <div class="modal-header">
-                    <h5 class="modal-title">Scan Inventory QR Code</h5>
-                    <button class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-
-                <div class="modal-body text-center">
-                    <div id="qr-reader" style="width:100%"></div>
-                </div>
-
-            </div>
-        </div>
-    </div>
-
-
-    <script src="https://unpkg.com/html5-qrcode"></script>
-<script>
-function startScanner() {
-
-    const scanner = new Html5Qrcode("qr-reader");
-
-    scanner.start(
-        { facingMode: "environment" }, // use back camera
-        { fps: 24, qrbox: 500, disableFlip: true },
-
-        (decodedText) => {
-
-            console.log("QR Code scanned:", decodedText);
-
-            // stop scanner immediately
-            scanner.stop().then(() => {
-
-                console.log("Scanner stopped");
-
-                // remove possible prefix like ICT:
-                let code = decodedText.split(":").pop().trim();
-
-                // redirect to universal scan route
-                window.location.href = "/inventory/scan/" + encodeURIComponent(code);
-
-            }).catch((err) => {
-                console.error("Error stopping scanner:", err);
-            });
-
-        },
-
-        (errorMessage) => {
-            // optional error logging
-            // console.warn(errorMessage);
-        }
-    );
-}
-// Trigger scanner when modal is shown
-document.getElementById("qrScannerModal").addEventListener("shown.bs.modal", startScanner);
-</script>
-    <!-- <script src="https://unpkg.com/html5-qrcode"></script>
-    <script>
-        function startScanner() {
-
-            const scanner = new Html5Qrcode("qr-reader");
-
-            scanner.start({
-                    facingMode: "environment"
-                }, // use back camera
-                {
-                    fps: 24,
-                    qrbox: 500,
-                    disableFlip: true
-                },
-                (decodedText) => {
-
-                    console.log("QR Code:", decodedText);
-
-                    // redirect to inventory item
-                    window.location.href = "/inventory/item/" + decodedText;
-
-                },
-                (errorMessage) => {
-                    // ignore scanning errors
-                }
-            );
-        }
-
-        document.getElementById("qrScannerModal").addEventListener("shown.bs.modal", startScanner);
-    </script> -->

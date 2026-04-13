@@ -7,7 +7,7 @@
                     : route_to('user.dashboard') ?>"
           class="nav-link">
 
-          <span class="brand-text fw-light">DENR ICT INVENTORY</span>
+          <span class="brand-text fw-light">TRAVEL ORDER SYSTEM</span>
         </a>
         <!--begin::Brand Image-->
 
