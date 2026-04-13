@@ -37,7 +37,7 @@ class CreateUsersTable extends Migration
             ],
             'role' => [
                 'type' => 'ENUM',
-                'constraint' => ['employee', 'supervisor', 'division_head', 'penro', 'records'],
+                'constraint' => ['employee', 'supervisor', 'division_head', 'penro', 'records', 'admin'],
                 'default' => 'employee'
             ],
             'created_at' => [

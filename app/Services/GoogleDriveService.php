@@ -134,24 +134,24 @@ class GoogleDriveService
     }
 
     // Upload file (user-specific)
-    public function uploadFile($filePath, $fileName, $folderId = null)
-    {
-        if (!$this->userId) {
-            throw new \Exception("User not set.");
-        }
-        $fileMetadata = new \Google\Service\Drive\DriveFile([
-            'name' => $fileName,
-            'parents' => $folderId ? [$folderId] : []
-        ]);
-        $content = file_get_contents($filePath);
-        $file = $this->drive->files->create($fileMetadata, [
-            'data' => $content,
-            'mimeType' => mime_content_type($filePath),
-            'uploadType' => 'multipart',
-            'fields' => 'id'
-        ]);
-        return $file->id;
-    }
+    // public function uploadFile($filePath, $fileName, $folderId = null)
+    // {
+    //     if (!$this->userId) {
+    //         throw new \Exception("User not set.");
+    //     }
+    //     $fileMetadata = new \Google\Service\Drive\DriveFile([
+    //         'name' => $fileName,
+    //         'parents' => $folderId ? [$folderId] : []
+    //     ]);
+    //     $content = file_get_contents($filePath);
+    //     $file = $this->drive->files->create($fileMetadata, [
+    //         'data' => $content,
+    //         'mimeType' => mime_content_type($filePath),
+    //         'uploadType' => 'multipart',
+    //         'fields' => 'id'
+    //     ]);
+    //     return $file->id;
+    // }
 
     private function sanitizeFileName($fileName)
     {
