@@ -6,12 +6,11 @@ use CodeIgniter\Model;
 
 class SelectModel extends Model
 {
-    function generateNextInventoryID()
+    function generateNextTravelOrderID()
     {
         $year  = date('Y');
-        $month = date('m');
 
-        $base = "Travel-Order#-{$year}-{$month}";
+        $base = "Travel-Order#-{$year}";
 
         $builder = $this->db->table('travel_orders');
 

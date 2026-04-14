@@ -105,7 +105,7 @@
 <div class="modal fade" id="modal-add-travel-order">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <form action="<?= route_to('dashboard.createTravelOrder') ?>" method="POST" class="needs-validation" enctype="multipart/form-data" novalidate >
+            <form action="<?= route_to('dashboard.createTravelOrder') ?>" method="POST" class="needs-validation" enctype="multipart/form-data" novalidate>
                 <?= csrf_field() ?>
                 <div class="modal-header">
                     <h4 class="modal-title">Travel Order Application Form</h4>
@@ -123,6 +123,7 @@
                         </div>
                     </div>
 
+                    <hr>
                     <!-- Begin :: Personal Information -->
                     <div class="row">
                         <div class="d-flex justify-content-between align-items-center mb-2">
@@ -142,29 +143,35 @@
                                 </button>
                             </div>
                             <div class="row">
-                                <div class="col-6">
+                                <div class="col-5">
                                     <label class="form-label">Name</label>
                                     <input type="text" class="form-control" name="persons[0][name]" required>
                                 </div>
-                                <div class="col-6">
+                                <div class="col-2">
                                     <label class="form-label">Salary Grade</label>
                                     <input type="text" class="form-control" name="persons[0][salary_grade]" required>
                                 </div>
-                            </div>
-                            <div class="row mt-2">
-                                <div class="col-6">
-                                    <label class="form-label">Division/Section/Unit</label>
-                                    <input type="text" class="form-control" name="persons[0][division_section_unit]" required>
-                                </div>
-                                <div class="col-6">
+                                <div class="col-5">
                                     <label class="form-label">Position</label>
                                     <input type="text" class="form-control" name="persons[0][position]" required>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <!-- End :: Personal Information -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label for="division_section_unit" class="form-label"></label>ROUTE TO: PENRO/Division/Section/Unit</label>
+                                <input type="text" class="form-control" id="division_section_unit" name="division_section_unit" required>
+                                <div class="invalid-feedback">
+                                    Please Enter Division/Section/Unit.
+                                </div>
+                            </div>
+                        </div>
 
+                    </div>
+                    <!-- End :: Personal Information -->
+                    <hr>
                     <!-- Begin :: Travel Details -->
                     <div class="row">
                         <label class="form-label fs-4">Travel Details</label>
@@ -212,7 +219,7 @@
                         </div>
                     </div>
                     <!-- End :: Travel Details -->
-
+                    <hr>
                     <!-- Begin :: Supporting Documents -->
                     <div class="row">
                         <label class="form-label fs-4">Supporting Documents</label>
@@ -308,7 +315,7 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         const container = document.getElementById('person-container');
         const addBtn = document.getElementById('add-person');
 
@@ -324,21 +331,15 @@
                     </button>
                 </div>
                 <div class="row">
-                    <div class="col-6">
+                    <div class="col-5">
                         <label class="form-label">Name</label>
                         <input type="text" class="form-control" name="persons[${i}][name]" required>
                     </div>
-                    <div class="col-6">
+                    <div class="col-2">
                         <label class="form-label">Salary Grade</label>
                         <input type="text" class="form-control" name="persons[${i}][salary_grade]" required>
                     </div>
-                </div>
-                <div class="row mt-2">
-                    <div class="col-6">
-                        <label class="form-label">Division/Section/Unit</label>
-                        <input type="text" class="form-control" name="persons[${i}][division_section_unit]" required>
-                    </div>
-                    <div class="col-6">
+                    <div class="col-5">
                         <label class="form-label">Position</label>
                         <input type="text" class="form-control" name="persons[${i}][position]" required>
                     </div>
@@ -349,30 +350,30 @@
 
         function reindexGroups() {
             const groups = container.querySelectorAll('.person-group');
-            groups.forEach(function (group, i) {
+            groups.forEach(function(group, i) {
                 const label = group.querySelector('.fw-semibold');
                 if (label) label.textContent = `Person #${i + 1}`;
 
-                group.querySelector('[name*="[name]"]').name               = `persons[${i}][name]`;
-                group.querySelector('[name*="[salary_grade]"]').name       = `persons[${i}][salary_grade]`;
+                group.querySelector('[name*="[name]"]').name = `persons[${i}][name]`;
+                group.querySelector('[name*="[salary_grade]"]').name = `persons[${i}][salary_grade]`;
                 group.querySelector('[name*="[division_section_unit]"]').name = `persons[${i}][division_section_unit]`;
-                group.querySelector('[name*="[position]"]').name           = `persons[${i}][position]`;
+                group.querySelector('[name*="[position]"]').name = `persons[${i}][position]`;
             });
 
             const deleteButtons = container.querySelectorAll('.delete-person');
-            deleteButtons.forEach(function (btn) {
+            deleteButtons.forEach(function(btn) {
                 btn.disabled = groups.length === 1;
             });
         }
 
-        addBtn.addEventListener('click', function () {
+        addBtn.addEventListener('click', function() {
             const count = container.querySelectorAll('.person-group').length + 1;
             const newGroup = createPersonGroup(count);
             container.appendChild(newGroup);
             reindexGroups();
         });
 
-        container.addEventListener('click', function (e) {
+        container.addEventListener('click', function(e) {
             const deleteBtn = e.target.closest('.delete-person');
             if (!deleteBtn) return;
 

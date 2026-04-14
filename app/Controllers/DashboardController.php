@@ -50,7 +50,7 @@ class DashboardController extends BaseController
         }
 
         // Generate new travel order number
-        $newTravelOrderNumber = (new SelectModel())->generateNextInventoryID();
+        $newTravelOrderNumber = (new SelectModel())->generateNextTravelOrderID();
 
         // Initialize GDriveService
         $drive = new GoogleDriveService();

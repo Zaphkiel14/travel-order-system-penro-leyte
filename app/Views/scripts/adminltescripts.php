@@ -209,7 +209,6 @@
   })();
 </script>
 
-<script></script>
 
 <script>
   $(function() {
@@ -424,19 +423,6 @@
             gap: '8px'
           });
           dt.buttons().container().prependTo($filter);
-        }
-      }
-      /* -------------------------------
-      QR AUTO SEARCH FROM URL
-      -------------------------------- */
-      if (dt) {
-        const params = new URLSearchParams(window.location.search);
-        const qrSearch = params.get('search');
-        if (qrSearch) {
-          // put value in search input
-          $('input[type="search"]').val(qrSearch);
-          // trigger datatable search
-          dt.search(qrSearch).draw();
         }
       }
     });
