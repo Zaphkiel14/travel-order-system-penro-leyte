@@ -30,7 +30,7 @@ class Auth extends BaseController
         //search database if email exists
         $user = $userModel->where('email', $email)->first();
 
-        // No user found block 
+        // No user found block
         if (!$user) {
             log_message('debug', 'No user found with that email.');
             $alert = session()->getFlashdata('alert') ?? [];
@@ -151,7 +151,7 @@ class Auth extends BaseController
             'confirm_password' => 'required|matches[password]',
             'position'         => 'required',
             'role'             => 'required',
-            'field_office'     => 'required',
+            // 'field_office'     => 'required',
         ]);
 
         // Validation check
@@ -185,7 +185,7 @@ class Auth extends BaseController
             'password'     => $passwordHash,
             'role'         => $this->request->getPost('role'),
             'position'     => $this->request->getPost('position'),
-            'field_office' => $this->request->getPost('field_office'),
+            // // 'field_office' => $this->request->getPost('field_office'),
         ];
 
         // Save user
@@ -197,7 +197,7 @@ class Auth extends BaseController
             $data['password'],
             $data['position'],
             $data['role'],
-            $data['field_office'],
+            // $data['field_office'],
         );
 
         // Add success/failure alert

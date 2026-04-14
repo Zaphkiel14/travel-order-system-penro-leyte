@@ -12,7 +12,11 @@ class UsersSeeder extends Seeder
             [
                 'first_name' => 'admin',
                 'last_name' => 'admin',
+<<<<<<< Updated upstream
                 'email' => 'admin@example.com',
+=======
+                'email' => 'josepheannemarie.misola@evsu.edu.ph',
+>>>>>>> Stashed changes
                 'password' => password_hash('admin123', PASSWORD_DEFAULT),
                 'position' => 'Administrator',
                 'role' => 'admin',

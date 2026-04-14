@@ -33,6 +33,7 @@ class SelectModel extends Model
     protected $skipValidation       = false;
     protected $cleanValidationRules = true;
 
+<<<<<<< Updated upstream
     // Callbacks
     protected $allowCallbacks = true;
     protected $beforeInsert   = [];
@@ -43,4 +44,8 @@ class SelectModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+=======
+
+
+>>>>>>> Stashed changes
 }
