@@ -6,41 +6,34 @@ use CodeIgniter\Model;
 
 class SelectModel extends Model
 {
-    protected $table            = 'selects';
-    protected $primaryKey       = 'id';
-    protected $useAutoIncrement = true;
-    protected $returnType       = 'array';
-    protected $useSoftDeletes   = false;
-    protected $protectFields    = true;
-    protected $allowedFields    = [];
+    function generateNextInventoryID()
+    {
+        $year  = date('Y');
+        $month = date('m');
 
-    protected bool $allowEmptyInserts = false;
-    protected bool $updateOnlyChanged = true;
+        $base = "Travel-Order#-{$year}-{$month}";
 
-    protected array $casts = [];
-    protected array $castHandlers = [];
+        $builder = $this->db->table('travel_orders');
 
-    // Dates
-    protected $useTimestamps = false;
-    protected $dateFormat    = 'datetime';
-    protected $createdField  = 'created_at';
-    protected $updatedField  = 'updated_at';
-    protected $deletedField  = 'deleted_at';
+        $builder->select('travel_order_number');
+        $builder->like('travel_order_number', $base, 'after');
+        $builder->orderBy('travel_order_number', 'DESC');
+        $builder->limit(1);
 
-    // Validation
-    protected $validationRules      = [];
-    protected $validationMessages   = [];
-    protected $skipValidation       = false;
-    protected $cleanValidationRules = true;
+        $result = $builder->get()->getRow();
 
-    // Callbacks
-    protected $allowCallbacks = true;
-    protected $beforeInsert   = [];
-    protected $afterInsert    = [];
-    protected $beforeUpdate   = [];
-    protected $afterUpdate    = [];
-    protected $beforeFind     = [];
-    protected $afterFind      = [];
-    protected $beforeDelete   = [];
-    protected $afterDelete    = [];
+        if ($result) {
+            $parts = explode('-', $result->travel_order_number);
+            $lastIncrement = (int) end($parts);
+            $nextIncrement = $lastIncrement + 1;
+        } else {
+            $nextIncrement = 1;
+        }
+
+        $nextIncrementFormatted = str_pad($nextIncrement, 4, '0', STR_PAD_LEFT);
+
+        return "{$base}-{$nextIncrementFormatted}";
+    }
+
+
 }

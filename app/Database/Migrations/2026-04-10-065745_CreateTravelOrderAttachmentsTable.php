@@ -23,12 +23,24 @@ class CreateTravelOrderAttachmentsTable extends Migration
             'attachment_id' => [
                 'type' => 'MEDIUMINT',
                 'constraint' => 8,
-                'unsigned' => true
-            ]
+                'unsigned' => true,
+            ],
+            'file_id' => [
+                'type' => 'VARCHAR',
+                'constraint' => 255
+            ],
+            'attachment_name' => [
+                'type' => 'VARCHAR',
+                'constraint' => 255
+            ],
+            'attachment_type' => [
+                'type' => 'ENUM',
+                'constraint' => ['Request Memo', 'Request Letter', 'Training Notification','Conference Program', 'Special Order', 'Invitation Letter', 'Meeting Notice', 'Other Document'],
+                'null' => true
+            ],
         ]);
         $this->forge->addKey('travel_order_attachment_id', true);
             $this->forge->addForeignKey('travel_order_id', 'travel_orders', 'travel_order_id', 'CASCADE', 'CASCADE');
-            $this->forge->addForeignKey('attachment_id', 'attachments', 'attachment_id', 'CASCADE', 'CASCADE');
         $this->forge->createTable('travel_order_attachments');
     }
 

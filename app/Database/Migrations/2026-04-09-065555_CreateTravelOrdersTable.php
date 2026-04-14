@@ -20,6 +20,11 @@ class CreateTravelOrdersTable extends Migration
                 'constraint' => 8,
                 'unsigned' => true
             ],
+            'travel_order_number' => [
+                'type' => 'VARCHAR',
+                'constraint' => 255,
+                'unique' => true
+            ],
             'departure_date' => [
                 'type' => 'DATE'
             ],
@@ -35,8 +40,23 @@ class CreateTravelOrdersTable extends Migration
             ],
             'status' => [
                 'type' => 'ENUM',
-                'constraint' => ['Pending Supervisor', 'For Division Approval', 'For PENRO Approval', 'Approved', 'Rejected'],
+                'constraint' => [
+                                    'Pending Supervisor',
+                                    'Approved by Supervisor',
+                                    'For Division Approval',
+                                    'Approved by Division Head',
+                                    'For PENRO Approval', 
+                                    'Approved', 
+                                    'Rejected by Supervisor',
+                                    'Rejected by Division Head',
+                                    'Rejected by PENRO'],
                 'default' => 'Pending Supervisor'
+            ],
+            'unit_id' => [
+                'type' => 'MEDIUMINT',
+                'constraint' => 8,
+                'unsigned' => true,
+                'null' => true
             ],
             'approved_by_supervisor' => [
                 'type' => 'VARCHAR',
@@ -47,6 +67,12 @@ class CreateTravelOrdersTable extends Migration
                 'type' => 'TEXT',
                 'null' => true
             ],
+            'division_id' => [
+                'type' => 'MEDIUMINT',
+                'constraint' => 8,
+                'unsigned' => true,
+                'null' => true
+            ],
             'approved_by_division_head' => [
                 'type' => 'VARCHAR',
                 'constraint' => 255,
@@ -54,6 +80,12 @@ class CreateTravelOrdersTable extends Migration
             ],
             'division_head_remarks' => [
                 'type' => 'TEXT',
+                'null' => true
+            ],
+            'organization_id' => [
+                'type' => 'MEDIUMINT',
+                'constraint' => 8,
+                'unsigned' => true,
                 'null' => true
             ],
             'approved_by_organization_head' => [
@@ -80,6 +112,9 @@ class CreateTravelOrdersTable extends Migration
         ]);
         $this->forge->addKey('travel_order_id', true);
         $this->forge->addForeignKey('user_id', 'users', 'user_id', 'CASCADE', 'CASCADE');
+        $this->forge->addForeignKey('unit_id', 'units', 'unit_id', 'SET NULL', 'CASCADE');
+        $this->forge->addForeignKey('division_id', 'divisions', 'division_id', 'SET NULL', 'CASCADE');
+        $this->forge->addForeignKey('organization_id', 'organization', 'organization_id', 'SET NULL', 'CASCADE');
         $this->forge->createTable('travel_orders');
     }
 

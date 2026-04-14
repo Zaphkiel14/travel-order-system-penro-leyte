@@ -71,7 +71,7 @@
 
         <i class="bi <?= esc($icon) ?> me-2 fs-5"></i>
 
-        <strong class="me-auto">DENR ICT INVENTORY SYSTEM</strong>
+        <strong class="me-auto">TRAVEL ORDER SYSTEM <br> PENRO LEYTE</strong>
 
         <small class="text-white-50 toast-time" data-start="<?= time() ?>"></small>
 

@@ -68,7 +68,6 @@ class Auth extends BaseController
             'role'  => $user['role'],
             'position'  => $user['position'],
             'created_at' => $user['created_at'],
-            'field_office_id' => $user['field_office_id'],
             'isLoggedIn' => true,
         ]);
 
@@ -234,7 +233,6 @@ class Auth extends BaseController
                 'role'       => $user['role'],
                 'position'   => $user['position'],
                 'created_at' => $user['created_at'],
-                'field_office_id' => $user['field_office_id'],
                 'isLoggedIn' => true,
             ]);
             log_message('debug', 'Google login session: ' . json_encode(session()->get()));

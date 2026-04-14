@@ -33,4 +33,6 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
     $routes->get('dashboard', [DashboardController::class, 'index'],['as' => 'dashboard']);
     // End :: Dashboard route
 
+    $routes->post('dashboard/create-travel-order', [DashboardController::class, 'createTravelOrder'], ['as' => 'dashboard.createTravelOrder']);
+
 });

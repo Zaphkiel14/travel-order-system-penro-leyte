@@ -48,6 +48,7 @@ class GoogleDriveService
         }
         // Set token
         $this->client->setAccessToken($token);
+        
         // Verify identity
         $payload = $this->client->verifyIdToken();
         if (!$payload) {
@@ -68,6 +69,7 @@ class GoogleDriveService
         $userId = $user->user_id;
         // SET SESSION (LOGIN SUCCESS)
         session()->set('user_id', $userId);
+        log_message('debug', 'Google login successful for user ID: ' . $userId);
         // SAVE / UPDATE GOOGLE TOKENS
         $data = [
             'user_id' => $userId,

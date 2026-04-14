@@ -12,7 +12,7 @@ class UsersSeeder extends Seeder
             [
                 'first_name' => 'admin',
                 'last_name' => 'admin',
-                'email' => 'admin@example.com',
+                'email' => 'vincenteleazar.uykieng@evsu.edu.ph',
                 'password' => password_hash('admin123', PASSWORD_DEFAULT),
                 'position' => 'Administrator',
                 'role' => 'admin',
