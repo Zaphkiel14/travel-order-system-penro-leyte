@@ -291,8 +291,7 @@ class TravelOrderController extends BaseController
                                             class="btn btn-sm btn-primary">
                                             <i class="bi bi-eye"></i> 
                                         </a>
-                                        
-                                    ',
+                                        ',
             ];
         }, $rows);
 
