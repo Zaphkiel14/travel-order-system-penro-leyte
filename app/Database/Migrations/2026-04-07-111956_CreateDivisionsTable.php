@@ -30,6 +30,11 @@ class CreateDivisionsTable extends Migration
                 'unsigned' => true,
                 'null' => true
             ],
+            'division_head_position' => [
+                'type' => 'VARCHAR',
+                'constraint' => 255,
+                'null' => true
+            ],
             'created_at' => [
                 'type' => 'DATETIME',
                 'null' => true

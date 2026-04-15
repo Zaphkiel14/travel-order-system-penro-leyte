@@ -77,8 +77,7 @@ class TravelOrderModel extends Model
         $meeting_notice,
         $conference_program,
         $other_document
-    )
-    {
+    ) {
 
         $this->db->transStart();
 
@@ -93,17 +92,16 @@ class TravelOrderModel extends Model
         ]);
         $travelOrderId = $this->getInsertID();
 
-    // Step 2: Insert each person into travel_order_users
-    foreach ($persons as $person) {
-        $this->db->table('travel_order_users')->insert([
-            'travel_order_id' => $travelOrderId,
-            'user_id'         => null,                              // null = manually typed person, not a system user
-            'name'            => trim($person['name']),
-            'salary_grade'    => trim($person['salary_grade']),
-            'division'        => trim($person['division_section_unit']), // map form field -> column name
-            'position'        => trim($person['position']),
-        ]);
-    }
+        // Step 2: Insert each person into travel_order_users
+        foreach ($persons as $person) {
+            $this->db->table('travel_order_users')->insert([
+                'travel_order_id' => $travelOrderId,
+                'user_id'         => null,                              // null = manually typed person, not a system user
+                'name'            => trim($person['name']),
+                'salary_grade'    => trim($person['salary_grade']),
+                'position'        => trim($person['position']),
+            ]);
+        }
 
         // insert attachments
         $attachments = [
@@ -129,15 +127,6 @@ class TravelOrderModel extends Model
         return $this->db->transStatus() ? $travelOrderId : false;
     }
 
-
-
-
-
-
-
-
-
-
     /**
      *  Summary of getTravelOrderDetails
      * - fetches full detail of a travel order including its attachments
@@ -146,8 +135,7 @@ class TravelOrderModel extends Model
      */
     public function getTravelOrderDetails($travelOrderId)
     {
-        $builder = $this->db->table('travel_orders');
-        $builder->select('
+                $this->select('
             to.travel_order_id,
             to.travel_order_number,
             to.departure_date,
@@ -155,18 +143,35 @@ class TravelOrderModel extends Model
             to.destination,
             to.purpose_of_travel,
             to.status,
+
+            to.unit_id,
+            u.unit_supervisor_position,
             to.approved_by_supervisor,
             to.supervisor_remarks,
+
+            to.division_id,
+            d.division_head_position,
             to.approved_by_division_head,
             to.division_head_remarks,
+
+            to.organization_id,
+            o.organization_head_position,
             to.approved_by_organization_head,
             to.organization_head_remarks,
+
+            CONCAT(us.first_name, " ", us.last_name) AS applicant_name,
+            us.position AS applicant_position,
+
             to.created_at
-            ')
+        ')
             ->from('travel_orders to')
+            ->join('units u', 'u.unit_id = to.unit_id', 'left')
+            ->join('divisions d', 'd.division_id = to.division_id', 'left')
+            ->join('organization o', 'o.organization_id = to.organization_id', 'left')
+            ->join('users us', 'us.user_id = to.user_id', 'left')
             ->where('to.travel_order_id', $travelOrderId);
-        $travel_order_items = $builder->get()->getResult();
-        foreach ($travel_order_items as $item) {
+        $travelOrderItems = $this->get()->getResult();
+        foreach ($travelOrderItems as $item) {
             $attachmentBuilder = $this->db->table('travel_order_attachments ta');
             $attachmentBuilder->select('
                 to.travel_order_id,
@@ -180,18 +185,19 @@ class TravelOrderModel extends Model
             $attachmentBuilder->where('ta.travel_order_id', $item->travel_order_id);
             $item->attachments = $attachmentBuilder->get()->getResult();
         }
-        return $travel_order_items;
-    }
+        return $travelOrderItems;
+        }
 
     /**
      * Summary of getMyTravelOrders
      * - fetches travel orders of the currently logged in user
      * @param mixed $userId
-     * @return array
+     * @return static
      */
-    public function getMyTravelOrders($userId)
-    {
-        $this->select('
+
+public function getMyTravelOrdersQuery($userId): static
+{
+    return $this->select('
             travel_order_id,
             travel_order_number,
             departure_date,
@@ -199,20 +205,12 @@ class TravelOrderModel extends Model
             destination,
             purpose_of_travel,
             status,
-            unit_id,
-            approved_by_supervisor,
-            supervisor_remarks,
-            division_id,
-            approved_by_division_head,
-            division_head_remarks,
-            organization_id,
-            approved_by_organization_head,
-            organization_head_remarks,
             created_at
         ')
-            ->where('user_id', $userId);
-        return $this->get()->getResult();
-    }
+        ->where('user_id', $userId);
+    // Returns the model itself (query builder state), NOT results yet
+    // Caller decides whether to count, paginate, or fetch
+}
 
 
     /**

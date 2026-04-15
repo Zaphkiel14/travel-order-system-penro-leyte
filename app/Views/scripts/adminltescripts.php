@@ -371,7 +371,8 @@
     });
   });
 </script> -->
-<script>
+<!-- WORKING DATATABLE INITIALIZATION -->
+<!-- <script>
   $(function() {
     $('.datatable-standard').each(function() {
       var $table = $(this);
@@ -427,8 +428,194 @@
       }
     });
   });
-</script>
+</script> -->
+<!-- WORKING DATATABLE INITIALIZATION -->
 
+
+<!-- EXPERIMENTAL DATATABLE INITIALIZATION -->
+<script>
+$(function () {
+
+  /**
+   * DataTable Global Initializer
+   * ─────────────────────────────────────────────────────────────────────
+   * Usage: add class="datatable-standard" to any <table> and configure
+   * behaviour via data-* attributes or an inline JSON config block.
+   *
+   * BASIC ATTRIBUTES (on the <table> element)
+   * ─────────────────────────────────────────
+   * data-url="..."               → enables server-side processing (AJAX POST)
+   * data-method="GET|POST"       → AJAX method (default: POST)
+   * data-last-column-width="120" → px width for last column (default: 100)
+   * data-page-length="25"        → rows per page (default: 25)
+   * data-order='[[0,"asc"]]'     → initial sort (JSON array)
+   * data-searching="false"       → disable search box
+   * data-buttons="false"         → disable export buttons
+   * data-responsive="true"       → enable responsive plugin (default: true)
+   * data-language="..."          → custom language object (JSON)
+   *
+   * COLUMN DEFINITIONS (on <th> elements)
+   * ──────────────────────────────────────
+   * data-name="column_name"      → maps to server-side column name
+   * data-orderable="false"       → disable sorting for this column
+   * data-searchable="false"      → exclude column from search
+   * data-visible="false"         → hide column (still sent server-side)
+   * data-class="text-center"     → adds class to all <td> in this column
+   * data-width="80"              → column width in px
+   * data-type="date"             → column type (date, num, string, etc.)
+   *
+   * SERVER-SIDE RESPONSE FORMAT (your PHP controller must return):
+   * ──────────────────────────────────────────────────────────────
+   * {
+   *   "draw":            <int>,
+   *   "recordsTotal":    <int>,
+   *   "recordsFiltered": <int>,
+   *   "data":            [ [...], [...] ]   ← array of row arrays
+   * }
+   *
+   * EXAMPLES
+   * ────────
+   * <table class="datatable-standard"
+   *        data-url=" route_to('travel-orders.data') "
+   *        data-page-length="10"
+   *        data-order='[[3,"desc"]]'>
+   *
+   * <th data-name="travel_order_number">TO #</th>
+   * <th data-name="destination">Destination</th>
+   * <th data-name="status" data-orderable="false">Status</th>
+   * <th data-orderable="false" data-searchable="false">Actions</th>
+   */
+
+  $('.datatable-standard').each(function () {
+    var $table = $(this);
+
+    // ── Read table-level config from data-* attributes ──────────────────
+    var ajaxUrl          = $table.data('url')               || null;
+    var ajaxMethod       = ($table.data('method')           || 'POST').toUpperCase();
+    var lastColWidth     = $table.data('last-column-width') || 100;
+    var pageLength       = parseInt($table.data('page-length')) || 25;
+    var initialOrder     = $table.data('order')             || [[0, 'asc']];
+    var enableSearching  = $table.data('searching')  !== false;
+    var enableButtons    = $table.data('buttons')    !== false;
+    var enableResponsive = $table.data('responsive') !== false;
+    var extraParams      = $table.data('params')            || {};   // static extra POST params
+
+    // ── Build columnDefs from <th data-*> attributes ─────────────────────
+    var columns     = [];
+    var columnDefs  = [];
+
+    $table.find('thead th').each(function (i) {
+      var $th          = $(this);
+      var colName      = $th.data('name')       || null;
+      var orderable    = $th.data('orderable')  !== false;
+      var searchable   = $th.data('searchable') !== false;
+      var visible      = $th.data('visible')    !== false;
+      var colClass     = $th.data('class')      || null;
+      var colWidth     = $th.data('width')      || null;
+      var colType      = $th.data('type')       || null;
+
+      // Column definition for the columns array (used with server-side)
+      var colDef = {
+        data:       colName,          // null = positional (client-side friendly)
+        name:       colName,
+        orderable:  orderable,
+        searchable: searchable,
+        visible:    visible
+      };
+      if (colType)  colDef.type  = colType;
+      if (colWidth) colDef.width = colWidth + 'px';
+      if (colClass) colDef.className = colClass;
+
+      columns.push(colDef);
+
+      // Build columnDefs array for non-orderable / non-searchable columns
+      if (!orderable)  columnDefs.push({ orderable:  false, targets: i });
+      if (!searchable) columnDefs.push({ searchable: false, targets: i });
+      if (!visible)    columnDefs.push({ visible:    false, targets: i });
+      if (colClass)    columnDefs.push({ className:  colClass, targets: i });
+      if (colWidth)    columnDefs.push({ width:      colWidth + 'px', targets: i });
+    });
+
+    // Force last column width (actions column convenience)
+    columnDefs.push({ width: lastColWidth + 'px', targets: -1 });
+
+    // ── Base DataTable config ────────────────────────────────────────────
+    var config = {
+      responsive:   enableResponsive,
+      processing:   true,
+      lengthChange: false,
+      autoWidth:    false,
+      info:         true,
+      paging:       true,
+      searching:    enableSearching,
+      pageLength:   pageLength,
+      order:        (typeof initialOrder === 'string')
+                      ? JSON.parse(initialOrder)
+                      : initialOrder,
+      columnDefs:   columnDefs,
+      language: {
+        processing: '<div class="d-flex align-items-center gap-2 py-2">'
+                  + '<span class="spinner-border spinner-border-sm text-primary"></span>'
+                  + '<span>Loading...</span></div>',
+        emptyTable: 'No records found.',
+        zeroRecords: 'No matching records found.'
+      },
+      dom: enableButtons
+        ? '<"d-flex justify-content-between align-items-center mb-2"Bf>rtip'
+        : '<"d-flex justify-content-between align-items-center mb-2"f>rtip',
+      buttons: enableButtons ? [
+        { extend: 'copy',   className: 'btn btn-sm btn-default' },
+        { extend: 'csv',    className: 'btn btn-sm btn-default' },
+        { extend: 'excel',  className: 'btn btn-sm btn-default' },
+        { extend: 'pdf',    className: 'btn btn-sm btn-default' },
+        { extend: 'print',  className: 'btn btn-sm btn-default' },
+        { extend: 'colvis', className: 'btn btn-sm btn-default' }
+      ] : []
+    };
+
+    // ── Server-side mode ─────────────────────────────────────────────────
+    if (ajaxUrl) {
+      config.serverSide = true;
+      config.columns    = columns;   // required for server-side column mapping
+      config.ajax = {
+        url:  ajaxUrl,
+        type: ajaxMethod,
+        data: function (d) {
+          // Merge any static extra params (e.g. data-params='{"status":"active"}')
+          return $.extend({}, d, extraParams);
+        }
+      };
+    }
+
+    // ── Init ─────────────────────────────────────────────────────────────
+    var dt;
+    try {
+      dt = $table.DataTable(config);
+    } catch (err) {
+      console.warn('[DataTable] Init failed on #' + ($table.attr('id') || '(no id)'), err);
+      return;
+    }
+
+    // ── QR / URL search param auto-search ────────────────────────────────
+    var searchParam = new URLSearchParams(window.location.search).get('search');
+    if (searchParam && dt) {
+      dt.search(searchParam).draw();
+    }
+
+    // ── Re-init any Select2 inside a modal that contains this table ───────
+    $table.closest('.modal').on('shown.bs.modal', function () {
+      var $m = $(this);
+      $m.find('.select2').each(function () {
+        var $s = $(this);
+        if ($s.data('select2')) { try { $s.select2('destroy'); } catch (e) {} }
+        try { $s.select2({ dropdownParent: $m }); } catch (e) {}
+      });
+    });
+  });
+
+});
+</script>
+<!-- EXPERIMENTAL DATATABLE INITIALIZATION -->
 
 
 <!--begin::Third Party Plugin(OverlayScrollbars)-->

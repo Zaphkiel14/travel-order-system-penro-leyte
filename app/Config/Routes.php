@@ -4,7 +4,7 @@ use CodeIgniter\Router\RouteCollection;
 
 use App\Controllers\Auth;
 use App\Controllers\DashboardController;
-
+use App\Controllers\TravelOrderController;
 
 /**
  * @var RouteCollection $routes
@@ -33,6 +33,8 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
     $routes->get('dashboard', [DashboardController::class, 'index'],['as' => 'dashboard']);
     // End :: Dashboard route
 
-    $routes->post('dashboard/create-travel-order', [DashboardController::class, 'createTravelOrder'], ['as' => 'dashboard.createTravelOrder']);
+    $routes->post('dashboard/create-travel-order', [TravelOrderController::class, 'createTravelOrder'], ['as' => 'create.TravelOrder']);
+
+    $routes->post('dashboard/mytravelorders', [TravelOrderController::class, 'travelOrdersData'], ['as' => 'data.travelOrders']);
 
 });

@@ -19,10 +19,15 @@ class CreateOrganizationTable extends Migration
                 'type' => 'VARCHAR',
                 'constraint' => 255     
             ],
-            'organization_user_id' => [
+            'organization_head_id' => [
                 'type' => 'MEDIUMINT',
                 'constraint' => 8,
                 'unsigned' => true,
+                'null' => true
+            ],
+            'organization_head_position' => [
+                'type' => 'VARCHAR',
+                'constraint' => 255,
                 'null' => true
             ],
             'created_at' => [
@@ -39,7 +44,7 @@ class CreateOrganizationTable extends Migration
             ]   
         ]);
         $this->forge->addKey('organization_id', true);
-        $this->forge->addForeignKey('organization_user_id', 'users', 'user_id', 'CASCADE', 'CASCADE');
+        $this->forge->addForeignKey('organization_head_id', 'users', 'user_id', 'CASCADE', 'CASCADE');
         $this->forge->createTable('organization');
     }
 

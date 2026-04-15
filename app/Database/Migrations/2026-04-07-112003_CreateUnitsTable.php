@@ -30,6 +30,11 @@ class CreateUnitsTable extends Migration
                 'unsigned' => true,
                 'null' => true
             ],
+            'unit_supervisor_position' => [
+                'type' => 'VARCHAR',
+                'constraint' => 255,
+                'null' => true
+            ],
             'created_at' => [
                 'type' => 'DATETIME',
                 'null' => true
