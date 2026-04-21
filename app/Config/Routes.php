@@ -34,6 +34,8 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
     $routes->get('dashboard', [DashboardController::class, 'index'],['as' => 'dashboard']);
     $routes->post('dashboard/create-travel-order', [TravelOrderController::class, 'createTravelOrder'], ['as' => 'create.TravelOrder']);
     $routes->post('dashboard/mytravelorders', [TravelOrderController::class, 'travelOrdersData'], ['as' => 'data.travelOrders']);
+    
+    $routes->get('dashboard/travel-orders/details/(:num)',[TravelOrderController::class, 'travelOrderDetails'],['as' => 'data.travelOrderDetails']);
     // End :: Dashboard route
 
     $routes->group('account-settings', function ($routes) {

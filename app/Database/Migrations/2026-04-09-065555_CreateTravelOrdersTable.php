@@ -63,6 +63,10 @@ class CreateTravelOrdersTable extends Migration
                 'constraint' => 255,
                 'null' => true
             ],
+            'is_approved_by_supervisor' => [
+                'type' => 'BOOLEAN',
+                'default' => false
+            ],
             'supervisor_remarks' => [
                 'type' => 'TEXT',
                 'null' => true
@@ -78,6 +82,10 @@ class CreateTravelOrdersTable extends Migration
                 'constraint' => 255,
                 'null' => true
             ],
+            'is_approved_by_division_head' => [
+                'type' => 'BOOLEAN',
+                'default' => false
+            ],
             'division_head_remarks' => [
                 'type' => 'TEXT',
                 'null' => true
@@ -92,6 +100,10 @@ class CreateTravelOrdersTable extends Migration
                 'type' => 'VARCHAR',
                 'constraint' => 255,
                 'null' => true
+            ],
+            'is_approved_by_organization_head' => [
+                'type' => 'BOOLEAN',
+                'default' => false
             ],
             'organization_head_remarks' => [
                 'type' => 'TEXT',

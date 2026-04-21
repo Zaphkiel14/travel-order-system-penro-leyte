@@ -62,132 +62,126 @@ class TravelOrderModel extends Model
     protected $afterDelete    = [];
 
 
-    public function insertTravelOrder(
-        $travel_order_number,
-        $persons,
-        $departure_date,
-        $arrival_date,
-        $destination,
-        $travel_purpose,
-        $request_memo,
-        $special_order,
-        $request_letter,
-        $invitation_letter,
-        $training_notification,
-        $meeting_notice,
-        $conference_program,
-        $other_document
-    ) {
+public function insertTravelOrder(
+    string $travel_order_number,
+    array  $persons,
+    string $departure_date,
+    string $arrival_date,
+    string $destination,
+    string $travel_purpose,
+    array  $attachments       // ['request_memo' => ['file_id' => ..., 'file_name' => ...], ...]
+): int|false {
 
-        $this->db->transStart();
+    $this->db->transStart();
 
-        // insert travel order information
-        $this->insert([
-            'travel_order_number' => $travel_order_number,
-            'user_id' => session()->get('user_id'),
-            'departure_date' => $departure_date,
-            'arrival_date' => $arrival_date,
-            'destination' => $destination,
-            'purpose_of_travel' => $travel_purpose,
+    // ── Travel order record ────────────────────────────────────────────
+    $this->insert([
+        'travel_order_number' => $travel_order_number,
+        'user_id'             => session()->get('user_id'),
+        'departure_date'      => $departure_date,
+        'arrival_date'        => $arrival_date,
+        'destination'         => $destination,
+        'purpose_of_travel'   => $travel_purpose,
+    ]);
+    $travelOrderId = $this->getInsertID();
+
+    // ── Persons ────────────────────────────────────────────────────────
+    foreach ($persons as $person) {
+        $this->db->table('travel_order_users')->insert([
+            'travel_order_id' => $travelOrderId,
+            'user_id'         => null,
+            'name'            => trim($person['name']),
+            'salary_grade'    => trim($person['salary_grade']),
+            'position'        => trim($person['position']),
         ]);
-        $travelOrderId = $this->getInsertID();
-
-        // Step 2: Insert each person into travel_order_users
-        foreach ($persons as $person) {
-            $this->db->table('travel_order_users')->insert([
-                'travel_order_id' => $travelOrderId,
-                'user_id'         => null,                              // null = manually typed person, not a system user
-                'name'            => trim($person['name']),
-                'salary_grade'    => trim($person['salary_grade']),
-                'position'        => trim($person['position']),
-            ]);
-        }
-
-        // insert attachments
-        $attachments = [
-            'request_memo' => $request_memo,
-            'special_order' => $special_order,
-            'request_letter' => $request_letter,
-            'invitation_letter' => $invitation_letter,
-            'training_notification' => $training_notification,
-            'meeting_notice' => $meeting_notice,
-            'conference_program' => $conference_program,
-            'other_document' => $other_document
-        ];
-        foreach ($attachments as $type => $fileId) {
-            if ($fileId) {
-                $this->db->table('travel_order_attachments')->insert([
-                    'travel_order_id' => $travelOrderId,
-                    'attachment_id' => $fileId,
-                    'attachment_type' => $type
-                ]);
-            }
-        }
-        $this->db->transComplete();
-        return $this->db->transStatus() ? $travelOrderId : false;
     }
 
-    /**
-     *  Summary of getTravelOrderDetails
-     * - fetches full detail of a travel order including its attachments
-     * @param int $travelOrderId
-     * @return array
-     */
-    public function getTravelOrderDetails($travelOrderId)
-    {
-                $this->select('
-            to.travel_order_id,
-            to.travel_order_number,
-            to.departure_date,
-            to.arrival_date,
-            to.destination,
-            to.purpose_of_travel,
-            to.status,
+    // ── Attachments ────────────────────────────────────────────────────
+    foreach ($attachments as $type => $file) {
+        // Skip fields where no file was uploaded
+        if (!$file || empty($file['file_id'])) {
+            continue;
+        }
 
-            to.unit_id,
-            u.unit_supervisor_position,
-            to.approved_by_supervisor,
-            to.supervisor_remarks,
+        $this->db->table('travel_order_attachments')->insert([
+            'travel_order_id' => $travelOrderId,
+            'file_id'         => $file['file_id'],
+            'attachment_name' => $file['file_name'],
+            'attachment_type' => $type,
+        ]);
+    }
 
-            to.division_id,
-            d.division_head_position,
-            to.approved_by_division_head,
-            to.division_head_remarks,
+    $this->db->transComplete();
 
-            to.organization_id,
-            o.organization_head_position,
-            to.approved_by_organization_head,
-            to.organization_head_remarks,
-
-            CONCAT(us.first_name, " ", us.last_name) AS applicant_name,
-            us.position AS applicant_position,
-
-            to.created_at
+    return $this->db->transStatus() ? $travelOrderId : false;
+}
+/**
+ * Fetches full detail of a travel order including persons, attachments,
+ * and all data needed for the view modal (signatories, unit/division names).
+ */
+public function getTravelOrderDetails(int $travelOrderId): ?array
+{
+    $order = $this->db->table('travel_orders tord')
+        ->select('
+            tord.travel_order_id,
+            tord.travel_order_number,
+            tord.departure_date,
+            tord.arrival_date,
+            tord.destination,
+            tord.purpose_of_travel,
+            tord.status,
+            tord.user_id,
+            tord.created_at,
+            CONCAT(applicant.first_name, " ", applicant.last_name) AS applicant_name,
+            applicant.position AS applicant_position,
+            tord.unit_id,
+            un.unit_name,
+            tord.approved_by_supervisor,
+            tord.supervisor_remarks,
+            tord.division_id,
+            div.division_name,
+            CONCAT(div_head.first_name, " ", div_head.last_name) AS division_head_name,
+            div_head.position AS division_head_position,
+            tord.approved_by_division_head,
+            tord.division_head_remarks,
+            tord.organization_id,
+            org.organization_name,
+            CONCAT(org_head.first_name, " ", org_head.last_name) AS organization_head_name,
+            org_head.position AS organization_head_position,
+            tord.approved_by_organization_head,
+            tord.organization_head_remarks
         ')
-            ->from('travel_orders to')
-            ->join('units u', 'u.unit_id = to.unit_id', 'left')
-            ->join('divisions d', 'd.division_id = to.division_id', 'left')
-            ->join('organization o', 'o.organization_id = to.organization_id', 'left')
-            ->join('users us', 'us.user_id = to.user_id', 'left')
-            ->where('to.travel_order_id', $travelOrderId);
-        $travelOrderItems = $this->get()->getResult();
-        foreach ($travelOrderItems as $item) {
-            $attachmentBuilder = $this->db->table('travel_order_attachments ta');
-            $attachmentBuilder->select('
-                to.travel_order_id,
-                a.attachment_id,
-                a.file_id,
-                a.attachment_name,
-                a.attachment_type,
-            ');
-            $attachmentBuilder->join('attachments a', 'a.attachment_id = ta.attachment_id', 'left');
-            $attachmentBuilder->join('travel_orders to', 'to.travel_order_id = ta.travel_order_id', 'left');
-            $attachmentBuilder->where('ta.travel_order_id', $item->travel_order_id);
-            $item->attachments = $attachmentBuilder->get()->getResult();
-        }
-        return $travelOrderItems;
-        }
+        ->join('users applicant',  'applicant.user_id = tord.user_id',              'left')
+        ->join('units un',         'un.unit_id = tord.unit_id',                     'left')
+        ->join('divisions div',    'div.division_id = tord.division_id',            'left')
+        ->join('users div_head',   'div_head.user_id = div.division_head_id',       'left')
+        ->join('organization org', 'org.organization_id = tord.organization_id',    'left')
+        ->join('users org_head',   'org_head.user_id = org.organization_user_id',   'left')
+        ->where('tord.travel_order_id', $travelOrderId)
+        ->where('tord.deleted_at IS NULL', null, false)
+        ->get()
+        ->getRowArray();
 
+    if (!$order) {
+        return null;
+    }
+
+    $order['persons'] = $this->db
+        ->table('travel_order_users')
+        ->select('name, position, salary_grade')
+        ->where('travel_order_id', $travelOrderId)
+        ->get()
+        ->getResultArray();
+
+    $order['attachments'] = $this->db
+        ->table('travel_order_attachments')
+        ->select('file_id, attachment_name, attachment_type')
+        ->where('travel_order_id', $travelOrderId)
+        ->get()
+        ->getResultArray();
+
+    return $order;
+}
     /**
      * Summary of getMyTravelOrders
      * - fetches travel orders of the currently logged in user

@@ -35,5 +35,27 @@ class DashboardController extends BaseController
         }
     }
 
+public function travelOrderDetails(int $travelOrderId)
+{
+    if (!$this->request->isAJAX()) {
+        return $this->response->setStatusCode(403)->setBody('Forbidden');
+    }
 
+    $userId = session()->get('user_id');
+    $model  = new TravelOrderModel();
+    $order  = $model->getTravelOrderDetails($travelOrderId);
+
+    // Security: only owner can view their own travel order
+    if (!$order || (int)$order['user_id'] !== (int)$userId) {
+        return $this->response->setJSON([
+            'success' => false,
+            'message' => 'Travel order not found.'
+        ])->setStatusCode(404);
+    }
+
+    return $this->response->setJSON([
+        'success' => true,
+        'data'    => $order,
+    ]);
+}
 }

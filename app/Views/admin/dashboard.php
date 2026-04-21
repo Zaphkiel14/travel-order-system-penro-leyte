@@ -82,7 +82,7 @@
                                 <th data-name="destination">Destination</th>
                                 <th data-name="travel_dates">Travel Dates</th>
                                 <th data-name="status" data-orderable="false">Status</th>
-                                <th data-name="actions"data-orderable="false" data-searchable="false">Actions</th>
+                                <th data-name="actions" data-orderable="false" data-searchable="false">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -105,7 +105,7 @@
 </div>
 
 
-<!-- modal -->
+<!-- BEGIN :: modal add travel order -->
 <div class="modal fade" id="modal-add-travel-order">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -318,6 +318,245 @@
     </div>
 </div>
 
+<!-- END :: modal add travel order -->
+
+
+<!-- BEGIN :: modal view travel order -->
+
+<!-- ── Travel Order Detail Modal ──────────────────────────────── -->
+<div class="modal fade" id="modal-view-travel-order" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+
+            <!-- Header -->
+            <div class="modal-header py-2">
+                <div>
+                    <h5 class="modal-title mb-0">Travel Order Details</h5>
+                    <small id="to-modal-number" class="text-muted fw-semibold"></small>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <!-- Loading state -->
+            <div id="to-state-loading" class="modal-body text-center py-5">
+                <div class="spinner-border text-primary" role="status"></div>
+                <p class="mt-3 text-muted mb-0">Loading details...</p>
+            </div>
+
+            <!-- Error state -->
+            <div id="to-state-error" class="modal-body text-center py-5 d-none">
+                <i class="bi bi-exclamation-triangle-fill text-danger" style="font-size:2.5rem"></i>
+                <p class="mt-3 text-danger mb-0" id="to-error-msg">Failed to load details.</p>
+            </div>
+
+            <!-- Content state -->
+            <div id="to-state-content" class="d-none">
+                <div class="modal-body">
+                    <div class="row g-3">
+
+                        <!-- ═══════════════════════════════════════ -->
+                        <!-- LEFT COL — Document view                -->
+                        <!-- ═══════════════════════════════════════ -->
+                        <div class="col-12 col-lg-8">
+                            <div class="border rounded p-3 h-100">
+
+                                <!-- Travel Order Number + Date -->
+                                <div class="d-flex justify-content-between align-items-start mb-3 pb-2 border-bottom">
+                                    <div>
+                                        <p class="mb-0 small text-muted">Travel Order No.</p>
+                                        <p class="mb-0 fw-bold fs-6" id="to-doc-number"></p>
+                                    </div>
+                                    <div class="text-end">
+                                        <p class="mb-0 small text-muted">Date</p>
+                                        <p class="mb-0 fw-semibold" id="to-doc-date"></p>
+                                    </div>
+                                </div>
+
+                                <!-- Persons -->
+                                <p class="mb-1 small text-muted text-uppercase fw-semibold"
+                                    style="letter-spacing:.05em">Personnel</p>
+                                <div class="row g-2 mb-3">
+                                    <div class="col-5">
+                                        <p class="mb-1 small text-muted">Name/s</p>
+                                        <div id="to-persons-names" class="d-flex flex-column gap-0"></div>
+                                    </div>
+                                    <div class="col-4">
+                                        <p class="mb-1 small text-muted">Position/s</p>
+                                        <div id="to-persons-positions" class="d-flex flex-column gap-0"></div>
+                                    </div>
+                                    <div class="col-3">
+                                        <p class="mb-1 small text-muted">Salary Grade/s</p>
+                                        <div id="to-persons-grades" class="d-flex flex-column gap-0"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Office Station -->
+                                <div class="mb-3">
+                                    <p class="mb-0 small text-muted">Office Station</p>
+                                    <p class="mb-0 fw-semibold" id="to-doc-office"></p>
+                                </div>
+
+                                <!-- Travel Details -->
+                                <p class="mb-1 small text-muted text-uppercase fw-semibold"
+                                    style="letter-spacing:.05em">Travel Details</p>
+                                <div class="row g-2 mb-3">
+                                    <div class="col-6">
+                                        <p class="mb-0 small text-muted">Destination</p>
+                                        <p class="mb-0 fw-semibold" id="to-doc-destination"></p>
+                                    </div>
+                                    <div class="col-3">
+                                        <p class="mb-0 small text-muted">Departure</p>
+                                        <p class="mb-0 fw-semibold" id="to-doc-departure"></p>
+                                    </div>
+                                    <div class="col-3">
+                                        <p class="mb-0 small text-muted">Return</p>
+                                        <p class="mb-0 fw-semibold" id="to-doc-arrival"></p>
+                                    </div>
+                                </div>
+                                <div class="mb-4">
+                                    <p class="mb-0 small text-muted">Purpose of Travel</p>
+                                    <p class="mb-0" id="to-doc-purpose"></p>
+                                </div>
+
+                                <!-- Approval Signatories -->
+                                <div class="row g-2 pt-3 border-top mt-2">
+                                    <div class="col-6 text-center">
+                                        <p class="mb-0 small text-muted">Recommended by</p>
+                                        <p class="mb-0 fw-semibold" id="to-sig-division"></p>
+                                        <p class="mb-0 small text-muted" id="to-sig-division-position"></p>
+                                    </div>
+                                    <div class="col-6 text-center">
+                                        <p class="mb-0 small text-muted">Approved by</p>
+                                        <p class="mb-0 fw-semibold" id="to-sig-penro"></p>
+                                        <p class="mb-0 small text-muted" id="to-sig-penro-position"></p>
+                                    </div>
+                                </div>
+
+                            </div><!-- /.border.rounded -->
+                        </div>
+                        <!-- END LEFT COL -->
+
+                        <!-- ═══════════════════════════════════════ -->
+                        <!-- RIGHT COL — Tracking sidebar           -->
+                        <!-- ═══════════════════════════════════════ -->
+                        <div class="col-12 col-lg-4 d-flex flex-column gap-3">
+
+                            <!-- Current Status -->
+                            <div class="border rounded p-3">
+                                <p class="mb-2 small text-muted text-uppercase fw-semibold"
+                                    style="letter-spacing:.05em">Current Status</p>
+                                <div id="to-status-banner" class="d-flex align-items-center gap-2">
+                                    <i id="to-status-icon" class="bi fs-5"></i>
+                                    <span id="to-status-badge" class="badge fs-6 px-3 py-2"></span>
+                                </div>
+                            </div>
+
+                            <!-- Approval Steps -->
+                            <div class="border rounded p-3">
+                                <p class="mb-3 small text-muted text-uppercase fw-semibold"
+                                    style="letter-spacing:.05em">Approval Progress</p>
+
+                                <!-- Supervisor step -->
+                                <div class="d-flex align-items-start gap-2 mb-3">
+                                    <div class="flex-shrink-0 mt-1">
+                                        <i id="to-step-icon-supervisor" class="bi bi-clock text-muted fs-5"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <p class="mb-0 fw-semibold small">Supervisor</p>
+                                        <p class="mb-0 small text-muted" id="to-step-name-supervisor">Pending</p>
+                                        <p class="mb-0 small fst-italic text-muted"
+                                            id="to-step-remarks-supervisor"></p>
+                                    </div>
+                                    <div class="flex-shrink-0">
+                                        <span id="to-step-badge-supervisor"
+                                            class="badge bg-secondary-subtle text-secondary-emphasis small">
+                                            Pending
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Division Head step -->
+                                <div class="d-flex align-items-start gap-2 mb-3">
+                                    <div class="flex-shrink-0 mt-1">
+                                        <i id="to-step-icon-division" class="bi bi-clock text-muted fs-5"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <p class="mb-0 fw-semibold small">Division Head</p>
+                                        <p class="mb-0 small text-muted" id="to-step-name-division">Pending</p>
+                                        <p class="mb-0 small fst-italic text-muted"
+                                            id="to-step-remarks-division"></p>
+                                    </div>
+                                    <div class="flex-shrink-0">
+                                        <span id="to-step-badge-division"
+                                            class="badge bg-secondary-subtle text-secondary-emphasis small">
+                                            Pending
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- PENRO step -->
+                                <div class="d-flex align-items-start gap-2">
+                                    <div class="flex-shrink-0 mt-1">
+                                        <i id="to-step-icon-org" class="bi bi-clock text-muted fs-5"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <p class="mb-0 fw-semibold small">PENRO</p>
+                                        <p class="mb-0 small text-muted" id="to-step-name-org">Pending</p>
+                                        <p class="mb-0 small fst-italic text-muted"
+                                            id="to-step-remarks-org"></p>
+                                    </div>
+                                    <div class="flex-shrink-0">
+                                        <span id="to-step-badge-org"
+                                            class="badge bg-secondary-subtle text-secondary-emphasis small">
+                                            Pending
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tracking History / Timeline -->
+                            <div class="border rounded p-3">
+                                <p class="mb-3 small text-muted text-uppercase fw-semibold"
+                                    style="letter-spacing:.05em">Tracking History</p>
+                                <div id="to-timeline" class="position-relative ps-3">
+                                    <!-- JS-rendered timeline items -->
+                                </div>
+                            </div>
+
+                            <!-- Supporting Documents -->
+                            <div class="border rounded p-3">
+                                <p class="mb-2 small text-muted text-uppercase fw-semibold"
+                                    style="letter-spacing:.05em">Supporting Documents</p>
+                                <p id="to-no-attachments" class="text-muted fst-italic small d-none mb-0">
+                                    No attachments uploaded.
+                                </p>
+                                <div id="to-attachments-list" class="d-flex flex-column gap-1"></div>
+                            </div>
+
+                        </div>
+                        <!-- END RIGHT COL -->
+
+                    </div><!-- /.row -->
+                </div><!-- /.modal-body -->
+
+                <div class="modal-footer justify-content-between py-2">
+                    <button type="button" class="btn btn-default btn-sm" data-bs-dismiss="modal">
+                        <i class="bi bi-x-lg me-1"></i> Close
+                    </button>
+                    <button type="button" class="btn btn-secondary btn-sm" id="to-btn-print">
+                        <i class="bi bi-printer me-1"></i> Print
+                    </button>
+                </div>
+            </div><!-- /#to-state-content -->
+
+        </div>
+    </div>
+</div>
+<!-- END :: modal view travel order -->
+
+
+
+<!-- BEGIN :: Add Person Script -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const container = document.getElementById('person-container');
@@ -389,5 +628,379 @@
         });
     });
 </script>
+<!-- END :: Add Person Script -->
+
+<!-- BEGIN :: View Travel Order Script -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+        var STATUS_CONFIG = {
+            'Pending Supervisor': {
+                badge: 'bg-warning text-dark',
+                icon: 'bi-clock-history text-warning',
+                callout: 'warning'
+            },
+            'Approved by Supervisor': {
+                badge: 'bg-info text-white',
+                icon: 'bi-check-circle text-info',
+                callout: 'info'
+            },
+            'For Division Approval': {
+                badge: 'bg-primary text-white',
+                icon: 'bi-clock-history text-primary',
+                callout: 'info'
+            },
+            'Approved by Division Head': {
+                badge: 'bg-info text-white',
+                icon: 'bi-check-circle text-info',
+                callout: 'info'
+            },
+            'For PENRO Approval': {
+                badge: 'bg-primary text-white',
+                icon: 'bi-clock-history text-primary',
+                callout: 'info'
+            },
+            'Approved': {
+                badge: 'bg-success text-white',
+                icon: 'bi-check-circle-fill text-success',
+                callout: 'success'
+            },
+            'Rejected by Supervisor': {
+                badge: 'bg-danger text-white',
+                icon: 'bi-x-circle-fill text-danger',
+                callout: 'danger'
+            },
+            'Rejected by Division Head': {
+                badge: 'bg-danger text-white',
+                icon: 'bi-x-circle-fill text-danger',
+                callout: 'danger'
+            },
+            'Rejected by PENRO': {
+                badge: 'bg-danger text-white',
+                icon: 'bi-x-circle-fill text-danger',
+                callout: 'danger'
+            },
+        };
+
+        var ATTACHMENT_ICONS = {
+            'request_memo': 'bi-file-text',
+            'special_order': 'bi-file-ruled',
+            'request_letter': 'bi-envelope',
+            'invitation_letter': 'bi-envelope-open',
+            'training_notification': 'bi-mortarboard',
+            'meeting_notice': 'bi-calendar-event',
+            'conference_program': 'bi-journal-text',
+            'other_document': 'bi-paperclip',
+        };
+
+        var ATTACHMENT_LABELS = {
+            'request_memo': 'Request Memo',
+            'special_order': 'Special Order',
+            'request_letter': 'Request Letter',
+            'invitation_letter': 'Invitation Letter',
+            'training_notification': 'Training Notification',
+            'meeting_notice': 'Meeting Notice',
+            'conference_program': 'Conference Program',
+            'other_document': 'Other Document',
+        };
+
+        // ── Utilities ──────────────────────────────────────────────────────
+        function fmtDate(str) {
+            if (!str || str === '0000-00-00') return '—';
+            return new Date(str + 'T00:00:00')
+                .toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+        }
+
+        function setText(id, val) {
+            var el = document.getElementById(id);
+            if (el) el.textContent = val || '—';
+        }
+
+        // ── State machine ──────────────────────────────────────────────────
+        var bsModal = new bootstrap.Modal(document.getElementById('modal-view-travel-order'));
+
+        function showState(state) {
+            ['loading', 'error', 'content'].forEach(function(s) {
+                document.getElementById('to-state-' + s)
+                    .classList.toggle('d-none', s !== state);
+            });
+        }
+
+        // ── Render approval step ───────────────────────────────────────────
+        function renderStep(suffix, approverName, remarks, status) {
+            var iconEl = document.getElementById('to-step-icon-' + suffix);
+            var nameEl = document.getElementById('to-step-name-' + suffix);
+            var remarksEl = document.getElementById('to-step-remarks-' + suffix);
+            var badgeEl = document.getElementById('to-step-badge-' + suffix);
+
+            if (approverName) {
+                if (status === 'rejected') {
+                    iconEl.className = 'bi bi-x-circle-fill text-danger fs-5';
+                    badgeEl.className = 'badge bg-danger-subtle text-danger-emphasis small';
+                    badgeEl.textContent = 'Rejected';
+                } else {
+                    iconEl.className = 'bi bi-check2-all text-success fs-5';
+                    badgeEl.className = 'badge bg-success-subtle text-success-emphasis small';
+                    badgeEl.textContent = 'Approved';
+                }
+                nameEl.textContent = approverName;
+                remarksEl.textContent = remarks ? '"' + remarks + '"' : '';
+            } else {
+                iconEl.className = 'bi bi-clock text-muted fs-5';
+                nameEl.textContent = 'Pending';
+                remarksEl.textContent = '';
+                badgeEl.className = 'badge bg-secondary-subtle text-secondary-emphasis small';
+                badgeEl.textContent = 'Pending';
+            }
+        }
+
+        // ── Build timeline ─────────────────────────────────────────────────
+        function buildTimeline(d) {
+            var container = document.getElementById('to-timeline');
+            container.innerHTML = '';
+
+            // Timeline item helper
+            function addItem(iconClass, colorClass, title, subtitle) {
+                var item = document.createElement('div');
+                item.className = 'mb-3 position-relative';
+                item.style.cssText = 'padding-left: 1.5rem;';
+
+                // Vertical line connector
+                var line = document.createElement('div');
+                line.style.cssText =
+                    'position:absolute; left:7px; top:20px; bottom:-12px;' +
+                    'width:1px; background:var(--color-border-tertiary);';
+
+                var dot = document.createElement('div');
+                dot.style.cssText =
+                    'position:absolute; left:0; top:4px; width:14px; height:14px;' +
+                    'border-radius:50%; display:flex; align-items:center; justify-content:center;';
+                dot.innerHTML = '<i class="bi ' + iconClass + ' ' + colorClass + '" style="font-size:11px"></i>';
+
+                var content = document.createElement('div');
+                content.innerHTML =
+                    '<p class="mb-0 small fw-semibold" style="line-height:1.3">' + title + '</p>' +
+                    '<p class="mb-0 small text-muted" style="font-size:11px">' + subtitle + '</p>';
+
+                item.appendChild(line);
+                item.appendChild(dot);
+                item.appendChild(content);
+                container.appendChild(item);
+            }
+
+            // Always: submitted
+            addItem('bi-send-fill', 'text-primary',
+                'Submitted by ' + (d.applicant_name || 'Applicant'),
+                (d.applicant_position || '') + ' &bull; ' + fmtDate(d.created_at));
+
+            // Supervisor
+            if (d.approved_by_supervisor) {
+                var supRejected = d.status === 'Rejected by Supervisor';
+                addItem(
+                    supRejected ? 'bi-x-fill' : 'bi-check-lg',
+                    supRejected ? 'text-danger' : 'text-success',
+                    (supRejected ? 'Rejected' : 'Approved') + ' by Supervisor',
+                    d.approved_by_supervisor + (d.supervisor_remarks ? ' &bull; "' + d.supervisor_remarks + '"' : '')
+                );
+            }
+
+            // Division Head
+            if (d.approved_by_division_head) {
+                var divRejected = d.status === 'Rejected by Division Head';
+                addItem(
+                    divRejected ? 'bi-x-fill' : 'bi-check-lg',
+                    divRejected ? 'text-danger' : 'text-success',
+                    (divRejected ? 'Rejected' : 'Approved') + ' by Division Head',
+                    d.approved_by_division_head + (d.division_head_remarks ? ' &bull; "' + d.division_head_remarks + '"' : '')
+                );
+            }
+
+            // PENRO
+            if (d.approved_by_organization_head) {
+                var orgRejected = d.status === 'Rejected by PENRO';
+                addItem(
+                    orgRejected ? 'bi-x-fill' : 'bi-check-lg',
+                    orgRejected ? 'text-danger' : 'text-success',
+                    (orgRejected ? 'Rejected' : 'Approved') + ' by PENRO',
+                    d.approved_by_organization_head + (d.organization_head_remarks ? ' &bull; "' + d.organization_head_remarks + '"' : '')
+                );
+            }
+
+            // Remove last connector line
+            var items = container.querySelectorAll('.mb-3');
+            if (items.length > 0) {
+                var lastLine = items[items.length - 1].querySelector('div[style*="position:absolute; left:7px"]');
+                if (lastLine) lastLine.style.display = 'none';
+            }
+        }
+
+        // ── Populate entire modal ──────────────────────────────────────────
+        function populateModal(d) {
+            var cfg = STATUS_CONFIG[d.status] || {
+                badge: 'bg-secondary text-white',
+                icon: 'bi-question-circle text-muted',
+                callout: ''
+            };
+
+            // ── Header ────────────────────────────────────────────────────
+            setText('to-modal-number', d.travel_order_number);
+
+            // ── LEFT COL: document fields ─────────────────────────────────
+            setText('to-doc-number', d.travel_order_number);
+            setText('to-doc-date', fmtDate(d.created_at));
+            setText('to-doc-destination', d.destination);
+            setText('to-doc-departure', fmtDate(d.departure_date));
+            setText('to-doc-arrival', fmtDate(d.arrival_date));
+            setText('to-doc-purpose', d.purpose_of_travel);
+
+            // ── Signatories ───────────────────────────────────────────────
+            setText('to-sig-division',
+                d.approved_by_division_head || d.division_head_name || '___________________');
+            setText('to-sig-division-position',
+                d.division_head_position || 'Division Chief');
+
+            setText('to-sig-penro',
+                d.approved_by_organization_head || d.organization_head_name || '___________________');
+            setText('to-sig-penro-position',
+                d.organization_head_position || 'PENRO Officer');
+
+            // ── Persons — stacked columns layout ──────────────────────────
+            var namesEl = document.getElementById('to-persons-names');
+            var positionsEl = document.getElementById('to-persons-positions');
+            var gradesEl = document.getElementById('to-persons-grades');
+
+            namesEl.innerHTML = '';
+            positionsEl.innerHTML = '';
+            gradesEl.innerHTML = '';
+
+            if (d.persons && d.persons.length > 0) {
+                d.persons.forEach(function(p) {
+                    var mkLine = function(val) {
+                        var el = document.createElement('p');
+                        el.className = 'mb-0 fw-semibold small';
+                        el.textContent = val || '—';
+                        return el;
+                    };
+                    namesEl.appendChild(mkLine(p.name));
+                    positionsEl.appendChild(mkLine(p.position));
+                    gradesEl.appendChild(mkLine(p.salary_grade));
+                });
+            } else {
+                namesEl.innerHTML = '<p class="mb-0 small text-muted fst-italic">None listed</p>';
+            }
+
+            // ── Office Station (organization name) ────────────────────────
+            setText('to-doc-office', d.organization_name || 'PENRO Leyte');
+
+            // ── RIGHT COL: current status ─────────────────────────────────
+            var iconEl = document.getElementById('to-status-icon');
+            var badgeEl = document.getElementById('to-status-badge');
+            iconEl.className = 'bi ' + cfg.icon + ' fs-5';
+            badgeEl.className = 'badge px-3 py-2 ' + cfg.badge;
+            badgeEl.textContent = d.status;
+
+            // ── Approval steps ────────────────────────────────────────────
+            renderStep('supervisor',
+                d.approved_by_supervisor,
+                d.supervisor_remarks,
+                d.status === 'Rejected by Supervisor' ? 'rejected' : 'approved'
+            );
+            renderStep('division',
+                d.approved_by_division_head,
+                d.division_head_remarks,
+                d.status === 'Rejected by Division Head' ? 'rejected' : 'approved'
+            );
+            renderStep('org',
+                d.approved_by_organization_head,
+                d.organization_head_remarks,
+                d.status === 'Rejected by PENRO' ? 'rejected' : 'approved'
+            );
+
+            // ── Timeline ──────────────────────────────────────────────────
+            buildTimeline(d);
+
+            // ── Attachments ───────────────────────────────────────────────
+            var list = document.getElementById('to-attachments-list');
+            var noAtch = document.getElementById('to-no-attachments');
+            list.innerHTML = '';
+
+            if (d.attachments && d.attachments.length > 0) {
+                noAtch.classList.add('d-none');
+                d.attachments.forEach(function(a) {
+                    var label = ATTACHMENT_LABELS[a.attachment_type] || a.attachment_type || 'Document';
+                    var iconCls = ATTACHMENT_ICONS[a.attachment_type] || 'bi-file-earmark';
+                    var fileUrl = 'https://drive.google.com/file/d/' + a.file_id + '/view';
+                    var dispName = a.attachment_name || label;
+
+                    var row = document.createElement('div');
+                    row.className = 'd-flex align-items-center gap-2 p-2 rounded border';
+                    row.style.background = 'var(--color-background-secondary)';
+                    row.innerHTML =
+                        '<i class="bi ' + iconCls + ' text-primary flex-shrink-0"></i>' +
+                        '<div class="flex-grow-1 overflow-hidden">' +
+                        '<p class="mb-0 small fw-semibold text-truncate">' + label + '</p>' +
+                        '<p class="mb-0 small text-muted text-truncate" ' +
+                        'style="font-size:11px">' + dispName + '</p>' +
+                        '</div>' +
+                        '<a href="' + fileUrl + '" target="_blank" rel="noopener noreferrer" ' +
+                        'class="btn btn-sm btn-outline-primary flex-shrink-0 py-0 px-2" ' +
+                        'style="font-size:11px">' +
+                        '<i class="bi bi-box-arrow-up-right me-1"></i>View' +
+                        '</a>';
+                    list.appendChild(row);
+                });
+            } else {
+                noAtch.classList.remove('d-none');
+            }
+        }
+
+        // ── Delegated click handler ────────────────────────────────────────
+        document.addEventListener('click', function(e) {
+            var btn = e.target.closest('.btn-view-travel-order');
+            if (!btn) return;
+
+            var id = btn.getAttribute('data-id');
+            if (!id) return;
+
+            document.getElementById('to-btn-print').setAttribute('data-id', id);
+            showState('loading');
+            bsModal.show();
+
+            fetch('<?= site_url('dashboard/travel-orders/details') ?>/' + id, {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                    }
+                })
+                .then(function(res) {
+                    if (!res.ok) throw new Error('Server returned ' + res.status);
+                    return res.json();
+                })
+                .then(function(json) {
+                    if (!json.success) throw new Error(json.message || 'Unknown error.');
+                    populateModal(json.data);
+                    showState('content');
+                })
+                .catch(function(err) {
+                    document.getElementById('to-error-msg').textContent =
+                        err.message || 'Failed to load travel order details.';
+                    showState('error');
+                });
+        });
+
+        // ── Print ──────────────────────────────────────────────────────────
+        document.getElementById('to-btn-print').addEventListener('click', function() {
+            var id = this.getAttribute('data-id');
+            if (id) window.open('<?= site_url('travel-orders/print') ?>/' + id, '_blank');
+        });
+
+    });
+</script>
+<!-- END :: View Travel Order Script -->
 
 <?= $this->endSection() ?>
