@@ -13,55 +13,110 @@
     />
 
     <style>
-      /* ══════════════════════════════════════════════════════════
-         LAYOUT SIZING — adjust these two variables only.
-         Everything else (content padding, margins) updates automatically.
-         header-h = top margin + logo/text height + red bar height
-         footer-h = footer content height + bottom margin
-      ══════════════════════════════════════════════════════════ */
       :root {
-        --header-h: 48mm;   /* ← increase if header content grows */
-        --footer-h: 28mm;   /* ← increase if footer content grows */
+        --header-h: 48mm;
+        --footer-h: 28mm;
         --page-top-margin: 10mm;
         --page-side-margin: 20mm;
       }
 
-      /* ── Font-family utility classes ──────────────────────── */
-      .font-times     { font-family: "Times New Roman", Times, serif; }
-      .font-arial     { font-family: Arial, Helvetica, sans-serif; }
-      .font-calibri   { font-family: Calibri, "Gill Sans", sans-serif; }
-      .font-georgia   { font-family: Georgia, "Palatino Linotype", serif; }
-      .font-verdana   { font-family: Verdana, Geneva, sans-serif; }
-      .font-tahoma    { font-family: Tahoma, Geneva, sans-serif; }
-      .font-trebuchet { font-family: "Trebuchet MS", Helvetica, sans-serif; }
-      .font-courier   { font-family: "Courier New", Courier, monospace; }
+      .font-times {
+        font-family: "Times New Roman", Times, serif;
+      }
+      .font-arial {
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      .font-calibri {
+        font-family: Calibri, "Gill Sans", sans-serif;
+      }
+      .font-georgia {
+        font-family: Georgia, "Palatino Linotype", serif;
+      }
+      .font-verdana {
+        font-family: Verdana, Geneva, sans-serif;
+      }
+      .font-tahoma {
+        font-family: Tahoma, Geneva, sans-serif;
+      }
+      .font-trebuchet {
+        font-family: "Trebuchet MS", Helvetica, sans-serif;
+      }
+      .font-courier {
+        font-family: "Courier New", Courier, monospace;
+      }
 
-      body { font-family: "Times New Roman", Times, serif; }
+      body {
+        font-family: "Times New Roman", Times, serif;
+      }
 
-      /* ── Line-spacing utility classes ─────────────────────── */
-      .text-justify { text-align: justify; }
-      .no-space     { line-height: 1    !important; margin: 0 !important; }
-      .single-space { line-height: 1    !important; margin: 0 0 0.5em 0 !important; }
-      .space-115    { line-height: 1.15 !important; margin: 0 0 0.5em 0 !important; }
-      .space-150    { line-height: 1.5  !important; margin: 0 0 0.5em 0 !important; }
-      .double-space { line-height: 2    !important; margin: 0 0 0.5em 0 !important; }
 
-      /* ── pt font-size utilities ───────────────────────────── */
-      .pt-6  { font-size:  6pt !important; }
-      .pt-7  { font-size:  7pt !important; }
-      .pt-8  { font-size:  8pt !important; }
-      .pt-9  { font-size:  9pt !important; }
-      .pt-10 { font-size: 10pt !important; }
-      .pt-11 { font-size: 11pt !important; }
-      .pt-12 { font-size: 12pt !important; }
-      .pt-13 { font-size: 13pt !important; }
-      .pt-14 { font-size: 14pt !important; }
-      .pt-16 { font-size: 16pt !important; }
-      .pt-18 { font-size: 18pt !important; }
+      .text-justify {
+        text-align: justify;
+      }
+      .tab {
+        display: block;
+        text-indent: 40px; /* 1 tab */
+      }
 
-      /* ── Header / Footer shell ───────────────────────────────
-         Column flex: [header-row] then [header-bar] stacked vertically
-      ────────────────────────────────────────────────────────── */
+      .tab-2 {
+        display: block;
+        text-indent: 80px; /* 2 tabs */
+      }
+      .no-space {
+        line-height: 1 !important;
+        margin: 0 !important;
+      }
+      .single-space {
+        line-height: 1 !important;
+        margin: 0 0 0.5em 0 !important;
+      }
+      .space-115 {
+        line-height: 1.15 !important;
+        margin: 0 0 0.5em 0 !important;
+      }
+      .space-150 {
+        line-height: 1.5 !important;
+        margin: 0 0 0.5em 0 !important;
+      }
+      .double-space {
+        line-height: 2 !important;
+        margin: 0 0 0.5em 0 !important;
+      }
+
+      .pt-6 {
+        font-size: 6pt !important;
+      }
+      .pt-7 {
+        font-size: 7pt !important;
+      }
+      .pt-8 {
+        font-size: 8pt !important;
+      }
+      .pt-9 {
+        font-size: 9pt !important;
+      }
+      .pt-10 {
+        font-size: 10pt !important;
+      }
+      .pt-11 {
+        font-size: 11pt !important;
+      }
+      .pt-12 {
+        font-size: 12pt !important;
+      }
+      .pt-13 {
+        font-size: 13pt !important;
+      }
+      .pt-14 {
+        font-size: 14pt !important;
+      }
+      .pt-16 {
+        font-size: 16pt !important;
+      }
+      .pt-18 {
+        font-size: 18pt !important;
+      }
+
       .header,
       .footer {
         width: 100%;
@@ -72,15 +127,14 @@
         align-items: stretch;
       }
 
-      /* ── Header row: images + text, text pinned to bottom ─── */
       .header-row {
         display: flex;
         flex-direction: row;
-        align-items: flex-end;   /* ← pins everything to bottom of row */
+        align-items: flex-end;
         justify-content: center;
         gap: 3mm;
         width: 100%;
-        padding-bottom: 2mm;     /* breathing room above red bar */
+        padding-bottom: 2mm;
       }
 
       .footer-row {
@@ -92,7 +146,6 @@
         width: 100%;
       }
 
-      /* Red bar — full width, forced color in print */
       .header-bar {
         width: 100%;
         height: 15px;
@@ -103,24 +156,22 @@
         flex-shrink: 0;
       }
 
-      /* Center text */
       .header-text,
       .footer-text {
         text-align: center;
       }
 
-      /* Image slots */
       .header-img-left,
       .header-img-right,
       .footer-img-left,
       .footer-img-right {
         flex-shrink: 0;
         display: flex;
-        align-items: flex-end;   /* images also sit at bottom of row */
+        align-items: flex-end;
         justify-content: center;
       }
 
-      .header-img-left  img{
+      .header-img-left img {
         width: 27mm;
         height: 27mm;
         object-fit: contain;
@@ -130,51 +181,65 @@
         height: 30mm;
         object-fit: contain;
       }
-
-      .footer-img-left  img,
+      .footer-img-left img,
       .footer-img-right img {
         width: 35mm;
         height: 35mm;
         object-fit: contain;
       }
 
-      .header { padding-top: 2mm; padding-bottom: 0; }
-      .footer  { padding-top: 2mm; padding-bottom: 2mm; }
+      .header {
+        padding-top: 2mm;
+        padding-bottom: 0;
+      }
+      .footer {
+        padding-top: 2mm;
+        padding-bottom: 2mm;
+      }
 
-      /* ── Screen preview ──────────────────────────────────── */
       @media screen {
-        .header, .footer { position: fixed; }
-        .header { top: 0; }
-        .footer { bottom: 0; border-top: 1px solid #dee2e6; }
+        .header,
+        .footer {
+          position: fixed;
+        }
+        .header {
+          top: 0;
+        }
+        .footer {
+          bottom: 0;
+          border-top: 1px solid #dee2e6;
+        }
 
-        /* content clears fixed header and footer */
         .content {
-          margin-top:    var(--header-h);
+          margin-top: var(--header-h);
           margin-bottom: var(--footer-h);
-          padding-left:  var(--page-side-margin);
+          padding-left: var(--page-side-margin);
           padding-right: var(--page-side-margin);
-          padding-top:   6mm;
+          padding-top: 6mm;
           padding-bottom: 6mm;
         }
       }
 
-      /* ── Print ───────────────────────────────────────────── */
       @media print {
         @page {
           size: 8.5in 13in;
-          margin: 0mm;           /* all margins handled manually below */
+          margin: 0mm;
         }
 
-        html, body { margin: 0 !important; padding: 0 !important; }
+        html,
+        body {
+          margin: 0 !important;
+          padding: 0 !important;
+        }
 
-        .header, .footer {
+        .header,
+        .footer {
           position: fixed;
           left: 0;
           width: 100%;
           box-sizing: border-box;
         }
 
-        /* Header: top margin is the padding-top */
         .header {
           top: 0;
           padding-top: var(--page-top-margin);
@@ -182,7 +247,6 @@
           height: auto;
         }
 
-        /* Footer: bottom margin is the padding-bottom */
         .footer {
           bottom: 0;
           padding-top: 4mm;
@@ -190,71 +254,60 @@
           height: auto;
         }
 
-        /*
-          Content MUST clear:
-            top:    page-top-margin + header content + red bar  = var(--header-h)
-            bottom: footer content + page-bottom-margin         = var(--footer-h)
-
-          If text bleeds into header/footer → increase --header-h / --footer-h above.
-        */
         .content {
           margin: 0;
-          padding-top:    var(--header-h);
+          padding-top: var(--header-h);
           padding-bottom: var(--footer-h);
-          padding-left:   var(--page-side-margin);
-          padding-right:  var(--page-side-margin);
+          padding-left: var(--page-side-margin);
+          padding-right: var(--page-side-margin);
         }
       }
     </style>
   </head>
 
   <body onload="window.print()">
-
     <!-- HEADER -->
     <div class="header font-times">
-
       <div class="header-row">
-
         <div class="header-img-left">
           <img src="../../../public/denr_logo.png" alt="DENR Logo" />
-          <!-- <img src="<?= base_url('denr_logo.png') ?>" alt="DENR Logo" /> -->
         </div>
-
         <div class="header-text">
-          <p class="single-space pt-11">Republic of The Philippines</p>
+          <p class="no-space pt-11">Republic of The Philippines</p>
           <p class="single-space pt-11">
             <strong>
-              <span style="font-size:15pt">D</span>EPARTMENT OF
-              <span style="font-size:15pt">E</span>NVIRONMENT AND
-              <span style="font-size:15pt">N</span>ATURAL
-              <span style="font-size:15pt">R</span>ESOURCES
+              <span style="font-size: 15pt">D</span>EPARTMENT OF
+              <span style="font-size: 15pt">E</span>NVIRONMENT AND
+              <span style="font-size: 15pt">N</span>ATURAL
+              <span style="font-size: 15pt">R</span>ESOURCES
             </strong>
           </p>
-          <p class="single-space pt-11">KAGAWARAN NG KAPALIGIRAN AT LIKAS NA YAMAN</p>
-          <p class="single-space pt-11">Provincial Environment and Natural Resources Office Leyte</p>
+          <p class="single-space pt-11">
+            KAGAWARAN NG KAPALIGIRAN AT LIKAS NA YAMAN
+          </p>
+          <p class="single-space pt-11">
+            Provincial Environment and Natural Resources Office Leyte
+          </p>
         </div>
-
         <div class="header-img-right">
-          <img src="../../../public/bagong_pilipinas_logo.png" alt="Bagong Pilipinas Logo" />
-          <!-- <img src="<?= base_url('bagong_pilipinas_logo.png') ?>" alt="Bagong Pilipinas Logo" /> -->
+          <img
+            src="../../../public/bagong_pilipinas_logo.png"
+            alt="Bagong Pilipinas Logo"
+          />
         </div>
-
       </div>
-
-      <!-- Red bar — full width below logos and text -->
       <div class="header-bar"></div>
-
     </div>
 
     <!-- FOOTER -->
     <div class="footer font-times">
       <div class="footer-row">
-
         <div class="footer-img-left">
-          <img src="../../../public/system_certification.jpg" alt="System Certification" />
-          <!-- <img src="<?= base_url('system_certification.jpg') ?>" alt="System Certification" /> -->
+          <img
+            src="../../../public/system_certification.jpg"
+            alt="System Certification"
+          />
         </div>
-
         <div class="footer-text">
           <p class="single-space pt-9">
             Government Center, Brgy. Baras, Palo, Leyte, Philippines <br />
@@ -262,124 +315,172 @@
             penroleyte@denr.gov.ph / penroleyte@yahoo.com
           </p>
         </div>
-
         <div class="footer-img-right">
           <img src="../../../public/socotec.jpg" alt="Socotec" />
-          <!-- <img src="<?= base_url('socotec.jpg') ?>" alt="Socotec" /> -->
         </div>
-
       </div>
     </div>
 
     <!-- CONTENT -->
     <div class="content container-fluid font-arial">
-      <p class="text-center space-115 pt-12">
-        <strong>TRAVEL ORDER No. _______________</strong>
-      </p>
-      <p class="text-center space-115 pt-12">Date: _______________</p>
+      <p class="text-center space-115 pt-10"><strong>TRAVEL ORDER</strong></p>
+      <p class="text-center space-115 pt-10">(No. _____________)</p>
       <br />
-      <div class="m-0 row">
-        <div class="col-6 m-0 px-0">
-          <p class="space-115 pt-12"><strong>NAME: </strong></p>
-          <p class="space-115 pt-12"><strong>FRANCIS PAULO N. BAUTISTA</strong></p>
+
+      <!-- NAME -->
+      <div class="row">
+        <div class="col-3 d-flex justify-content-between mb-0">
+          <span class="space-115 pt-9">NAME</span
+          ><span class="space-115 pt-9">:</span>
         </div>
-        <div class="col-6 m-0 px-0">
-          <p class="space-115 pt-12"><strong>POSITION: </strong></p>
-          <p class="space-115 pt-12">Driver</p>
+        <div class="col-5">
+          <p class="space-115 pt-9"><strong>ANNABELLE TUYAK-AGRAVA</strong></p>
+          <p class="space-115 pt-9"><strong>MATT T. JASON UY</strong></p>
+        </div>
+        <div class="col-2 d-flex justify-content-between mb-0">
+          <span class="space-115 pt-9">Salary</span><span class="space-115 pt-9">:</span>
+        </div>
+        <div class="col-2">
+          <p class="space-115 pt-9">SG-18</p>
+          <p class="space-115 pt-9">SG-12</p>
         </div>
       </div>
       <br />
-      <p class="space-115 pt-12"><strong>OFFICIAL STATION:</strong> <u>DENR - PENRO LEYTE</u></p>
-      <br>
-      <div class="m-0 row">
-        <div class="col-6 m-0 px-0">
-          <p class="space-115 pt-12"><strong>DEPARTURE DATE: </strong><u>May 23, 2025</u></p>
+
+      <!-- POSITION -->
+      <div class="row">
+        <div class="col-3 d-flex justify-content-between mb-0">
+          <span class="space-115 pt-9">POSITION</span
+          ><span class="space-115 pt-9">:</span>
         </div>
-        <div class="col-6 m-0 px-0">
-          <p class="space-115 pt-12"><strong>ARRIVAL DATE: </strong><u>May 23, 2025</u></p>
+        <div class="col-5">
+          <p class="space-115 pt-9"><strong>ISA II</strong></p>
+          <p class="space-115 pt-9"><strong>IT Technical Support</strong></p>
         </div>
-      </div>
-      <p class="space-115 pt-12"><strong>DESTINATION:</strong> Dulag, Leyte</p>
-      <br>
-      <p class="space-115 pt-12"><strong>PURPOSE OF TRAVEL:</strong></p>
-      <br>
-      <p class="space-115 pt-12">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1. To ferry PENRO Leyte personnel to Dulag, Leyte.</p>
-      <br>
-      <p class="text-center space-115 pt-12"><strong>CERTIFICATION</strong></p>
-      <br>
-      <p class="space-115 pt-12">
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This is to certify that the travel is necessary and relates to the functions of the official/employee of this Div./Sec./Unit.
-      </p>
-      <br><br>
-      <div class="m-0 row text-center">
-        <div class="col-6 m-0 px-0">
-          <p class="space-115 pt-12"><strong>Recommending Approval: </strong></p>
-          <p class="no-space pt-12"><strong><u>KARL ANTHONY M. QUEJADA</u></strong></p>
-          <p class="space-115 pt-12">Chief, Management Services Division</p>
+        <div class="col-2 d-flex justify-content-between mb-0">
+          <span class="space-115 pt-9">Official Station</span
+          ><span class="space-115 pt-9">:</span>
         </div>
-        <div class="col-6 m-0 px-0">
-          <p class="space-115 pt-12"><strong>Approved: </strong></p>
-          <p class="no-space pt-12"><strong><u>ILDEFONSO L. QUILLOY, RPF</u></strong></p>
-          <p class="space-115 pt-12">PENR Officer</p>
+        <div class="col-2">
+          <p class="space-115 pt-9">PENRO Leyte</p>
         </div>
       </div>
-      <br><br>      <div class="m-0 row text-center">
-        <div class="col-6 m-0 px-0">
-          <p class="space-115 pt-12"><strong>Recommending Approval: </strong></p>
-          <p class="no-space pt-12"><strong><u>KARL ANTHONY M. QUEJADA</u></strong></p>
-          <p class="space-115 pt-12">Chief, Management Services Division</p>
+      <br />
+
+      <!-- DEPARTURE DATE -->
+      <div class="row">
+        <div class="col-3 d-flex justify-content-between mb-0">
+          <span class="space-115 pt-9">Departure Date</span><span class="space-115 pt-9">:</span>
         </div>
-        <div class="col-6 m-0 px-0">
-          <p class="space-115 pt-12"><strong>Approved: </strong></p>
-          <p class="no-space pt-12"><strong><u>ILDEFONSO L. QUILLOY, RPF</u></strong></p>
-          <p class="space-115 pt-12">PENR Officer</p>
-        </div>
-      </div>
-      <br><br>      <div class="m-0 row text-center">
-        <div class="col-6 m-0 px-0">
-          <p class="space-115 pt-12"><strong>Recommending Approval: </strong></p>
-          <p class="no-space pt-12"><strong><u>KARL ANTHONY M. QUEJADA</u></strong></p>
-          <p class="space-115 pt-12">Chief, Management Services Division</p>
-        </div>
-        <div class="col-6 m-0 px-0">
-          <p class="space-115 pt-12"><strong>Approved: </strong></p>
-          <p class="no-space pt-12"><strong><u>ILDEFONSO L. QUILLOY, RPF</u></strong></p>
-          <p class="space-115 pt-12">PENR Officer</p>
+        <div class="col-9">
+          <p class="space-115 pt-9">March 10, 2026</p>
         </div>
       </div>
-      <br><br>      <div class="m-0 row text-center">
-        <div class="col-6 m-0 px-0">
-          <p class="space-115 pt-12"><strong>Recommending Approval: </strong></p>
-          <p class="no-space pt-12"><strong><u>KARL ANTHONY M. QUEJADA</u></strong></p>
-          <p class="space-115 pt-12">Chief, Management Services Division</p>
+      <br />
+
+      <!-- ARRIVAL DATE -->
+      <div class="row">
+        <div class="col-3 d-flex justify-content-between mb-0">
+          <span class="space-115 pt-9">Arrival Date</span
+          ><span class="space-115 pt-9">:</span>
         </div>
-        <div class="col-6 m-0 px-0">
-          <p class="space-115 pt-12"><strong>Approved: </strong></p>
-          <p class="no-space pt-12"><strong><u>ILDEFONSO L. QUILLOY, RPF</u></strong></p>
-          <p class="space-115 pt-12">PENR Officer</p>
-        </div>
-      </div>
-      <br><br>      <div class="m-0 row text-center">
-        <div class="col-6 m-0 px-0">
-          <p class="space-115 pt-12"><strong>Recommending Approval: </strong></p>
-          <p class="no-space pt-12"><strong><u>KARL ANTHONY M. QUEJADA</u></strong></p>
-          <p class="space-115 pt-12">Chief, Management Services Division</p>
-        </div>
-        <div class="col-6 m-0 px-0">
-          <p class="space-115 pt-12"><strong>Approved: </strong></p>
-          <p class="no-space pt-12"><strong><u>ILDEFONSO L. QUILLOY, RPF</u></strong></p>
-          <p class="space-115 pt-12">PENR Officer</p>
+        <div class="col-9">
+          <p class="space-115 pt-9">March 12, 2026</p>
         </div>
       </div>
-      <br><br>
-      <p class="text-center space-115 pt-12"><strong>AUTHORIZATION</strong></p>
+      <br />
+
+      <!-- DESTINATION -->
+      <div class="row">
+        <div class="col-3 d-flex justify-content-between mb-0">
+          <span class="space-115 pt-9">Destination</span
+          ><span class="space-115 pt-9">:</span>
+        </div>
+        <div class="col-9">
+          <p class="space-115 pt-9">
+            DENR REGIONAL OFFICE VIII, Tacloban City
+          </p>
+        </div>
+      </div>
+      <br />
+
+      <!-- PURPOSE OF TRAVEL -->
+      <div class="row">
+        <div class="col-3 d-flex justify-content-between mb-0">
+          <span class="space-115 pt-9">Purpose of Travel</span
+          ><span class="space-115 pt-9">:</span>
+        </div>
+        <div class="col-9">
+          <p class="space-115 pt-9">
+            1. To attend the training on managed next-generation firewall with
+            software-defined wide area network (sd-wan) capability
+          </p>
+        </div>
+      </div>
       <br>
-      <p class="space-115 pt-12 text-justify">
-        I hereby authorize the accountant to deduct the corresponding amount of the unliquidated cash advance from my succeeding salary for my failure to liquidate this travel within the prescribed twenty-day period from upon return to my permanent official station pursuant to Item 5.1.3 COA 97-002 dated February 10, 1987 and Sec. 16 EO No. 248 dated May 29, 1995.
-      </p>
-      <br><br>
-      <p class="no-space pt-12 text-center"><strong><u>FRANCIS PAULO N. BAUTISTA</u></strong></p>
-      <p class="space-115 pt-12 text-center">Employee</p>
+
+      <!-- PURPOSE OF TRAVEL -->
+      <div class="row">
+        <p class="space-115 pt-9">Per Diems/Expenses Allowed: ________________</p>
+        <br>
+        <p class="space-115 pt-9">Assistants or Laborers Allowed: ________________</p>
+        <br>
+        <p class="space-115 pt-9">Appropriation to which travel expenses should be charged: ________________</p>
+        <br>
+        <p class="space-115 pt-9">Remarks or special instructions: <u>Submit report upon completion of travel</u></p>
+      </div>
+      <br>
+
+      <div class="row">
+        <p class="space-115 pt-9">Certifications:</p>
+        <p class="space-115 pt-9 tab-2"> This is to certify that the travel is necessary and is connected with the functions of the official/ employee of this Div./Sec./Unit</p>
+      </div>
+      <br>
+
+
+      <div class="row">
+        <div class="col-6">
+          <p class="space-115 pt-9"><strong>Recommending Approval:</strong></p>
+          <br>
+          <p class="no-space pt-9 text-center"><strong><u>KARL ANTHONY M. QUEJADA</u></strong></p>
+          
+          <p class="space-115 pt-9 text-center">Chief Management Services Division</p>
+        </div>
+        <div class="col-6">
+          <p class="space-115 pt-9"><strong>APPROVED:</strong></p>
+          <br>
+          <p class="no-space pt-9 text-center"><strong><u>FOR. ILDEFONSO L. QUILLOY</u></strong></p>
+          
+          <p class="space-115 pt-9 text-center">PENR Officer</p>
+
+        </div>
+        
+      </div>
+        <br><hr><br>
+
+        <div class="row">
+            <p class="space-115 pt-9 text-center"><strong>AUTHORIZATION</strong></p>
+            <br>
+            <p class="space-115 pt-9 tab">I hereby authorize the accountant to deduct the corresponding amount of the unliquidated cash advance from my succeeding salary for my failure to liquidate this travel within the prescribed thirty-day period from upon return to my permanent official station pursuant to Item 5.1.3 COA 97-002 dated February 10, 1987 and Sec. 16 EO No. 248 dated May 29, 1995.</p>
+        </div>
+
+
+      <div class="row">
+        <div class="col-6">
+          <br>
+          <p class="no-space pt-9 text-center"><strong><u>KARL ANTHONY M. QUEJADA</u></strong></p>
+          
+          <p class="space-115 pt-9 text-center">Chief Management Services Division</p>
+        </div>
+        <div class="col-6">
+          <br>
+          <p class="no-space pt-9 text-center"><strong><u>FOR. ILDEFONSO L. QUILLOY</u></strong></p>
+          
+          <p class="space-115 pt-9 text-center">PENR Officer</p>
+
+        </div>
+        
+      </div>
     </div>
 
   </body>
@@ -389,4 +490,4 @@
     integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
     crossorigin="anonymous"
   ></script>
-</html> 
+</html>
