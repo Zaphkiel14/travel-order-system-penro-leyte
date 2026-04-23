@@ -325,7 +325,7 @@
 
 <!-- ── Travel Order Detail Modal ──────────────────────────────── -->
 <div class="modal fade" id="modal-view-travel-order" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-dialog modal-xl" style="max-height: 90vh;">
         <div class="modal-content">
 
             <!-- Header -->
@@ -353,24 +353,8 @@
             <div id="to-state-content" class="d-none">
                 <div class="modal-body">
                     <div class="row g-3">
-
-                        <!-- ═══════════════════════════════════════ -->
-                        <!-- LEFT COL — Document view                -->
-                        <!-- ═══════════════════════════════════════ -->
                         <div class="col-12 col-lg-8">
-                            <div class="border rounded p-3 h-100">
-
-                                <!-- Travel Order Number + Date -->
-                                <div class="d-flex justify-content-between align-items-start mb-3 pb-2 border-bottom">
-                                    <div>
-                                        <p class="mb-0 small text-muted">Travel Order No.</p>
-                                        <p class="mb-0 fw-bold fs-6" id="to-doc-number"></p>
-                                    </div>
-                                    <div class="text-end">
-                                        <p class="mb-0 small text-muted">Date</p>
-                                        <p class="mb-0 fw-semibold" id="to-doc-date"></p>
-                                    </div>
-                                </div>
+                            <div class="border rounded p-3 h-100 d-flex flex-column">
 
                                 <!-- Persons -->
                                 <p class="mb-1 small text-muted text-uppercase fw-semibold"
@@ -419,7 +403,7 @@
                                 </div>
 
                                 <!-- Approval Signatories -->
-                                <div class="row g-2 pt-3 border-top mt-2">
+                                <div class="row g-2 pt-3 border-top mt-auto">
                                     <div class="col-6 text-center">
                                         <p class="mb-0 small text-muted">Recommended by</p>
                                         <p class="mb-0 fw-semibold" id="to-sig-division"></p>
@@ -517,7 +501,7 @@
                             <!-- Tracking History / Timeline -->
                             <div class="border rounded p-3">
                                 <p class="mb-3 small text-muted text-uppercase fw-semibold"
-                                    style="letter-spacing:.05em">Tracking History</p>
+                                    style="letter-spacing:.05em">Application Details</p>
                                 <div id="to-timeline" class="position-relative ps-3">
                                     <!-- JS-rendered timeline items -->
                                 </div>
@@ -530,7 +514,7 @@
                                 <p id="to-no-attachments" class="text-muted fst-italic small d-none mb-0">
                                     No attachments uploaded.
                                 </p>
-                                <div id="to-attachments-list" class="d-flex flex-column gap-1"></div>
+                                <div id="to-attachments-list" class="d-flex flex-column gap-2"></div>
                             </div>
 
                         </div>
@@ -543,9 +527,12 @@
                     <button type="button" class="btn btn-default btn-sm" data-bs-dismiss="modal">
                         <i class="bi bi-x-lg me-1"></i> Close
                     </button>
-                    <button type="button" class="btn btn-secondary btn-sm" id="to-btn-print">
+
+                    <a href="javascript:void(0)" class="btn btn-secondary btn-sm" id="to-btn-print">
                         <i class="bi bi-printer me-1"></i> Print
-                    </button>
+                    </a>
+
+                    <iframe id="print-frame" style="display:none;"></iframe>
                 </div>
             </div><!-- /#to-state-content -->
 
@@ -554,7 +541,24 @@
 </div>
 <!-- END :: modal view travel order -->
 
+<style>
+    .to-attachment-row {
+        cursor: pointer;
+        transition: background-color .15s ease, border-color .15s ease;
+        text-decoration: none;
+        color: inherit;
+    }
 
+    .to-attachment-row:hover {
+        background-color: var(--bs-primary-bg-subtle, #cfe2ff) !important;
+        border-color: var(--bs-primary-border-subtle, #9ec5fe) !important;
+        color: inherit;
+    }
+
+    .to-attachment-row:hover .to-attachment-download-icon {
+        color: var(--bs-primary) !important;
+    }
+</style>
 
 <!-- BEGIN :: Add Person Script -->
 <script>
@@ -715,6 +719,24 @@
                 });
         }
 
+        function fmtDateTime(str) {
+            if (!str) return '—';
+            // MySQL datetime comes as "2026-04-07 10:30:00" — replace space with T
+            // so all browsers parse it correctly as a local time
+            var normalized = str.replace(' ', 'T');
+            var d = new Date(normalized);
+            if (isNaN(d.getTime())) return '—';
+            return d.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+            }) + ', ' + d.toLocaleTimeString('en-US', {
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: true,
+            });
+        }
+
         function setText(id, val) {
             var el = document.getElementById(id);
             if (el) el.textContent = val || '—';
@@ -763,41 +785,27 @@
             var container = document.getElementById('to-timeline');
             container.innerHTML = '';
 
-            // Timeline item helper
             function addItem(iconClass, colorClass, title, subtitle) {
                 var item = document.createElement('div');
                 item.className = 'mb-3 position-relative';
-                item.style.cssText = 'padding-left: 1.5rem;';
-
-                // Vertical line connector
-                var line = document.createElement('div');
-                line.style.cssText =
-                    'position:absolute; left:7px; top:20px; bottom:-12px;' +
-                    'width:1px; background:var(--color-border-tertiary);';
-
-                var dot = document.createElement('div');
-                dot.style.cssText =
-                    'position:absolute; left:0; top:4px; width:14px; height:14px;' +
-                    'border-radius:50%; display:flex; align-items:center; justify-content:center;';
-                dot.innerHTML = '<i class="bi ' + iconClass + ' ' + colorClass + '" style="font-size:11px"></i>';
+                item.style.cssText = 'padding-left: 1.8rem;';
+                var icon = document.createElement('i');
+                icon.className = 'bi ' + iconClass + ' ' + colorClass;
+                icon.style.cssText = 'position:absolute; left:0; top:4px; font-size:16px;';
 
                 var content = document.createElement('div');
                 content.innerHTML =
                     '<p class="mb-0 small fw-semibold" style="line-height:1.3">' + title + '</p>' +
                     '<p class="mb-0 small text-muted" style="font-size:11px">' + subtitle + '</p>';
 
-                item.appendChild(line);
-                item.appendChild(dot);
+                item.appendChild(icon);
                 item.appendChild(content);
                 container.appendChild(item);
             }
+            addItem('bi-file-earmark-text-fill', 'text-primary',
+                'Travel Order Submitted',
+                (d.applicant_name || 'Applicant') + ' &mdash; ' + (d.applicant_position || '') + '<br>' + fmtDateTime(d.created_at));
 
-            // Always: submitted
-            addItem('bi-send-fill', 'text-primary',
-                'Submitted by ' + (d.applicant_name || 'Applicant'),
-                (d.applicant_position || '') + ' &bull; ' + fmtDate(d.created_at));
-
-            // Supervisor
             if (d.approved_by_supervisor) {
                 var supRejected = d.status === 'Rejected by Supervisor';
                 addItem(
@@ -808,7 +816,6 @@
                 );
             }
 
-            // Division Head
             if (d.approved_by_division_head) {
                 var divRejected = d.status === 'Rejected by Division Head';
                 addItem(
@@ -819,7 +826,6 @@
                 );
             }
 
-            // PENRO
             if (d.approved_by_organization_head) {
                 var orgRejected = d.status === 'Rejected by PENRO';
                 addItem(
@@ -830,7 +836,6 @@
                 );
             }
 
-            // Remove last connector line
             var items = container.querySelectorAll('.mb-3');
             if (items.length > 0) {
                 var lastLine = items[items.length - 1].querySelector('div[style*="position:absolute; left:7px"]');
@@ -846,10 +851,7 @@
                 callout: ''
             };
 
-            // ── Header ────────────────────────────────────────────────────
             setText('to-modal-number', d.travel_order_number);
-
-            // ── LEFT COL: document fields ─────────────────────────────────
             setText('to-doc-number', d.travel_order_number);
             setText('to-doc-date', fmtDate(d.created_at));
             setText('to-doc-destination', d.destination);
@@ -857,18 +859,15 @@
             setText('to-doc-arrival', fmtDate(d.arrival_date));
             setText('to-doc-purpose', d.purpose_of_travel);
 
-            // ── Signatories ───────────────────────────────────────────────
             setText('to-sig-division',
                 d.approved_by_division_head || d.division_head_name || '___________________');
             setText('to-sig-division-position',
                 d.division_head_position || 'Division Chief');
-
             setText('to-sig-penro',
                 d.approved_by_organization_head || d.organization_head_name || '___________________');
             setText('to-sig-penro-position',
                 d.organization_head_position || 'PENRO Officer');
 
-            // ── Persons — stacked columns layout ──────────────────────────
             var namesEl = document.getElementById('to-persons-names');
             var positionsEl = document.getElementById('to-persons-positions');
             var gradesEl = document.getElementById('to-persons-grades');
@@ -893,34 +892,24 @@
                 namesEl.innerHTML = '<p class="mb-0 small text-muted fst-italic">None listed</p>';
             }
 
-            // ── Office Station (organization name) ────────────────────────
             setText('to-doc-office', d.organization_name || 'PENRO Leyte');
 
-            // ── RIGHT COL: current status ─────────────────────────────────
             var iconEl = document.getElementById('to-status-icon');
             var badgeEl = document.getElementById('to-status-badge');
             iconEl.className = 'bi ' + cfg.icon + ' fs-5';
             badgeEl.className = 'badge px-3 py-2 ' + cfg.badge;
             badgeEl.textContent = d.status;
 
-            // ── Approval steps ────────────────────────────────────────────
             renderStep('supervisor',
-                d.approved_by_supervisor,
-                d.supervisor_remarks,
-                d.status === 'Rejected by Supervisor' ? 'rejected' : 'approved'
-            );
+                d.approved_by_supervisor, d.supervisor_remarks,
+                d.status === 'Rejected by Supervisor' ? 'rejected' : 'approved');
             renderStep('division',
-                d.approved_by_division_head,
-                d.division_head_remarks,
-                d.status === 'Rejected by Division Head' ? 'rejected' : 'approved'
-            );
+                d.approved_by_division_head, d.division_head_remarks,
+                d.status === 'Rejected by Division Head' ? 'rejected' : 'approved');
             renderStep('org',
-                d.approved_by_organization_head,
-                d.organization_head_remarks,
-                d.status === 'Rejected by PENRO' ? 'rejected' : 'approved'
-            );
+                d.approved_by_organization_head, d.organization_head_remarks,
+                d.status === 'Rejected by PENRO' ? 'rejected' : 'approved');
 
-            // ── Timeline ──────────────────────────────────────────────────
             buildTimeline(d);
 
             // ── Attachments ───────────────────────────────────────────────
@@ -930,27 +919,27 @@
 
             if (d.attachments && d.attachments.length > 0) {
                 noAtch.classList.add('d-none');
+
                 d.attachments.forEach(function(a) {
                     var label = ATTACHMENT_LABELS[a.attachment_type] || a.attachment_type || 'Document';
                     var iconCls = ATTACHMENT_ICONS[a.attachment_type] || 'bi-file-earmark';
-                    var fileUrl = 'https://drive.google.com/file/d/' + a.file_id + '/view';
                     var dispName = a.attachment_name || label;
+                    var href = '<?= site_url('dashboard/travel-orders/attachment/download') ?>/' + a.file_id;
 
-                    var row = document.createElement('div');
-                    row.className = 'd-flex align-items-center gap-2 p-2 rounded border';
-                    row.style.background = 'var(--color-background-secondary)';
+                    // The entire row is the <a> — clicking anywhere triggers the download
+                    var row = document.createElement('a');
+                    row.href = href;
+                    row.download = dispName; // suggested filename for the browser
+                    row.className = 'to-attachment-row d-flex align-items-center gap-2 p-2 rounded border';
+
                     row.innerHTML =
-                        '<i class="bi ' + iconCls + ' text-primary flex-shrink-0"></i>' +
+                        '<i class="bi ' + iconCls + ' text-primary flex-shrink-0 fs-5"></i>' +
                         '<div class="flex-grow-1 overflow-hidden">' +
-                        '<p class="mb-0 small fw-semibold text-truncate">' + label + '</p>' +
-                        '<p class="mb-0 small text-muted text-truncate" ' +
-                        'style="font-size:11px">' + dispName + '</p>' +
+                        '<p class="mb-0 small fw-semibold text-truncate">' + dispName + '</p>' +
+                        '<p class="mb-0 text-muted text-truncate" style="font-size:11px">' + label + '</p>' +
                         '</div>' +
-                        '<a href="' + fileUrl + '" target="_blank" rel="noopener noreferrer" ' +
-                        'class="btn btn-sm btn-outline-primary flex-shrink-0 py-0 px-2" ' +
-                        'style="font-size:11px">' +
-                        '<i class="bi bi-box-arrow-up-right me-1"></i>View' +
-                        '</a>';
+                        '<i class="bi bi-download to-attachment-download-icon text-muted flex-shrink-0"></i>';
+
                     list.appendChild(row);
                 });
             } else {
@@ -992,13 +981,32 @@
                     showState('error');
                 });
         });
-
         // ── Print ──────────────────────────────────────────────────────────
+        function printTO(travel_order_id) {
+            fetch('<?= route_to('print.to', 0) ?>'.replace('/0', '/' + travel_order_id))
+                .then(function(response) {
+                    return response.text();
+                })
+                .then(function(html) {
+                    var iframe = document.getElementById('print-frame');
+                    var doc = iframe.contentDocument || iframe.contentWindow.document;
+                    doc.open();
+                    doc.write(html);
+                    doc.close();
+                    setTimeout(function() {
+                        iframe.contentWindow.focus();
+                        iframe.contentWindow.print();
+                    }, 200);
+                })
+                .catch(function(err) {
+                    console.error('Error printing Travel Order:', err);
+                });
+        }
+
         document.getElementById('to-btn-print').addEventListener('click', function() {
             var id = this.getAttribute('data-id');
-            if (id) window.open('<?= site_url('travel-orders/print') ?>/' + id, '_blank');
+            if (id) printTO(id);
         });
-
     });
 </script>
 <!-- END :: View Travel Order Script -->

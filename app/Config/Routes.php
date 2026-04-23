@@ -36,6 +36,9 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
     $routes->post('dashboard/mytravelorders', [TravelOrderController::class, 'travelOrdersData'], ['as' => 'data.travelOrders']);
     
     $routes->get('dashboard/travel-orders/details/(:num)',[TravelOrderController::class, 'travelOrderDetails'],['as' => 'data.travelOrderDetails']);
+    $routes->get('dashboard/travel-orders/attachment/download/(:any)', [TravelOrderController::class, 'downloadAttachment'], ['as' => 'download.travelOrder']);
+    
+    $routes->get('dashboard/travel-orders/print/(:num)', [TravelOrderController::class, 'printTO/$1'], ['as' => 'print.to']);
     // End :: Dashboard route
 
     $routes->group('account-settings', function ($routes) {

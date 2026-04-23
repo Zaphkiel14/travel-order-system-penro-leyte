@@ -48,7 +48,7 @@ class GoogleDriveService
         }
         // Set token
         $this->client->setAccessToken($token);
-        
+
         // Verify identity
         $payload = $this->client->verifyIdToken();
         if (!$payload) {
@@ -135,26 +135,6 @@ class GoogleDriveService
         }
     }
 
-    // Upload file (user-specific)
-    // public function uploadFile($filePath, $fileName, $folderId = null)
-    // {
-    //     if (!$this->userId) {
-    //         throw new \Exception("User not set.");
-    //     }
-    //     $fileMetadata = new \Google\Service\Drive\DriveFile([
-    //         'name' => $fileName,
-    //         'parents' => $folderId ? [$folderId] : []
-    //     ]);
-    //     $content = file_get_contents($filePath);
-    //     $file = $this->drive->files->create($fileMetadata, [
-    //         'data' => $content,
-    //         'mimeType' => mime_content_type($filePath),
-    //         'uploadType' => 'multipart',
-    //         'fields' => 'id'
-    //     ]);
-    //     return $file->id;
-    // }
-
     private function sanitizeFileName($fileName)
     {
         // remove unsafe chars
@@ -225,7 +205,50 @@ class GoogleDriveService
         return null;
     }
 
+    /**
+     * Download a file from Google Drive and return its metadata + raw content.
+     *
+     * The Google API client returns either a Guzzle Response object or a raw
+     * string depending on the version and how the request was made. We handle
+     * both cases so Intelephense is satisfied and it works at runtime.
+     *
+     * @param  string $fileId  Google Drive file ID
+     * @return array{name: string, mimeType: string, size: int|null, content: string}
+     * @throws \Exception
+     */
+    public function downloadFile(string $fileId): array
+    {
+        if (!$this->userId) {
+            throw new \Exception("User not set.");
+        }
 
+        // Fetch file metadata (name, mimeType, size)
+        /** @var \Google\Service\Drive\DriveFile $meta */
+        $meta = $this->drive->files->get($fileId, [
+            'fields' => 'id,name,mimeType,size',
+        ]);
+
+        // Tell the client to return the raw HTTP response for media downloads
+        $this->client->setDefer(true);
+
+        /** @var \GuzzleHttp\Psr7\Request $request */
+        $request = $this->drive->files->get($fileId, ['alt' => 'media']);
+
+        $httpClient = $this->client->authorize();
+        $response   = $httpClient->send($request);
+
+        $this->client->setDefer(false);
+
+        // Cast to string — works whether the body is a Stream or already a string
+        $content = (string) $response->getBody();
+
+        return [
+            'name'     => $meta->getName(),
+            'mimeType' => $meta->getMimeType(),
+            'size'     => $meta->getSize(),
+            'content'  => $content,
+        ];
+    }
 
     public function initForCLI()
     {
@@ -239,4 +262,6 @@ class GoogleDriveService
 
         $this->drive = new Drive($this->client);
     }
+
+    
 }

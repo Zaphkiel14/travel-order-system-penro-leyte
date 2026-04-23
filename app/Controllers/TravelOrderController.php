@@ -8,7 +8,7 @@ use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\TravelOrderModel;
 use App\Models\SelectModel;
 use App\Services\GoogleDriveService;
-
+use App\Services\PrintService;
 class TravelOrderController extends BaseController
 {
     public function index()
@@ -175,37 +175,69 @@ class TravelOrderController extends BaseController
         ]);
     }
 
-public function travelOrderDetails(int $travelOrderId)
-{
-    if (!$this->request->isAJAX()) {
-        return $this->response->setStatusCode(403)->setBody('Forbidden');
-    }
+    public function travelOrderDetails(int $travelOrderId)
+    {
+        if (!$this->request->isAJAX()) {
+            return $this->response->setStatusCode(403)->setBody('Forbidden');
+        }
 
-    $userId = (int) session()->get('user_id');
-    $role   = session()->get('role');
-    $model  = new TravelOrderModel();
-    $order  = $model->getTravelOrderDetails($travelOrderId);
+        $userId = (int) session()->get('user_id');
+        $role   = session()->get('role');
+        $model  = new TravelOrderModel();
+        $order  = $model->getTravelOrderDetails($travelOrderId);
 
-    if (!$order) {
-        return $this->response->setStatusCode(404)->setJSON([
-            'success' => false,
-            'message' => 'Travel order not found.',
+        if (!$order) {
+            return $this->response->setStatusCode(404)->setJSON([
+                'success' => false,
+                'message' => 'Travel order not found.',
+            ]);
+        }
+
+        $privilegedRoles = ['admin', 'penro', 'division_head', 'supervisor', 'records'];
+
+        if (!in_array($role, $privilegedRoles) && (int) $order['user_id'] !== $userId) {
+            return $this->response->setStatusCode(403)->setJSON([
+                'success' => false,
+                'message' => 'Access denied.',
+            ]);
+        }
+
+        return $this->response->setJSON([
+            'success' => true,
+            'data'    => $order,
         ]);
     }
 
-    // Roles that can view any travel order (not just their own)
-    $privilegedRoles = ['admin', 'penro', 'division_head', 'supervisor', 'records'];
+    public function downloadAttachment(string $fileId)
+    {
+        $userId = session()->get('user_id');
+        if (!$userId) {
+            return redirect()->route('login');
+        }
 
-    if (!in_array($role, $privilegedRoles) && (int) $order['user_id'] !== $userId) {
-        return $this->response->setStatusCode(403)->setJSON([
-            'success' => false,
-            'message' => 'Access denied.',
-        ]);
+        try {
+            $drive = new GoogleDriveService();
+            $drive->setUser($userId);
+            $file = $drive->downloadFile($fileId);
+        } catch (\Exception $e) {
+            log_message('error', 'Attachment download failed: ' . $e->getMessage());
+            return redirect()->back()->with('toast', [
+                'type'    => 'danger',
+                'message' => 'Could not download file: ' . $e->getMessage()
+            ]);
+        }
+
+        return $this->response
+            ->setHeader('Content-Type', $file['mimeType'])
+            ->setHeader('Content-Disposition', 'attachment; filename="' . $file['name'] . '"')
+            ->setHeader('Content-Length', (string) strlen($file['content']))
+            ->setHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
+            ->setBody($file['content']);
+    }
+            public function printTO($travelOrderId)
+    {
+        $printService = new PrintService();
+        return $printService->previewPrintTO($travelOrderId);
     }
 
-    return $this->response->setJSON([
-        'success' => true,
-        'data'    => $order,
-    ]);
-}
 }

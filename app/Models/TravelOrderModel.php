@@ -38,7 +38,7 @@ class TravelOrderModel extends Model
     protected array $castHandlers = [];
 
     // Dates
-    protected $useTimestamps = false;
+    protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
@@ -62,126 +62,122 @@ class TravelOrderModel extends Model
     protected $afterDelete    = [];
 
 
-public function insertTravelOrder(
-    string $travel_order_number,
-    array  $persons,
-    string $departure_date,
-    string $arrival_date,
-    string $destination,
-    string $travel_purpose,
-    array  $attachments       // ['request_memo' => ['file_id' => ..., 'file_name' => ...], ...]
-): int|false {
+    public function insertTravelOrder(
+        string $travel_order_number,
+        array  $persons,
+        string $departure_date,
+        string $arrival_date,
+        string $destination,
+        string $travel_purpose,
+        array  $attachments       // ['request_memo' => ['file_id' => ..., 'file_name' => ...], ...]
+    ): int|false {
 
-    $this->db->transStart();
+        $this->db->transStart();
 
-    // ── Travel order record ────────────────────────────────────────────
-    $this->insert([
-        'travel_order_number' => $travel_order_number,
-        'user_id'             => session()->get('user_id'),
-        'departure_date'      => $departure_date,
-        'arrival_date'        => $arrival_date,
-        'destination'         => $destination,
-        'purpose_of_travel'   => $travel_purpose,
-    ]);
-    $travelOrderId = $this->getInsertID();
-
-    // ── Persons ────────────────────────────────────────────────────────
-    foreach ($persons as $person) {
-        $this->db->table('travel_order_users')->insert([
-            'travel_order_id' => $travelOrderId,
-            'user_id'         => null,
-            'name'            => trim($person['name']),
-            'salary_grade'    => trim($person['salary_grade']),
-            'position'        => trim($person['position']),
+        // ── Travel order record ────────────────────────────────────────────
+        $this->insert([
+            'travel_order_number' => $travel_order_number,
+            'user_id'             => session()->get('user_id'),
+            'departure_date'      => $departure_date,
+            'arrival_date'        => $arrival_date,
+            'destination'         => $destination,
+            'purpose_of_travel'   => $travel_purpose,
         ]);
-    }
+        $travelOrderId = $this->getInsertID();
 
-    // ── Attachments ────────────────────────────────────────────────────
-    foreach ($attachments as $type => $file) {
-        // Skip fields where no file was uploaded
-        if (!$file || empty($file['file_id'])) {
-            continue;
+        // ── Persons ────────────────────────────────────────────────────────
+        foreach ($persons as $person) {
+            $this->db->table('travel_order_users')->insert([
+                'travel_order_id' => $travelOrderId,
+                'user_id'         => null,
+                'name'            => trim($person['name']),
+                'salary_grade'    => trim($person['salary_grade']),
+                // 'division'        => trim($person['division_section_unit']),
+                'position'        => trim($person['position']),
+            ]);
         }
 
-        $this->db->table('travel_order_attachments')->insert([
-            'travel_order_id' => $travelOrderId,
-            'file_id'         => $file['file_id'],
-            'attachment_name' => $file['file_name'],
-            'attachment_type' => $type,
-        ]);
+        // ── Attachments ────────────────────────────────────────────────────
+        foreach ($attachments as $type => $file) {
+            // Skip fields where no file was uploaded
+            if (!$file || empty($file['file_id'])) {
+                continue;
+            }
+
+            $this->db->table('travel_order_attachments')->insert([
+                'travel_order_id' => $travelOrderId,
+                'file_id'         => $file['file_id'],
+                'attachment_name' => $file['file_name'],
+                'attachment_type' => $type,
+            ]);
+        }
+
+        $this->db->transComplete();
+
+        return $this->db->transStatus() ? $travelOrderId : false;
     }
 
-    $this->db->transComplete();
+    /**
+     *  Summary of getTravelOrderDetails
+     * - fetches full detail of a travel order including its attachments
+     * @param int $travelOrderId
+     * @return array
+     */
 
-    return $this->db->transStatus() ? $travelOrderId : false;
-}
-/**
- * Fetches full detail of a travel order including persons, attachments,
- * and all data needed for the view modal (signatories, unit/division names).
- */
-public function getTravelOrderDetails(int $travelOrderId): ?array
-{
-    $order = $this->db->table('travel_orders tord')
-        ->select('
-            tord.travel_order_id,
-            tord.travel_order_number,
-            tord.departure_date,
-            tord.arrival_date,
-            tord.destination,
-            tord.purpose_of_travel,
-            tord.status,
-            tord.user_id,
-            tord.created_at,
-            CONCAT(applicant.first_name, " ", applicant.last_name) AS applicant_name,
-            applicant.position AS applicant_position,
-            tord.unit_id,
-            un.unit_name,
-            tord.approved_by_supervisor,
-            tord.supervisor_remarks,
-            tord.division_id,
-            div.division_name,
-            CONCAT(div_head.first_name, " ", div_head.last_name) AS division_head_name,
-            div_head.position AS division_head_position,
-            tord.approved_by_division_head,
-            tord.division_head_remarks,
-            tord.organization_id,
-            org.organization_name,
-            CONCAT(org_head.first_name, " ", org_head.last_name) AS organization_head_name,
-            org_head.position AS organization_head_position,
-            tord.approved_by_organization_head,
-            tord.organization_head_remarks
+    public function getTravelOrderDetails($travelOrderId)
+    {
+        $order = $this->db->table('travel_orders to')
+            ->select('
+            to.travel_order_id,
+            to.travel_order_number,
+            to.user_id,
+            to.departure_date,
+            to.arrival_date,
+            to.destination,
+            to.purpose_of_travel,
+            to.status,
+            to.unit_id,
+            u.unit_supervisor_position,
+            to.approved_by_supervisor,
+            to.supervisor_remarks,
+            to.division_id,
+            d.division_head_position,
+            to.approved_by_division_head,
+            to.division_head_remarks,
+            to.organization_id,
+            o.organization_head_position,
+            to.approved_by_organization_head,
+            to.organization_head_remarks,
+            CONCAT(us.first_name, " ", us.last_name) AS applicant_name,
+            us.position AS applicant_position,
+            to.created_at
         ')
-        ->join('users applicant',  'applicant.user_id = tord.user_id',              'left')
-        ->join('units un',         'un.unit_id = tord.unit_id',                     'left')
-        ->join('divisions div',    'div.division_id = tord.division_id',            'left')
-        ->join('users div_head',   'div_head.user_id = div.division_head_id',       'left')
-        ->join('organization org', 'org.organization_id = tord.organization_id',    'left')
-        ->join('users org_head',   'org_head.user_id = org.organization_user_id',   'left')
-        ->where('tord.travel_order_id', $travelOrderId)
-        ->where('tord.deleted_at IS NULL', null, false)
-        ->get()
-        ->getRowArray();
+            ->join('units u', 'u.unit_id = to.unit_id', 'left')
+            ->join('divisions d', 'd.division_id = to.division_id', 'left')
+            ->join('organization o', 'o.organization_id = to.organization_id', 'left')
+            ->join('users us', 'us.user_id = to.user_id', 'left')
+            ->where('to.travel_order_id', $travelOrderId)
+            ->get()->getRowArray();
 
-    if (!$order) {
-        return null;
+        if (!$order) {
+            return null;
+        }
+
+        // Fetch persons
+        $order['persons'] = $this->db->table('travel_order_users')
+            ->select('name, position, salary_grade')
+            ->where('travel_order_id', $travelOrderId)
+            ->get()->getResultArray();
+
+        // Fetch attachments — join to get file_id from google drive
+        $order['attachments'] = $this->db->table('travel_order_attachments ta')
+            ->select('ta.attachment_type, ta.file_id, ta.attachment_name')
+            ->where('ta.travel_order_id', $travelOrderId)
+            ->get()->getResultArray();
+
+        return $order;
     }
 
-    $order['persons'] = $this->db
-        ->table('travel_order_users')
-        ->select('name, position, salary_grade')
-        ->where('travel_order_id', $travelOrderId)
-        ->get()
-        ->getResultArray();
-
-    $order['attachments'] = $this->db
-        ->table('travel_order_attachments')
-        ->select('file_id, attachment_name, attachment_type')
-        ->where('travel_order_id', $travelOrderId)
-        ->get()
-        ->getResultArray();
-
-    return $order;
-}
     /**
      * Summary of getMyTravelOrders
      * - fetches travel orders of the currently logged in user
@@ -189,9 +185,9 @@ public function getTravelOrderDetails(int $travelOrderId): ?array
      * @return static
      */
 
-public function getMyTravelOrdersQuery($userId): static
-{
-    return $this->select('
+    public function getMyTravelOrdersQuery($userId): static
+    {
+        return $this->select('
             travel_order_id,
             travel_order_number,
             departure_date,
@@ -201,9 +197,43 @@ public function getMyTravelOrdersQuery($userId): static
             status,
             created_at
         ')
-        ->where('user_id', $userId);
-    // Returns the model itself (query builder state), NOT results yet
-    // Caller decides whether to count, paginate, or fetch
+            ->where('user_id', $userId);
+        // Returns the model itself (query builder state), NOT results yet
+        // Caller decides whether to count, paginate, or fetch
+    }
+
+public function printTO($travelOrderId)
+{
+    $travel_order = $this->db->table('travel_orders to')
+        ->select('
+            to.travel_order_id,
+            to.travel_order_number,
+            to.departure_date,
+            to.arrival_date,
+            to.destination,
+            to.purpose_of_travel,
+            d.division_head_position,
+            CONCAT(dh.first_name, " ", dh.last_name) AS division_head_name,
+            o.organization_head_position,
+            CONCAT(oh.first_name, " ", oh.last_name) AS organization_head_name
+        ')
+        ->join('divisions d', 'd.division_id = to.division_id', 'left')
+        ->join('users dh', 'dh.user_id = d.division_head_id', 'left')
+        ->join('organization o', 'o.organization_id = to.organization_id', 'left')
+        ->join('users oh', 'oh.user_id = o.organization_head_id', 'left')
+        ->where('to.travel_order_id', $travelOrderId)
+        ->get()->getRowArray();
+
+    if (!$travel_order) {
+        return null;
+    }
+
+    $travel_order['persons'] = $this->db->table('travel_order_users')
+        ->select('name, position, salary_grade')
+        ->where('travel_order_id', $travelOrderId)
+        ->get()->getResultArray();
+
+    return $travel_order;
 }
 
 
