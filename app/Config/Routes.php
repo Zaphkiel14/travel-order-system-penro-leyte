@@ -6,6 +6,7 @@ use App\Controllers\Auth;
 use App\Controllers\DashboardController;
 use App\Controllers\TravelOrderController;
 use App\Controllers\ProfileController;
+use App\Controllers\ConfigController;
 
 /**
  * @var RouteCollection $routes
@@ -17,8 +18,6 @@ $routes->get('/', 'Home::index');
 
 //auth routes
 $routes->group('', ['filter' => 'noauth'], function ($routes) {
-
-
     $routes->get('/login', [Auth::class, 'logIn'], ['as' => 'login']);
     $routes->post('/login/auth', [Auth::class, 'auth'], ['as' => 'auth.submit']);
     $routes->get('google/login', [Auth::class, 'googleLogin'], ['as' => 'google.login']);
@@ -31,15 +30,26 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
     $routes->get('logout', [Auth::class, 'logout']);
 
     // Begin :: dashboard route
-    $routes->get('dashboard', [DashboardController::class, 'index'],['as' => 'dashboard']);
-    $routes->post('dashboard/create-travel-order', [TravelOrderController::class, 'createTravelOrder'], ['as' => 'create.TravelOrder']);
-    $routes->post('dashboard/mytravelorders', [TravelOrderController::class, 'travelOrdersData'], ['as' => 'data.travelOrders']);
-    
-    $routes->get('dashboard/travel-orders/details/(:num)',[TravelOrderController::class, 'travelOrderDetails'],['as' => 'data.travelOrderDetails']);
-    $routes->get('dashboard/travel-orders/attachment/download/(:any)', [TravelOrderController::class, 'downloadAttachment'], ['as' => 'download.travelOrder']);
-    
-    $routes->get('dashboard/travel-orders/print/(:num)', [TravelOrderController::class, 'printTO/$1'], ['as' => 'print.to']);
+    $routes->group('dashboard', function ($routes) {
+        $routes->get('/', [DashboardController::class, 'index'], ['as' => 'dashboard']);
+        $routes->post('create-travel-order', [TravelOrderController::class, 'createTravelOrder'], ['as' => 'create.TravelOrder']);
+        $routes->post('mytravelorders', [TravelOrderController::class, 'travelOrdersData'], ['as' => 'data.travelOrders']);
+        $routes->get('travel-orders/details/(:num)', [TravelOrderController::class, 'travelOrderDetails'], ['as' => 'data.travelOrderDetails']);
+        $routes->get('travel-orders/attachment/download/(:any)', [TravelOrderController::class, 'downloadAttachment'], ['as' => 'download.travelOrder']);
+        $routes->get('travel-orders/print/(:num)', [TravelOrderController::class, 'printTO/$1'], ['as' => 'print.to']);
+    });
     // End :: Dashboard route
+    $routes->group('configuration',function($routes){
+        $routes->get('/', [ConfigController::class, 'index'] , ['as' => 'view.configuration']);
+
+    });
+
+
+
+
+
+
+
 
     $routes->group('account-settings', function ($routes) {
         $routes->get('/', [ProfileController::class, 'settings'], ['as' => 'account-settings']);
@@ -52,6 +62,5 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         $routes->post('update-email', [ProfileController::class, 'updateEmail'], ['as' => 'update.email']);
         $routes->post('update-birthdate', [ProfileController::class, 'updateBirthday'], ['as' => 'update.birthdate']);
         $routes->post('update-gender', [ProfileController::class, 'updateGender'], ['as' => 'update.gender']);
-});
-
+    });
 });

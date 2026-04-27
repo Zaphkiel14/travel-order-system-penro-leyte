@@ -6,6 +6,7 @@ use CodeIgniter\Controller;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 use Psr\Log\LoggerInterface;
+use App\Libraries\ErrorHandler;
 
 /**
  * BaseController provides a convenient place for loading components
@@ -18,6 +19,10 @@ use Psr\Log\LoggerInterface;
  *
  * For security, be sure to declare any new methods as protected or private.
  */
+
+
+
+
 abstract class BaseController extends Controller
 {
     /**
@@ -30,6 +35,9 @@ abstract class BaseController extends Controller
     /**
      * @return void
      */
+
+    
+    protected ErrorHandler $errorHandler;
     public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
     {
         // Load here all helpers you want to be available in your controllers that extend BaseController.
@@ -41,5 +49,15 @@ abstract class BaseController extends Controller
 
         // Preload any models, libraries, etc, here.
         // $this->session = service('session');
+
+    $this->errorHandler = new ErrorHandler();
     }
+
+protected function renderError(array $error)
+{
+    return response()
+        ->setStatusCode($error['error_code'])
+        ->setBody(view('error_page', $error));
+}
+    
 }
