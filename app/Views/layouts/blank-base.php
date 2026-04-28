@@ -16,7 +16,7 @@
     <?= $this->include('partials/user-header') ?>
     <!--end::Header-->
     <!--begin::Sidebar-->
-    <?= $this->include('partials/admin-sidebar') ?>
+    <?= $this->include('partials/blank-sidebar') ?>
 
     <!--end::Sidebar-->
     <!--begin::App Main-->
@@ -47,20 +47,20 @@
       <!--begin::App Content-->
       <div class="app-content">
         <!--begin::Container-->
-<?php
-$alerts = session()->getFlashdata('alerts');
-if (! empty($alerts)): ?>
-    <?php foreach ($alerts as $alert): ?>
-    <div class="alert alert-<?= esc($alert['type']) ?> alert-dismissible fade show">
-        <strong><?= esc($alert['title']) ?></strong>
-        <?= $alert['message'] ?>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-    <?php endforeach;
-    // keep them if you expect another redirect
-    session()->keepFlashdata('alerts');
-endif;
-?>
+          <?php
+          $alerts = session()->getFlashdata('alerts');
+          if (! empty($alerts)): ?>
+              <?php foreach ($alerts as $alert): ?>
+              <div class="alert alert-<?= esc($alert['type']) ?> alert-dismissible fade show">
+                  <strong><?= esc($alert['title']) ?></strong>
+                  <?= $alert['message'] ?>
+                  <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+              </div>
+              <?php endforeach;
+              // keep them if you expect another redirect
+              session()->keepFlashdata('alerts');
+          endif;
+          ?>
         <?= $this->renderSection('content') ?>
         <!--end::Container-->
       </div>

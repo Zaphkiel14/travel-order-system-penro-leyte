@@ -1,3 +1,9 @@
+    <?php
+    $session = session();
+    $isLoggedIn = $session->get('isLoggedIn') ?? false;
+    ?>
+
+
     <nav class="app-header navbar navbar-expand bg-body">
         <!--begin::Container-->
         <div class="container-fluid">
@@ -57,8 +63,21 @@
                             </small>
                         </li>
                         <li class="user-footer">
-                            <a href="<?= site_url(route_to('account-settings')) ?>" class="btn btn-default btn-flat">Profile</a>
-                            <a href="<?= site_url(route_to('logout')) ?>" class="btn btn-default btn-flat float-end">Sign out</a>
+                            <?php if ($isLoggedIn): ?>
+                                <a href="<?= site_url(route_to('account-settings')) ?>" class="btn btn-default btn-flat">
+                                    Profile
+                                </a>
+                                <a href="<?= site_url(route_to('logout')) ?>" class="btn btn-default btn-flat float-end">
+                                    Sign out
+                                </a>
+                            <?php else: ?>
+                                <button class="btn btn-default btn-flat" disabled>
+                                    Profile
+                                </button>
+                                <a href="<?= site_url(route_to('login')) ?>" class="btn btn-default btn-flat float-end">
+                                    Login
+                                </a>
+                            <?php endif; ?>
                         </li>
                     </ul>
                 </li>

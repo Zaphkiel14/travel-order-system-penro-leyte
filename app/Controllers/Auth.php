@@ -119,7 +119,7 @@ class Auth extends BaseController
         // Role-based redirect
         if ($user['role'] === 'admin' || $user['role'] === 'user') {
             log_message('debug', 'Redirecting to dashboard.');
-            return redirect()->to(route_to('dashboard'));
+            return redirect()->to(route_to('view.dashboard'));
         } else {
             log_message('debug', 'Unauthorized role.');
             // Goes back to login
@@ -236,7 +236,7 @@ class Auth extends BaseController
                 'isLoggedIn' => true,
             ]);
             log_message('debug', 'Google login session: ' . json_encode(session()->get()));
-            return redirect()->route('dashboard');
+            return redirect()->to(route_to('view.dashboard'));
         } catch (\Exception $e) {
             return redirect()->route('login')->with('alert', [
                 'type' => 'danger',
