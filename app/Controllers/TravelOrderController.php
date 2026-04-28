@@ -9,14 +9,13 @@ use App\Models\TravelOrderModel;
 use App\Models\SelectModel;
 use App\Services\GoogleDriveService;
 use App\Services\PrintService;
+
 class TravelOrderController extends BaseController
 {
     public function index()
     {
         //
     }
-
-
 
     public function createTravelOrder()
     {
@@ -177,8 +176,15 @@ class TravelOrderController extends BaseController
 
     public function travelOrderDetails(int $travelOrderId)
     {
+        if (!session()->get('isLoggedIn')) {
+            return $this->renderError(
+                $this->errorHandler->unauthorized()
+            );
+        }
         if (!$this->request->isAJAX()) {
-            return $this->response->setStatusCode(403)->setBody('Forbidden');
+            return $this->renderError(
+                $this->errorHandler->forbidden('You are Accessing a Restricted Route.')
+            );
         }
 
         $userId = (int) session()->get('user_id');
@@ -234,10 +240,9 @@ class TravelOrderController extends BaseController
             ->setHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
             ->setBody($file['content']);
     }
-            public function printTO($travelOrderId)
+    public function printTO($travelOrderId)
     {
         $printService = new PrintService();
         return $printService->previewPrintTO($travelOrderId);
     }
-
 }

@@ -91,23 +91,17 @@
 
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
-  $('#modal-add-item').on('shown.bs.modal', function() {
-    var $m = $(this);
-    // initialize any select2 inside this add-price modal to match edit modals
-    $m.find('.select2').each(function() {
-      var $s = $(this);
-      if ($s.data('select2')) {
-        try {
-          $s.select2('destroy');
-        } catch (e) {}
-      }
-      try {
-        $s.select2({
-          dropdownParent: $m
-        });
-      } catch (err) {
-        console.warn('Select2 init error', err);
-      }
+     // For all edit category modals
+  $(document).on('shown.bs.modal', '.modal', function() {
+    $(this).find('.select2').select2({
+      dropdownParent: $(this)
+    });
+  });
+
+  // Global initialize: all .select2 on the page (including non-modal)
+  $(document).ready(function() {
+    $('.select2').select2({
+      theme: 'bootstrap-5'
     });
   });
 </script>
@@ -212,6 +206,8 @@
 
 <script>
   $(function() {
+
+  
     //Initialize Select2 Elements
     $('.select2').select2()
 
@@ -611,6 +607,8 @@ $(function () {
         try { $s.select2({ dropdownParent: $m }); } catch (e) {}
       });
     });
+
+
   });
 
 });

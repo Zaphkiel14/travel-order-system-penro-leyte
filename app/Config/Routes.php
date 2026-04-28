@@ -25,13 +25,13 @@ $routes->group('', ['filter' => 'noauth'], function ($routes) {
 });
 
 // Authenticated routes
-$routes->group('', ['filter' => 'auth'], function ($routes) {
+$routes->group('', ['filter' => 'auth'],function ($routes) {
 
     $routes->get('logout', [Auth::class, 'logout']);
 
     // Begin :: dashboard route
     $routes->group('dashboard', function ($routes) {
-        $routes->get('/', [DashboardController::class, 'index'], ['as' => 'dashboard']);
+        $routes->get('/', [DashboardController::class, 'index'], ['as' => 'view.dashboard']);
         $routes->post('create-travel-order', [TravelOrderController::class, 'createTravelOrder'], ['as' => 'create.TravelOrder']);
         $routes->post('mytravelorders', [TravelOrderController::class, 'travelOrdersData'], ['as' => 'data.travelOrders']);
         $routes->get('travel-orders/details/(:num)', [TravelOrderController::class, 'travelOrderDetails'], ['as' => 'data.travelOrderDetails']);
@@ -43,6 +43,14 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         $routes->get('/', [ConfigController::class, 'index'] , ['as' => 'view.configuration']);
 
     });
+    $routes->get('admin/organization/(:num)',        'ConfigController::viewOrganization/$1');
+$routes->get('admin/organization/(:num)/edit',   'ConfigController::editOrganization/$1');
+
+$routes->get('admin/division/(:num)',            'ConfigController::viewDivision/$1');
+$routes->get('admin/division/(:num)/edit',       'ConfigController::editDivision/$1');
+
+$routes->get('admin/unit/(:num)',                'ConfigController::viewUnit/$1');
+$routes->get('admin/unit/(:num)/edit',           'ConfigController::editUnit/$1');
 
 
 

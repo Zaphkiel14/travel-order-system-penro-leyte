@@ -1,92 +1,219 @@
-<?php
+<?= $this->extend('layouts/admin-base') ?>
+<?= $this->section('content') ?>
 
-namespace App\Database\Seeds;
+<div class="container-fluid">
+<div class="row">
+<div class="col-12">
 
-use CodeIgniter\Database\Seeder;
+<div class="card">
+<div class="card-header">
+    <h3 class="card-title">Expandable Tree Table (Multi-Column)</h3>
+</div>
 
-class UnitsSeeder extends Seeder
-{
-    public function run()
-    {
+<div class="card-body p-0">
 
-        $MDS = $this->db->table('divisions')
-            ->where('division_name', 'MSD')
-            ->get()
-            ->getRow()
-            ->division_id;
-        $TDS = $this->db->table('divisions')
-            ->where('division_name', 'TSD')
-            ->get()
-            ->getRow()
-            ->division_id;
-        $data = [
-            [
-                'division_id' => $MDS,
-                'unit_name' => 'Accounting',
-                'created_at' => date('Y-m-d H:i:s'),
-            ],
-            [
-                'division_id' => $MDS,
-                'unit_name' => 'Budget',
-                'created_at' => date('Y-m-d H:i:s'),
-            ],
-            [
-                'division_id' => $MDS,
-                'unit_name' => 'Cashier',
-                'created_at' => date('Y-m-d H:i:s'),
-            ],
-            [
-                'division_id' => $MDS,
-                'unit_name' => 'HRD',
-                'created_at' => date('Y-m-d H:i:s'),
-            ],
-            [
-                'division_id' => $MDS,
-                'unit_name' => 'GSS',
-                'created_at' => date('Y-m-d H:i:s'),
-            ],
-            [
-                'division_id' => $MDS,
-                'unit_name' => 'Procurement & Supply',
-                'created_at' => date('Y-m-d H:i:s'),
-            ],
-            [
-                'division_id' => $MDS,
-                'unit_name' => 'Planning & Monitoring',
-                'created_at' => date('Y-m-d H:i:s'),
-            ],
-            [
-                'division_id' => $MDS,
-                'unit_name' => 'Records',
-                'created_at' => date('Y-m-d H:i:s'),
-            ],
-            [
-                'division_id' => $MDS,
-                'unit_name' => 'Receiving',
-                'created_at' => date('Y-m-d H:i:s'),
-            ],
-            [
-                'division_id' => $TDS,
-                'unit_name' => 'CDS',
-                'created_at' => date('Y-m-d H:i:s'),
-            ],
-            [
-                'division_id' => $TDS,
-                'unit_name' => 'MES',
-                'created_at' => date('Y-m-d H:i:s'),
-            ],
-            [
-                'division_id' => $TDS,
-                'unit_name' => 'NGP',
-                'created_at' => date('Y-m-d H:i:s'),
-            ],
-            [
-                'division_id' => $TDS,
-                'unit_name' => 'RPS',
-                'created_at' => date('Y-m-d H:i:s'),
-            ],
-        ];
+<table class="table table-hover mb-0">
 
-        $this->db->table('units')->insertBatch($data);
-    }
+<!-- HEADER -->
+<thead>
+<tr>
+    <th style="width: 180px;">Code</th>
+    <th>Name</th>
+    <th style="width: 160px;">Actions</th>
+</tr>
+</thead>
+
+<tbody>
+
+    <!-- ================= LEVEL 1 : ORGANIZATION ================= -->
+    <tr class="expand-toggle" data-target="children-org-<?= $organization->organization_id ?>">
+        <td>
+            <i class="fas fa-caret-right me-2 toggle-icon"></i>
+            <?= esc($organization->organization_code) ?>
+        </td>
+        <td><?= esc($organization->organization_name) ?></td>
+        <td>
+            <button class="btn btn-sm btn-primary">View</button>
+            <button class="btn btn-sm btn-warning">Edit</button>
+        </td>
+    </tr>
+
+    <?php foreach ($divisions as $division): ?>
+
+        <!-- ================= LEVEL 2 : DIVISION ================= -->
+        <tr class="tree-child children-org-<?= $organization->organization_id ?> expand-toggle d-none"
+            data-target="children-div-<?= $division->division_id ?>">
+            <td style="padding-left: 30px;">
+                <i class="fas fa-caret-right me-2 toggle-icon"></i>
+                <?= esc($division->division_code) ?>
+            </td>
+            <td><?= esc($division->division_name) ?></td>
+            <td>
+                <button class="btn btn-sm btn-primary">View</button>
+                <button class="btn btn-sm btn-warning">Edit</button>
+            </td>
+        </tr>
+
+        <?php foreach ($division->units as $unit): ?>
+
+            <!-- ================= LEVEL 3 : UNIT ================= -->
+            <tr class="tree-child children-div-<?= $division->division_id ?> d-none">
+                <td style="padding-left: 60px;">
+                    <?= esc($unit->unit_code) ?>
+                </td>
+                <td><?= esc($unit->unit_name) ?></td>
+                <td>
+                    <button class="btn btn-sm btn-primary">View</button>
+                    <button class="btn btn-sm btn-warning">Edit</button>
+                </td>
+            </tr>
+
+        <?php endforeach; ?>
+
+    <?php endforeach; ?>
+
+</tbody>
+</table>
+
+</div>
+</div>
+
+</div>
+</div>
+</div>
+<?= $this->extend('layouts/admin-base') ?>
+<?= $this->section('content') ?>
+
+<div class="container-fluid">
+<div class="row">
+<div class="col-12">
+
+<div class="card">
+<div class="card-header">
+    <h3 class="card-title">Expandable Tree Table (Multi-Column)</h3>
+</div>
+
+<div class="card-body p-0">
+
+<table class="table table-hover mb-0">
+
+<!-- HEADER -->
+<thead>
+<tr>
+    <th style="width: 180px;">Code</th>
+    <th>Name</th>
+    <th style="width: 160px;">Actions</th>
+</tr>
+</thead>
+
+<tbody>
+
+    <!-- ================= LEVEL 1 : ORGANIZATION ================= -->
+    <tr class="expand-toggle" data-target="children-org-<?= $organization->organization_id ?>">
+        <td>
+            <i class="fas fa-caret-right me-2 toggle-icon"></i>
+            <?= esc($organization->organization_code) ?>
+        </td>
+        <td><?= esc($organization->organization_name) ?></td>
+        <td>
+            <button class="btn btn-sm btn-primary">View</button>
+            <button class="btn btn-sm btn-warning">Edit</button>
+        </td>
+    </tr>
+
+    <?php foreach ($divisions as $division): ?>
+
+        <!-- ================= LEVEL 2 : DIVISION ================= -->
+        <tr class="tree-child children-org-<?= $organization->organization_id ?> expand-toggle d-none"
+            data-target="children-div-<?= $division->division_id ?>">
+            <td style="padding-left: 30px;">
+                <i class="fas fa-caret-right me-2 toggle-icon"></i>
+                <?= esc($division->division_code) ?>
+            </td>
+            <td><?= esc($division->division_name) ?></td>
+            <td>
+                <button class="btn btn-sm btn-primary">View</button>
+                <button class="btn btn-sm btn-warning">Edit</button>
+            </td>
+        </tr>
+
+        <?php foreach ($division->units as $unit): ?>
+
+            <!-- ================= LEVEL 3 : UNIT ================= -->
+            <tr class="tree-child children-div-<?= $division->division_id ?> d-none">
+                <td style="padding-left: 60px;">
+                    <?= esc($unit->unit_code) ?>
+                </td>
+                <td><?= esc($unit->unit_name) ?></td>
+                <td>
+                    <button class="btn btn-sm btn-primary">View</button>
+                    <button class="btn btn-sm btn-warning">Edit</button>
+                </td>
+            </tr>
+
+        <?php endforeach; ?>
+
+    <?php endforeach; ?>
+
+</tbody>
+</table>
+
+</div>
+</div>
+
+</div>
+</div>
+</div>
+
+<!-- SCRIPT -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    document.querySelectorAll('.expand-toggle').forEach(row => {
+        row.addEventListener('click', function (e) {
+
+            if (e.target.closest('button')) return;
+
+            const target = this.dataset.target;
+            if (!target) return;
+
+            document.querySelectorAll('.' + target).forEach(child => {
+
+                const isHiding = !child.classList.contains('d-none');
+                child.classList.toggle('d-none');
+
+                if (isHiding) {
+                    const childTarget = child.dataset.target;
+                    if (childTarget) {
+                        const childIcon = child.querySelector('.toggle-icon');
+                        if (childIcon) childIcon.classList.remove('fa-rotate-90');
+
+                        document.querySelectorAll('.' + childTarget).forEach(grandchild => {
+                            grandchild.classList.add('d-none');
+                        });
+                    }
+                }
+            });
+
+            const icon = this.querySelector('.toggle-icon');
+            if (icon) icon.classList.toggle('fa-rotate-90');
+        });
+    });
+
+});
+</script>
+
+<!-- STYLE -->
+<style>
+.expand-toggle {
+    cursor: pointer;
 }
+.expand-toggle:hover {
+    background: #f8f9fa;
+}
+.toggle-icon {
+    transition: transform 0.2s ease;
+}
+</style>
+
+<?= $this->endSection() ?>

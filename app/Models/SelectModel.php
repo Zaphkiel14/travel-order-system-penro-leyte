@@ -33,6 +33,46 @@ class SelectModel extends Model
 
         return "{$base}-{$nextIncrementFormatted}";
     }
+    public function organizationStructure()
+    {
+        $orgBuilder = $this->db->table('organization');
+        $organization = $orgBuilder
+            ->where('organization_id', 1)
+            ->get()
+            ->getRow();
 
+        $divBuilder = $this->db->table('divisions');
+        $organization->divisions = $divBuilder
+            ->where('organization_id', $organization->organization_id)
+            ->get()
+            ->getResult();
 
+        foreach ($organization->divisions as $division) {
+            $unitBuilder = $this->db->table('units');
+            $division->units = $unitBuilder
+                ->where('division_id', $division->division_id)
+                ->get()
+                ->getResult();
+        }
+        return $organization;
+    }
+
+    public function selectOrganization(){
+        $builder = $this->db->table('organization');
+        $builder->select('organization_id, organization_name');
+        $builder->limit('1');
+        return $builder->get()->getResult();
+    }
+    public function selectDivisions()
+    {
+        $builder = $this->db->table('divisions');
+        $builder->select('division_id, division_name');
+        return $builder->get()->getResult();
+    }
+
+    public function selectUnits(){
+                $builder = $this->db->table('units');
+        $builder->select('unit_id, unit_name');
+        return $builder->get()->getResult();
+    }
 }
