@@ -6,6 +6,8 @@ use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
 use PHPUnit\Framework\Constraint\IsFalse;
 use App\Models\SelectModel;
+use App\Models\DivisionsModel;
+use App\Models\UnitsModel;
 
 class ConfigController extends BaseController
 {
@@ -38,8 +40,44 @@ class ConfigController extends BaseController
 
 
     public function addOrganization() {}
-    public function addDivision() {}
-    public function addUnit() {}
+    public function addDivision() {
+        $data = [
+            'parent_organization' => $this->request->getPost('parent_organization'),
+            'division_name' => $this->request->getPost('division_name') ,
+            'division_head_position' => $this->request->getPost('division_head_position'),
+            'linked_units' => $this->request->getPost('linked_units') ?? []
+        ];
+
+        $model = new DivisionsModel();
+        $model->insertDivision(
+            $data['parent_organization'], 
+            $data['division_name'], 
+            $data['division_head_position'], 
+            $data['linked_units'] ?? '');
+
+        return redirect()->back()->with('toast', [
+            'type' => 'success',
+            'message' => "Division '{$data['division_name']}' created successfully"
+        ]);
+
+    }
+    public function addUnit() {
+        $data = [
+            'parent_division' => $this->request->getPost('parent_division'),
+            'unit_name' => $this->request->getPost('unit_name'),
+            'unit_head_position' => $this->request->getPost('unit_head_position'),
+        ];
+
+        $model = new UnitsModel();
+        $model->insertUnit(
+            $data['parent_division'], 
+            $data['unit_name'], 
+            $data['unit_head_position']);
+        return redirect()->back()->with('toast', [
+            'type' => 'success',
+            'message' => "Unit '{$data['unit_name']}' created successfully"
+        ]);
+    }
 
 //     public function viewOrganization($id)
 // {

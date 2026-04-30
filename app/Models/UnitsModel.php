@@ -12,7 +12,12 @@ class UnitsModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = [];
+    protected $allowedFields    = [
+        'division_id',
+        'unit_name',
+        'unit_head_id',
+        'unit_supervisor_position'
+    ];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;
@@ -43,4 +48,49 @@ class UnitsModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    
+    public function insertDivision(
+        int $parent_organization, 
+        string $division_name, 
+        string $division_head_position, 
+        array $linked_units)
+    {
+        $this->db->transStart();
+        $this->insert([
+            'organization_id' => $parent_organization, 
+            'division_name' => $division_name, 
+            'division_head_position' => $division_head_position]);
+        $division_id = $this->getInsertID();
+        if (!empty($linked_units)) {
+            $LinkedUnits = [];
+            foreach ($LinkedUnits as $unit_id) {
+                $LinkedUnits[] = [
+                    'division_id' => $division_id,
+                    'unit_id' => $unit_id
+                ];
+            }
+            $this->db->table('units')->insertBatch($LinkedUnits);
+        }
+        $this->db->transComplete();
+        return $this->db->transStatus() ? $division_id : false;
+        
+    }
+
+    public function insertUnit(
+        int $parent_division,
+        string $unit_name,
+        string $unit_head_position
+    )
+    {
+        $this->db->transStart();
+        $this->insert([
+            'division_id' => $parent_division,
+            'unit_name' => $unit_name,
+            'unit_supervisor_position' => $unit_head_position 
+        ]);
+        $unit_id = $this->getInsertID();
+        $this->db->transComplete();
+        return $this->db->transStatus() ? $unit_id : false;
+    }
 }

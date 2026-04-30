@@ -23,81 +23,81 @@
                 </div>
 
                 <div class="card-body p-0">
-<table class="table table-hover mb-0">
+                    <table class="table table-hover mb-0">
 
-    <thead>
-        <tr>
-            <th style="width: 20%;">Organization</th>
-            <th style="width: 20%;">Division</th>
-            <th style="width: 40%;">Unit</th>
-            <th style="width: 15%;">Actions</th>
-        </tr>
-    </thead>
+                        <thead>
+                            <tr>
+                                <th style="width: 20%;">Organization</th>
+                                <th style="width: 20%;">Division</th>
+                                <th style="width: 40%;">Unit</th>
+                                <th style="width: 15%;">Actions</th>
+                            </tr>
+                        </thead>
 
-    <tbody>
+                        <tbody>
 
-        <!-- LEVEL 1 : ORGANIZATION -->
-        <tr class="expand-toggle" data-target="children-org-<?= $orgstructure->organization_id ?>">
-            <td>
-                <i class="fas fa-caret-right me-2 toggle-icon"></i>
-                <?= esc($orgstructure->organization_name) ?>
-            </td>
-            <td></td>
-            <td></td>
-            <td>
-                <button class="btn btn-primary btn-view"
-                    data-type="organization"
-                    data-id="<?= $orgstructure->organization_id ?>"><i class="bi bi-eye"></i></button>
-                <button class="btn btn-success btn-edit"
-                    data-type="organization"
-                    data-id="<?= $orgstructure->organization_id ?>"><i class="bi bi-pencil-square"></i></button>
-            </td>
-        </tr>
+                            <!-- LEVEL 1 : ORGANIZATION -->
+                            <tr class="expand-toggle" data-target="children-org-<?= $orgstructure->organization_id ?>">
+                                <td>
+                                    <i class="fas fa-caret-right me-2 toggle-icon"></i>
+                                    <?= esc($orgstructure->organization_name) ?>
+                                </td>
+                                <td></td>
+                                <td></td>
+                                <td>
+                                    <button class="btn btn-primary btn-view"
+                                        data-type="organization"
+                                        data-id="<?= $orgstructure->organization_id ?>"><i class="bi bi-eye"></i></button>
+                                    <button class="btn btn-success btn-edit"
+                                        data-type="organization"
+                                        data-id="<?= $orgstructure->organization_id ?>"><i class="bi bi-pencil-square"></i></button>
+                                </td>
+                            </tr>
 
-        <?php foreach ($orgstructure->divisions as $division): ?>
+                            <?php foreach ($orgstructure->divisions as $division): ?>
 
-            <!-- LEVEL 2 : DIVISION -->
-            <tr class="tree-child children-org-<?= $orgstructure->organization_id ?> expand-toggle d-none"
-                data-target="children-div-<?= $division->division_id ?>">
-                <td></td>
-                <td>
-                    <i class="fas fa-caret-right me-2 toggle-icon"></i>
-                    <?= esc($division->division_name) ?>
-                </td>
-                <td></td>
-                <td>
-                    <button class="btn btn-primary btn-view"
-                        data-type="division"
-                        data-id="<?= $division->division_id ?>"><i class="bi bi-eye"></i></button>
-                    <button class="btn btn-success btn-edit"
-                        data-type="division"
-                        data-id="<?= $division->division_id ?>"><i class="bi bi-pencil-square"></i></button>
-                </td>
-            </tr>
+                                <!-- LEVEL 2 : DIVISION -->
+                                <tr class="tree-child children-org-<?= $orgstructure->organization_id ?> expand-toggle d-none"
+                                    data-target="children-div-<?= $division->division_id ?>">
+                                    <td></td>
+                                    <td>
+                                        <i class="fas fa-caret-right me-2 toggle-icon"></i>
+                                        <?= esc($division->division_name) ?>
+                                    </td>
+                                    <td></td>
+                                    <td>
+                                        <button class="btn btn-primary btn-view"
+                                            data-type="division"
+                                            data-id="<?= $division->division_id ?>"><i class="bi bi-eye"></i></button>
+                                        <button class="btn btn-success btn-edit"
+                                            data-type="division"
+                                            data-id="<?= $division->division_id ?>"><i class="bi bi-pencil-square"></i></button>
+                                    </td>
+                                </tr>
 
-            <?php foreach ($division->units as $unit): ?>
+                                <?php foreach ($division->units as $unit): ?>
 
-                <!-- LEVEL 3 : UNIT -->
-                <tr class="tree-child children-div-<?= $division->division_id ?> d-none">
-                    <td></td>
-                    <td></td>
-                    <td><?= esc($unit->unit_name) ?></td>
-                    <td>
-                        <button class="btn btn-primary btn-view"
-                            data-type="unit"
-                            data-id="<?= $unit->unit_id ?>"><i class="bi bi-eye"></i></button>
-                        <button class="btn btn-success btn-edit"
-                            data-type="unit"
-                            data-id="<?= $unit->unit_id ?>"><i class="bi bi-pencil-square"></i></button>
-                    </td>
-                </tr>
+                                    <!-- LEVEL 3 : UNIT -->
+                                    <tr class="tree-child children-div-<?= $division->division_id ?> d-none">
+                                        <td></td>
+                                        <td></td>
+                                        <td><?= esc($unit->unit_name) ?></td>
+                                        <td>
+                                            <button class="btn btn-primary btn-view"
+                                                data-type="unit"
+                                                data-id="<?= $unit->unit_id ?>"><i class="bi bi-eye"></i></button>
+                                            <button class="btn btn-success btn-edit"
+                                                data-type="unit"
+                                                data-id="<?= $unit->unit_id ?>"><i class="bi bi-pencil-square"></i></button>
+                                        </td>
+                                    </tr>
 
-            <?php endforeach; ?>
+                                <?php endforeach; ?>
 
-        <?php endforeach; ?>
+                            <?php endforeach; ?>
 
-    </tbody>
-</table>
+                        </tbody>
+                    </table>
 
                 </div>
             </div>
@@ -163,7 +163,7 @@
 <div class="modal fade" id="modal-add-division">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form action="<?= route_to('') ?>" method="POST" class="needs-validation" novalidate>
+            <form action="<?= route_to('add.division') ?>" method="POST" class="needs-validation" novalidate>
                 <div class="modal-header">
                     <h4 class="modal-title">Add Division</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -226,7 +226,7 @@
 <div class="modal fade" id="modal-add-unit">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form action="<?= route_to('') ?>" method="POST" class="needs-validation" novalidate>
+            <form action="<?= route_to('add.unit') ?>" method="POST" class="needs-validation" novalidate>
                 <div class="modal-header">
                     <h4 class="modal-title">Add Unit</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -237,8 +237,8 @@
                             <div class="form-group">
                                 <label for="parent_division" class="form-label">Parent Division:</label>
                                 <select class="form-control" style="width: 100%;" id="parent_division" data-placeholder="Select division" name="parent_division">
-                                
-                                <?php if (!empty($divisions)) : ?>
+
+                                    <?php if (!empty($divisions)) : ?>
                                         <?php foreach ($divisions as $division) : ?>
                                             <option value="<?= esc($division->division_id) ?>"><?= esc($division->division_name) ?></option>
                                         <?php endforeach; ?>

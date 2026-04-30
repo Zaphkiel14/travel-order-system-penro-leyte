@@ -50,24 +50,32 @@ class DivisionsModel extends Model
     protected $afterDelete    = [];
 
 
+    
     public function insertDivision(
-        int $organization_id,
-        string $division_name,
-        int $division_head_id,
-        string $division_head_position
-    ){
+        int $parent_organization, 
+        string $division_name, 
+        string $division_head_position, 
+        array $linked_units)
+    {
         $this->db->transStart();
-
         $this->insert([
-            'organization_id' => $organization_id, 
+            'organization_id' => $parent_organization, 
             'division_name' => $division_name, 
-            'division_head_id' => $division_head_id, 
             'division_head_position' => $division_head_position]);
-        $divisionId = $this->getInsertID();
-
+        $division_id = $this->getInsertID();
+        if (!empty($linked_units)) {
+            $LinkedUnits = [];
+            foreach ($LinkedUnits as $unit_id) {
+                $LinkedUnits[] = [
+                    'division_id' => $division_id,
+                    'unit_id' => $unit_id
+                ];
+            }
+            $this->db->table('units')->insertBatch($LinkedUnits);
+        }
         $this->db->transComplete();
-
-        return $this->db->transStatus() ? $divisionId : false;
+        return $this->db->transStatus() ? $division_id : false;
+        
     }
     public function updateDivision(
         int $division_id,
