@@ -7,7 +7,7 @@ use App\Controllers\DashboardController;
 use App\Controllers\TravelOrderController;
 use App\Controllers\ProfileController;
 use App\Controllers\ConfigController;
-
+use App\Controllers\UserManagementController;
 /**
  * @var RouteCollection $routes
  */
@@ -32,9 +32,9 @@ $routes->group('', ['filter' => 'auth'],function ($routes) {
     // Begin :: dashboard route
     $routes->group('dashboard', function ($routes) {
         $routes->get('/', [DashboardController::class, 'index'], ['as' => 'view.dashboard']);
-        $routes->post('create-travel-order', [TravelOrderController::class, 'createTravelOrder'], ['as' => 'create.TravelOrder']);
         $routes->post('mytravelorders', [TravelOrderController::class, 'travelOrdersData'], ['as' => 'data.travelOrders']);
         $routes->get('travel-orders/details/(:num)', [TravelOrderController::class, 'travelOrderDetails'], ['as' => 'data.travelOrderDetails']);
+        $routes->post('create-travel-order', [TravelOrderController::class, 'createTravelOrder'], ['as' => 'create.TravelOrder']);
         $routes->get('travel-orders/attachment/download/(:any)', [TravelOrderController::class, 'downloadAttachment'], ['as' => 'download.travelOrder']);
         $routes->get('travel-orders/print/(:num)', [TravelOrderController::class, 'printTO/$1'], ['as' => 'print.to']);
     });
@@ -45,6 +45,14 @@ $routes->group('', ['filter' => 'auth'],function ($routes) {
         $routes->post('add-unit', [ConfigController::class, 'addUnit'], ['as' => 'add.unit']);
 
     });
+    $routes->group('user-management', function($routes){
+        $routes->get('/', [UserManagementController::class, 'index'], ['as' => 'view.user-management']);
+        $routes->get('data', [UserManagementController::class, 'dataUserManagement'], ['as' => 'data.userManagement']);
+    });
+
+
+
+
     $routes->get('admin/organization/(:num)',        'ConfigController::viewOrganization/$1');
 $routes->get('admin/organization/(:num)/edit',   'ConfigController::editOrganization/$1');
 

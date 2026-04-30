@@ -66,7 +66,7 @@
             <!-- end:: ICS Management  -->
             <!-- begin:: User Management -->
             <li class="nav-item">
-              <a href="<?= route_to('admin.user.management') ?>" class="nav-link <?= ($page == 'User Management') ? 'active' : '' ?>">
+              <a href="<?= route_to('view.user-management') ?>" class="nav-link <?= ($page == 'User Management') ? 'active' : '' ?>">
                 <i class="nav-icon bi bi-person-fill-gear"></i>
                 <p>User Management</p>
               </a>
