@@ -18,6 +18,7 @@ class UserModel extends Model
         'email',
         'password',
         'position',
+        'salary_grade',
         'role',
         'created_at',
         'updated_at',
@@ -53,4 +54,18 @@ class UserModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+
+    public function getUserManagementQuery()
+    {
+        return $this->select('
+            user_id, 
+            first_name,
+            last_name,
+            email,
+            position,
+            salary_grade,
+            role
+        ');
+    }
 }

@@ -69,12 +69,12 @@
                     </div>
                 </div>
                 <div class="card-body table-responsive">
-                    <table id="my_travel_orders_table"
+                    <table id="user_management_table"
                         class="table table-bordered table-striped datatable-standard"
                         data-last-column-width="100"
                         data-page-length="10"
                         data-order='[[0,"desc"]]'
-                        data-url="<?= route_to('data.travelOrders') ?>">
+                        data-url="<?= route_to('data.userManagement') ?>">
                         <thead>
                             <tr>
                                 <th data-name="first_name">First Name</th>

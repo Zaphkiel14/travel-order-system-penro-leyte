@@ -47,7 +47,7 @@ $routes->group('', ['filter' => 'auth'],function ($routes) {
     });
     $routes->group('user-management', function($routes){
         $routes->get('/', [UserManagementController::class, 'index'], ['as' => 'view.user-management']);
-        $routes->get('data', [UserManagementController::class, 'dataUserManagement'], ['as' => 'data.userManagement']);
+        $routes->post('data', [UserManagementController::class, 'dataUserManagement'], ['as' => 'data.userManagement']);
     });
 
 

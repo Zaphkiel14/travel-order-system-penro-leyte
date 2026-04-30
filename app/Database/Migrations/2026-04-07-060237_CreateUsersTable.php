@@ -35,6 +35,11 @@ class CreateUsersTable extends Migration
                 'type' => 'VARCHAR',
                 'constraint' => 100
             ],
+            'salary_grade' =>[
+                'type' => 'VARCHAR',
+                'constraint' => 25,
+                'null' => true
+            ],
             'role' => [
                 'type' => 'ENUM',
                 'constraint' => ['employee', 'supervisor', 'division_head', 'penro', 'records', 'admin'],
