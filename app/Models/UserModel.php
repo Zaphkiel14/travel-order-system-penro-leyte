@@ -20,6 +20,8 @@ class UserModel extends Model
         'position',
         'salary_grade',
         'role',
+        'division_id',
+        'unit_id',
         'created_at',
         'updated_at',
         'deleted_at',
@@ -128,5 +130,71 @@ class UserModel extends Model
     public function deleteAccount(int $userId): bool
     {
         return $this->delete($userId);
+    }
+
+
+    public function updateUserInfo($user_id, $data)
+    {
+        // ── Handle division/unit mapping ─────────────────────────────
+        if (!empty($data['division_unit'])) {
+
+            $value = $data['division_unit'];
+
+            // Expected formats:
+            // "division-id-5"
+            // "unit-id-3"
+            $parts = explode('-', $value);
+
+            if (count($parts) === 3) {
+                [$type,, $id] = $parts;
+
+                if ($type === 'division') {
+                    $data['division_id'] = $id;
+                    $data['unit_id'] = null; // clear the other
+                } elseif ($type === 'unit') {
+                    $data['unit_id'] = $id;
+                    $data['division_id'] = null; // clear the other
+                }
+            }
+
+            // Remove the virtual field so it won't try to insert
+            unset($data['division_unit']);
+        }
+
+        // ── Perform update ───────────────────────────────────────────
+        return $this->update($user_id, $data);
+    }
+
+    public function useradd(
+    string $first_name,
+    string $last_name,
+    string $email,
+    string $password,
+    string $position,
+    string $salary_grade,
+    string $role,
+    $division_id = null,
+    $unit_id = null) 
+    {
+
+    $this->db->transStart();
+
+
+    $this->db->table('users')->insert([
+        'first_name' => $first_name,
+        'last_name' => $last_name,
+        'email' =>  $email,
+        'password' => $password,
+        'position' =>   $position,
+        'salary_grade' => $salary_grade,
+        'role' => $role,
+        'division_id' => $division_id,
+        'unit_id' => $unit_id,
+    ]);
+    $user_id = $this->getInsertID();
+            
+    $this->db->transComplete();
+
+    return $this->db->transStatus() ? $user_id : false;
     }
 }

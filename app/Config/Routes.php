@@ -50,12 +50,12 @@ $routes->group('', ['filter' => 'auth'],function ($routes) {
         $routes->post('data', [UserManagementController::class, 'dataUserManagement'], ['as' => 'data.userManagement']);
         $routes->get('details/(:num)', [UserManagementController::class, 'detailsUserManagement'], ['as' => 'details.userManagement']);
         $routes->post('update/(:num)', [UserManagementController::class, 'updateUserManagement/$1'], ['as' => 'update.userManagement']); 
+        $routes->post('add',  [UserManagementController::class, 'registerUser'], ['as' => 'register.user']); 
     });
 
     $routes->group('profile', function($routes){
         $routes->get('/', [ProfileController::class, 'index'], ['as' => 'account-settings']);
         $routes->group('update', function ($routes){
-        $routes->post('',[ProfileController::class, ''], ['as' => '']);
         $routes->post('profile-picture', [ProfileController::class, 'updateProfilePicture'], ['as' => 'user.update-profile-picture']);
         $routes->post('change-password', [ProfileController::class, 'changePassword'], ['as' => 'user.change-password']);
         $routes->post('delete-account', [ProfileController::class, 'deleteAccount'], ['as' => 'user.delete-account']);
@@ -77,22 +77,4 @@ $routes->group('', ['filter' => 'auth'],function ($routes) {
     $routes->get('admin/unit/(:num)',                'ConfigController::viewUnit/$1');
     $routes->get('admin/unit/(:num)/edit',           'ConfigController::editUnit/$1');
 
-
-
-
-
-
-
-
-    // $routes->group('account-settings', function ($routes) {
-    //     $routes->post('update-account-info', [ProfileController::class, 'updateAccountInfo'], ['as' => 'user.update-account-info']);
-    //     $routes->post('update-profile-picture', [ProfileController::class, 'updateProfilePicture'], ['as' => 'user.update-profile-picture']);
-    //     $routes->post('change-password', [ProfileController::class, 'changePassword'], ['as' => 'user.change-password']);
-    //     $routes->post('delete-account', [ProfileController::class, 'deleteAccount'], ['as' => 'user.delete-account']);
-    //     $routes->post('update-first-name', [ProfileController::class, 'updateFirstName'], ['as' => 'update.firstname']);
-    //     $routes->post('update-last-name', [ProfileController::class, 'updateLastName'], ['as' => 'update.lastname']);
-    //     $routes->post('update-email', [ProfileController::class, 'updateEmail'], ['as' => 'update.email']);
-    //     $routes->post('update-birthdate', [ProfileController::class, 'updateBirthday'], ['as' => 'update.birthdate']);
-    //     $routes->post('update-gender', [ProfileController::class, 'updateGender'], ['as' => 'update.gender']);
-    // });
 });

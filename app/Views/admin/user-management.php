@@ -63,7 +63,7 @@
                 <div class="card-header d-flex align-items-center justify-content-between">
                     <h3 class="card-title flex-grow-1">User Accounts</h3>
                     <div class="card-tools">
-                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal-add-travel-order">
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal-add-user-entry">
                             <i class="bi bi-plus-lg"></i> Create New Account
                         </button>
                     </div>
@@ -105,6 +105,133 @@
         </div>
     </div>
 </div>
+
+
+<!-- BEGIN :: Add User Entry -->
+<div class="modal fade" id="modal-add-user-entry">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form action="<?= route_to('register.user') ?>" method="POST" class="needs-validation" novalidate>
+                <div class="modal-header">
+                    <h4 class="modal-title">Create New User</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label for="first_name" class="form-label">First Name</label>
+                                <input type="text" class="form-control" id="first_name" name="first_name" required>
+                                <div class="invalid-feedback">
+                                    Please Enter First Name.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label for="last_name" class="form-label">Last Name</label>
+                                <input type="text" class="form-control" id="last_name" name="last_name" required>
+                                <div class="invalid-feedback">
+                                    Please Enter Last Name.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="text" class="form-control" id="email" name="email" required>
+                                <div class="invalid-feedback">
+                                    Please Enter Email.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                                <div class="invalid-feedback">
+                                    Please Enter Your Password.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label for="confirm_password" class="form-label">Confirm Password</label>
+                                <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                                <div class="invalid-feedback">
+                                    Please Enter Your Password Again.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label for="position" class="form-label">Position</label>
+                                <input type="text" class="form-control" id="position" name="position" required>
+                                <div class="invalid-feedback">
+                                    Please Enter Position.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label for="salary_grade" class="form-label">Salary Grade</label>
+                                <input type="text" class="form-control" id="salary_grade" name="salary_grade" required>
+                                <div class="invalid-feedback">
+                                    Please Enter Salary Grade.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                            <div class="col-6">
+                                <label for="edit-role" class="form-label">System Role</label>
+                                <select class="form-select" id="edit-role" name="role" required>
+                                    <option value="employee">Employee</option>
+                                    <option value="supervisor">Supervisor</option>
+                                    <option value="division_head">Division Head</option>
+                                    <option value="penro">PENRO</option>
+                                    <option value="records">Records</option>
+                                    <option value="admin">Admin</option>
+                                </select>
+                                <div class="invalid-feedback">Please select a role.</div>
+                            </div>
+                            <div class="col-6">
+                                <label for="edit-division_unit" class="form-label">Division Unit</label>
+                                <select class="form-select" id="edit-division_unit" name="division_unit" required>
+                                    <?php foreach ($divunits as $divunit): ?>
+                                        <option value="<?= $divunit['type'] . '-id-' . $divunit['id'] ?>">
+                                            <?= ucfirst($divunit['type']) . ': ' . $divunit['name'] ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <div class="invalid-feedback">Please select a role.</div>
+                            </div>
+                        </div>
+                </div>
+
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" name="submit"><i class="bi bi-floppy2"></i> Save Account</button>
+                </div>
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- END :: Add User Entry -->
+
+
 
 <!-- BEGIN :: View User Entry Modal -->
 <div class="modal fade" id="modal-view-user-entry" tabindex="-1" aria-hidden="true">

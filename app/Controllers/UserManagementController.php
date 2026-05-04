@@ -8,6 +8,7 @@ use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\UserModel;
 use App\Models\SelectModel;
 
+use Config\Services;
 
 class UserManagementController extends BaseController
 {
@@ -196,6 +197,7 @@ class UserManagementController extends BaseController
             'position'     => $this->request->getPost('position'),
             'salary_grade' => $this->request->getPost('salary_grade'),
             'role'         => $this->request->getPost('role'),
+            'division_unit' =>  $this->request->getPost('division_unit')
         ];
 
         // ── Handle Profile Picture Upload ─────────────────────────────
@@ -220,7 +222,7 @@ class UserManagementController extends BaseController
         }
 
         // ── Update user ───────────────────────────────────────────────
-        if (!$userModel->update($user_id, $data)) {
+        if (!$userModel->updateUserInfo($user_id, $data)) {
             return $this->response->setJSON([
                 'success' => false,
                 'message' => 'Failed to update user.'
@@ -230,6 +232,86 @@ class UserManagementController extends BaseController
         return $this->response->setJSON([
             'success' => true,
             'message' => 'User updated successfully.'
+        ]);
+    }
+
+    public function registerUser()
+    {
+        $validation = Services::validation();
+
+        $validation->setRules([
+            'first_name'       => 'required|min_length[2]',
+            'last_name'        => 'required|min_length[2]',
+            'email'            => 'required|valid_email|is_unique[users.email]',
+            'password'         => 'required|min_length[6]',
+            'confirm_password' => 'required|matches[password]',
+            'position'         => 'required',
+            'salary_grade'     => 'required',
+            'role'             => 'required',
+            'division_unit'    => 'required',
+        ]);
+
+        if (!$validation->withRequest($this->request)->run()) {
+            return redirect()->back()->withInput()->with('toast', [
+                'type'    => 'danger',
+                'message' => implode('<br>', $validation->getErrors()),
+            ]);
+        }
+
+        $division_id = null;
+        $unit_id     = null;
+
+        $divisionUnit = $this->request->getPost('division_unit');
+
+        if (!empty($divisionUnit)) {
+            $parts = explode('-id-', $divisionUnit);
+
+            if (count($parts) === 2) {
+                [$type, $id] = $parts;
+
+                if ($type === 'division') {
+                    $division_id = $id;
+                } elseif ($type === 'unit') {
+                    $unit_id = $id;
+                }
+            }
+        }
+
+        $passwordHash = password_hash(
+            $this->request->getPost('password'),
+            PASSWORD_DEFAULT
+        );
+
+        $data = [
+            'first_name'   => $this->request->getPost('first_name'),
+            'last_name'    => $this->request->getPost('last_name'),
+            'email'        => $this->request->getPost('email'),
+            'password'     => $passwordHash,
+            'position'     => $this->request->getPost('position'),
+            'salary_grade' => $this->request->getPost('salary_grade'),
+            'role'         => $this->request->getPost('role'),
+            'division_id'  => $division_id,
+            'unit_id'      => $unit_id,
+        ];
+
+        $model  = new UserModel();
+        $result = $model->useradd(
+            $data['first_name'],
+            $data['last_name'],
+            $data['email'],
+            $data['password'],
+            $data['position'],
+            $data['salary_grade'],
+            $data['role'],
+            $data['division_id'],
+            $data['unit_id']
+        );
+
+        return redirect()->back()->with('toast', [
+            'type'    => $result ? 'success' : 'danger',
+            'message' => $result
+                ? "User '{$data['email']}' registered successfully."
+                : "Failed to register '{$data['email']}'.",
         ]);
     }
 }
