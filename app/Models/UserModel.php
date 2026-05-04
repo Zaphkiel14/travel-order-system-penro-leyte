@@ -68,4 +68,65 @@ class UserModel extends Model
             role
         ');
     }
+
+
+    function updateFirstName($user_id, $first_name)
+    {
+        return $this->update($user_id, ['first_name' => $first_name]);
+    }
+
+    function updateLastName($user_id, $last_name)
+    {
+        return $this->update($user_id, ['last_name' => $last_name]);
+    }
+    function updateEmail($user_id, $email)
+    {
+        return $this->update($user_id, ['email' => $email]);
+    }
+    function updateProfilePicture($user_id, $profile_picture)
+    {
+        return $this->update($user_id, ['profile_picture' => $profile_picture]);
+    }
+
+    function updatePassword($user_id, $old_password, $newPassword)
+    {
+        // Retrieve user
+        $user = $this->find($user_id);
+        if (!$user) {
+            return [
+                'success' => false,
+                'message' => 'User not found'
+            ];
+        }
+
+        // Verify old password
+        if (!password_verify($old_password, $user['password'])) {
+            return [
+                'success' => false,
+                'message' => 'Current password is incorrect'
+            ];
+        }
+
+        // Hash new password
+        $newPasswordHash = password_hash($newPassword, PASSWORD_DEFAULT);
+
+        // Update password
+        $update = $this->update($user_id, ['password' => $newPasswordHash]);
+        if ($update) {
+            return [
+                'success' => true,
+                'message' => 'Password updated successfully'
+            ];
+        } else {
+            return [
+                'success' => false,
+                'message' => 'Failed to update password'
+            ];
+        }
+    }
+
+    public function deleteAccount(int $userId): bool
+    {
+        return $this->delete($userId);
+    }
 }

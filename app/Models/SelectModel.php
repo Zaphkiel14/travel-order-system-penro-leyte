@@ -75,4 +75,26 @@ class SelectModel extends Model
         $builder->select('unit_id, unit_name');
         return $builder->get()->getResult();
     }
+
+    public function selectDivisionUnit()
+    {
+        // Select divisions
+        $divBuilder = $this->db->table('divisions');
+        $divisions = $divBuilder
+            ->select("'division' as type, division_id as id, division_name as name")
+            ->get()
+            ->getResultArray();
+
+        // Select units
+        $unitBuilder = $this->db->table('units');
+        $units = $unitBuilder
+            ->select("'unit' as type, unit_id as id, unit_name as name")
+            ->get()
+            ->getResultArray();
+
+        // Merge both
+        $results = array_merge($divisions, $units);
+
+        return $results;
+    }
 }

@@ -110,10 +110,6 @@ $layout = $layouts[$role];
                                             <label class="form-label fw-bold">Position</label>
                                             <div class="d-flex justify-content-between align-items-center">
                                                 <p class="mb-0"><?= esc($user['position'] ?? 'Not set') ?></p>
-                                                <button type="button" class="btn btn-sm btn-outline-primary"
-                                                    data-bs-toggle="modal" data-bs-target="#editPositionModal">
-                                                    <i class="bi bi-pencil"></i> Edit
-                                                </button>
                                             </div>
                                         </div>
                                         <!-- Division/Unit -->
@@ -121,10 +117,6 @@ $layout = $layouts[$role];
                                             <label class="form-label fw-bold">Division/Unit</label>
                                             <div class="d-flex justify-content-between align-items-center">
                                                 <p class="mb-0"><?= esc($user['division'] ?? 'Not set') ?></p>
-                                                <button type="button" class="btn btn-sm btn-outline-primary"
-                                                    data-bs-toggle="modal" data-bs-target="#editDivisionModal">
-                                                    <i class="bi bi-pencil"></i> Edit
-                                                </button>
                                             </div>
                                         </div>
                                     </div>

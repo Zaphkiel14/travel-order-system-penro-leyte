@@ -8,7 +8,7 @@ use App\Models\UserModel;
 
 class ProfileController extends BaseController
 {
-    public function settings()
+    public function index()
     {
         // Get user data from database
         $userModel = new UserModel();
@@ -20,94 +20,6 @@ class ProfileController extends BaseController
             'user' => $user,
         ];
         return view('account-settings', $data);
-    }
-
-    public function updateAccountInfo()
-    {
-        if (!$this->request->isAJAX()) {
-            return $this->response->setJSON([
-                'success' => false,
-                'message' => 'Invalid request'
-            ]);
-        }
-
-        $userId = session()->get('user_id');
-        if (!$userId) {
-            return $this->response->setJSON([
-                'success' => false,
-                'message' => 'User not authenticated'
-            ]);
-        }
-
-        $data = $this->request->getJSON(true);
-        $field = $data['field'] ?? null;
-        $value = $data['value'] ?? null;
-
-        if (!$field) {
-            return $this->response->setJSON([
-                'success' => false,
-                'message' => 'Field is required'
-            ]);
-        }
-
-        // Validate allowed fields
-        $allowedFields = ['first_name', 'last_name', 'email', 'birthdate', 'gender'];
-        if (!in_array($field, $allowedFields)) {
-            return $this->response->setJSON([
-                'success' => false,
-                'message' => 'Invalid field'
-            ]);
-        }
-
-        // Validate email if field is email
-        if ($field === 'email') {
-            $validation = \Config\Services::validation();
-            if (!$validation->check($value, 'valid_email')) {
-                return $this->response->setJSON([
-                    'success' => false,
-                    'message' => 'Invalid email format'
-                ]);
-            }
-
-            // Check if email is already taken by another user
-            $userModel = new UserModel();
-            $existingUser = $userModel->where('email', $value)
-                ->where('user_id !=', $userId)
-                ->first();
-
-            if ($existingUser) {
-                return $this->response->setJSON([
-                    'success' => false,
-                    'message' => 'Email is already taken'
-                ]);
-            }
-        }
-
-        // Update user info
-        $userModel = new UserModel();
-        $updateData = [$field => $value];
-
-        if ($userModel->update($userId, $updateData)) {
-            // Update session if first_name or last_name changed
-            if ($field === 'first_name' || $field === 'last_name') {
-                $updatedUser = $userModel->find($userId);
-                session()->set([
-                    'first_name' => $updatedUser['first_name'],
-                    'last_name' => $updatedUser['last_name'],
-                    'full_name' => $updatedUser['first_name'] . ' ' . $updatedUser['last_name']
-                ]);
-            }
-
-            return $this->response->setJSON([
-                'success' => true,
-                'message' => ucfirst(str_replace('_', ' ', $field)) . ' updated successfully'
-            ]);
-        } else {
-            return $this->response->setJSON([
-                'success' => false,
-                'message' => 'Failed to update account information'
-            ]);
-        }
     }
 
     public function updateProfilePicture()
@@ -373,18 +285,14 @@ class ProfileController extends BaseController
         if (!$this->request->is('post')) {
             return redirect()->back();
         }
-
         $userId = session()->get('user_id');
         if (!$userId) {
             return redirect()->back()->with('error', 'You must be logged in to update your profile.');
         }
-
         $firstName = trim((string) $this->request->getPost('first_name'));
-
         if ($firstName === '') {
             return redirect()->back()->with('error', 'First name is required.');
         }
-
         $userModel = new UserModel();
         if ($userModel->updateFirstName($userId, $firstName)) {
             session()->set('first_name', $firstName);
@@ -466,54 +374,5 @@ class ProfileController extends BaseController
         return redirect()->back()->with('error', 'Failed to update email. Please try again.');
     }
 
-    public function updateBirthday()
-    {
-        if (!$this->request->is('post')) {
-            return redirect()->back();
-        }
-
-        $userId = session()->get('user_id');
-        if (!$userId) {
-            return redirect()->back()->with('error', 'You must be logged in to update your profile.');
-        }
-
-        $birthdate = $this->request->getPost('birthdate');
-        if ($birthdate && strtotime($birthdate) > time()) {
-            return redirect()->back()->with('error', 'Birthdate cannot be in the future.');
-        }
-
-        $userModel = new UserModel();
-        if ($userModel->updateBirthdate($userId, $birthdate)) {
-            return redirect()->back()->with('success', 'Birthdate updated successfully.');
-        }
-
-        return redirect()->back()->with('error', 'Failed to update birthdate. Please try again.');
-    }
-
-    public function updateGender()
-    {
-        if (!$this->request->is('post')) {
-            return redirect()->back();
-        }
-
-        $userId = session()->get('user_id');
-        if (!$userId) {
-            return redirect()->back()->with('error', 'You must be logged in to update your profile.');
-        }
-
-        $gender = $this->request->getPost('gender');
-        $allowedValues = ['Male', 'Female', 'Other', 'Prefer not to say'];
-
-        if (!in_array($gender, $allowedValues, true)) {
-            return redirect()->back()->with('error', 'Invalid gender selection.');
-        }
-
-        $userModel = new UserModel();
-        if ($userModel->updateGender($userId, $gender)) {
-            return redirect()->back()->with('success', 'Gender updated successfully.');
-        }
-
-        return redirect()->back()->with('error', 'Failed to update gender. Please try again.');
-    }
     
 }
