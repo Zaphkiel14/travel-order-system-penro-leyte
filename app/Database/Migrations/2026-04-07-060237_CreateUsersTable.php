@@ -35,7 +35,7 @@ class CreateUsersTable extends Migration
                 'type' => 'VARCHAR',
                 'constraint' => 100
             ],
-            'salary_grade' =>[
+            'salary_grade' => [
                 'type' => 'VARCHAR',
                 'constraint' => 25,
                 'null' => true
@@ -44,6 +44,22 @@ class CreateUsersTable extends Migration
                 'type' => 'ENUM',
                 'constraint' => ['employee', 'supervisor', 'division_head', 'penro', 'records', 'admin'],
                 'default' => 'employee'
+            ],
+            'division_id' => [
+                'type' => 'MEDIUMINT',
+                'constraint' => 8,
+                'unsigned' => true,
+                'null' => true
+            ],
+            'unit_id' => [
+                'type' => 'MEDIUMINT',
+                'constraint' => 8,
+                'unsigned' => true,
+                'null' => true
+            ],
+            'profile_picture' => [
+                'type' => 'LONGBLOB',
+                'null' => true
             ],
             'created_at' => [
                 'type' => 'DATETIME',
