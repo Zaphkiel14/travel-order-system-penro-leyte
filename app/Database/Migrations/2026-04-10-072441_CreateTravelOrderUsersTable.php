@@ -36,11 +36,6 @@ class CreateTravelOrderUsersTable extends Migration
                 'constraint' => 50,
                 'null' => true
             ],
-            'division' => [
-                'type' => 'VARCHAR',
-                'constraint' => 100,
-                'null' => true
-            ],
             'position' => [
                 'type' => 'VARCHAR',
                 'constraint' => 100,

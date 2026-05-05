@@ -42,7 +42,7 @@ class UsersSeeder extends Seeder
                 'email' => 'divisionhead@example.com',
                 'password' => password_hash('divisionhead123', PASSWORD_DEFAULT),
                 'position' => 'Division Head',
-                'role' => 'division_head',
+                'role' => 'division',
                 'created_at' => date('Y-m-d H:i:s'),
             ],
             [
