@@ -121,7 +121,7 @@
                         <div class="col-12">
                             <div class="callout callout-info mb-3">
                                 <p class="fs-6 mb-0">Property Number</p>
-                                <p class="fs-3 mb-0"><b>Travel Order #2026-0001</b></p>
+                                <p class="fs-3 mb-0"><b>Travel Order: <?= esc($newTravelOrderNumber)  ?></b></p>
                                 <small class="mb-0 text-muted">Auto-generated unique identifier</small>
                             </div>
                         </div>
@@ -165,11 +165,14 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="mb-3">
-                                <label for="division_section_unit" class="form-label"></label>ROUTE TO: PENRO/Division/Section/Unit</label>
-                                <input type="text" class="form-control" id="division_section_unit" name="division_section_unit" required>
-                                <div class="invalid-feedback">
-                                    Please Enter Division/Section/Unit.
-                                </div>
+                                <label for="unit_division_organization" class="form-label">ROUTE TO: Unit/Division/PENRO</label>
+                                    <select class="form-select" id="add-unit_division_organization" name="unit_division_organization" required>
+                                    <?php foreach ($divunits as $divunit): ?>
+                                        <option value="<?= $divunit['type'] . '-id-' . $divunit['id'] ?>">
+                                            <?= ucfirst($divunit['type']) . ': ' . $divunit['name'] ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
                             </div>
                         </div>
 

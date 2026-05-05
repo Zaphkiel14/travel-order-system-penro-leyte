@@ -101,4 +101,46 @@ class SelectModel extends Model
 
         return $results;
     }
+
+
+    public function resolveHierarchy(string $type, int $id): array
+{
+    $result = [
+        'unit_id'         => null,
+        'division_id'     => null,
+        'organization_id' => null,
+    ];
+
+    if ($type === 'unit') {
+        $unit = $this->db->table('units u')
+            ->select('u.unit_id , d.division_id, d.organization_id')
+            ->join('divisions d', 'd.division_id = u.division_id')
+            ->where('u.unit_id', $id)
+            ->get()
+            ->getRow();
+
+        if ($unit) {
+            $result['unit_id']         = $unit->unit_id;
+            $result['division_id']     = $unit->division_id;
+            $result['organization_id'] = $unit->organization_id;
+        }
+
+    } elseif ($type === 'division') {
+        $division = $this->db->table('divisions')
+            ->select('division_id, organization_id')
+            ->where('division_id', $id)
+            ->get()
+            ->getRow();
+
+        if ($division) {
+            $result['division_id']     = $division->division_id;
+            $result['organization_id'] = $division->organization_id;
+        }
+
+    } elseif ($type === 'organization') {
+        $result['organization_id'] = $id;
+    }
+
+    return $result;
+}
 }

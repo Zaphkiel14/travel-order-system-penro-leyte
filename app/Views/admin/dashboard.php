@@ -165,8 +165,8 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="mb-3">
-                                <label for="division_section_unit" class="form-label">ROUTE TO: Unit/Division/PENRO</label>
-                                    <select class="form-select" id="edit-division_unit" name="division_section_unit" required>
+                                <label for="unit_division_organization" class="form-label">ROUTE TO: Unit/Division/PENRO</label>
+                                    <select class="form-select" id="add-unit_division_organization" name="unit_division_organization" required>
                                     <?php foreach ($divunits as $divunit): ?>
                                         <option value="<?= $divunit['type'] . '-id-' . $divunit['id'] ?>">
                                             <?= ucfirst($divunit['type']) . ': ' . $divunit['name'] ?>

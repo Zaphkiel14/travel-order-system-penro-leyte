@@ -69,7 +69,10 @@ class TravelOrderModel extends Model
         string $arrival_date,
         string $destination,
         string $travel_purpose,
-        array  $attachments       // ['request_memo' => ['file_id' => ..., 'file_name' => ...], ...]
+        array  $attachments,
+        ?int $unit_id,
+        ?int $division_id,
+        int $organization_id     // ['request_memo' => ['file_id' => ..., 'file_name' => ...], ...]
     ): int|false {
 
         $this->db->transStart();
@@ -82,6 +85,9 @@ class TravelOrderModel extends Model
             'arrival_date'        => $arrival_date,
             'destination'         => $destination,
             'purpose_of_travel'   => $travel_purpose,
+            'unit_id'              => $unit_id,
+            'division_id'          => $division_id,
+            'organization_id' => $organization_id
         ]);
         $travelOrderId = $this->getInsertID();
 

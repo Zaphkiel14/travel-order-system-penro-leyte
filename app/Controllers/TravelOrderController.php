@@ -28,8 +28,8 @@ class TravelOrderController extends BaseController
                 'message' => 'User not logged in.',
             ]);
         }
-
-        $newTravelOrderNumber = (new SelectModel())->generateNextTravelOrderID();
+        $selectModel = new SelectModel();
+        $newTravelOrderNumber = $selectModel->generateNextTravelOrderID();
 
         $drive = new GoogleDriveService();
         try {
@@ -86,6 +86,12 @@ class TravelOrderController extends BaseController
             }
         }
 
+
+
+        $selection = $this->request->getPost('unit_division_organization');
+        [$type, , $id] = explode('-', $selection);
+
+        $hierarchy = $selectModel->resolveHierarchy($type, (int)$id);
         // ── Insert ─────────────────────────────────────────────────────────
         $model  = new TravelOrderModel();
         $result = $model->insertTravelOrder(
@@ -95,7 +101,10 @@ class TravelOrderController extends BaseController
             $this->request->getPost('arrival_date'),
             $this->request->getPost('destination'),
             $this->request->getPost('travel_purpose'),
-            $attachments   // single array replaces 8 individual parameters
+            $attachments,
+            $hierarchy['unit_id'],
+            $hierarchy['division_id'],
+            $hierarchy['organization_id']
         );
 
         return redirect()->back()->with('toast', [
