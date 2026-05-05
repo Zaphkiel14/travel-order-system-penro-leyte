@@ -59,23 +59,11 @@
                         </div>
                         <div class="input-group-text"><span class="bi bi-lock-fill"></span></div>
                     </div>
-                    <!--begin::Row-->
-                    <div class="row">
-                        <div class="col-8 d-inline-flex align-items-center">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" />
-                                <label class="form-check-label" for="flexCheckDefault"> Remember Me </label>
-                            </div>
-                        </div>
-                        <!-- /.col -->
-                        <div class="col-4">
-                            <div class="d-grid gap-2">
-                                <button type="submit" class="btn btn-primary">Sign In</button>
-                            </div>
-                        </div>
-                        <!-- /.col -->
-                    </div>
-                    <!--end::Row-->
+                <div class="social-auth-links text-center mb-3 d-grid gap-2">
+                    <button class="btn btn-primary" type="submit">
+                    Sign In
+            </button>
+                </div>
                 </form>
                 <script>
                     // Example starter JavaScript for disabling form submissions if there are invalid fields
@@ -105,11 +93,11 @@
                 <div class="social-auth-links text-center mb-3 d-grid gap-2">
                     <p>- OR -</p>
                     <a class="btn btn-danger" href="<?= route_to('google.login') ?>">
-                        <i class="bi bi-google me-2"></i> Sign in using Google+
+                        <i class="bi bi-google me-2"></i> Sign in using Google
                     </a>
                 </div>
                 <!-- /.social-auth-links -->
-                <p class="mb-1"><a href="forgot-password.html">I forgot my password</a></p>
+                <small class="text-muted"><i>First login: use Google Sign-In to connect your Drive.</i></small>
             </div>
             <!-- /.login-card-body -->
         </div>
