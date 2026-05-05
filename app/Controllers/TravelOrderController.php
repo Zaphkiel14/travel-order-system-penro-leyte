@@ -89,7 +89,7 @@ class TravelOrderController extends BaseController
 
 
         $selection = $this->request->getPost('unit_division_organization');
-        [$type, , $id] = explode('-', $selection);
+        [$type,, $id] = explode('-', $selection);
 
         $hierarchy = $selectModel->resolveHierarchy($type, (int)$id);
         // ── Insert ─────────────────────────────────────────────────────────
@@ -102,6 +102,7 @@ class TravelOrderController extends BaseController
             $this->request->getPost('destination'),
             $this->request->getPost('travel_purpose'),
             $attachments,
+            $hierarchy['current_level'],
             $hierarchy['unit_id'],
             $hierarchy['division_id'],
             $hierarchy['organization_id']

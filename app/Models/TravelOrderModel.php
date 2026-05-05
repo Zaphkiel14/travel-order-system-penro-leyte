@@ -70,6 +70,7 @@ class TravelOrderModel extends Model
         string $destination,
         string $travel_purpose,
         array  $attachments,
+        ?string $current_level,
         ?int $unit_id,
         ?int $division_id,
         int $organization_id     // ['request_memo' => ['file_id' => ..., 'file_name' => ...], ...]
@@ -85,6 +86,7 @@ class TravelOrderModel extends Model
             'arrival_date'        => $arrival_date,
             'destination'         => $destination,
             'purpose_of_travel'   => $travel_purpose,
+            'current_level'     => $current_level,
             'unit_id'              => $unit_id,
             'division_id'          => $division_id,
             'organization_id' => $organization_id
@@ -208,10 +210,10 @@ class TravelOrderModel extends Model
         // Caller decides whether to count, paginate, or fetch
     }
 
-public function printTO($travelOrderId)
-{
-    $travel_order = $this->db->table('travel_orders to')
-        ->select('
+    public function printTO($travelOrderId)
+    {
+        $travel_order = $this->db->table('travel_orders to')
+            ->select('
             to.travel_order_id,
             to.travel_order_number,
             to.departure_date,
@@ -223,24 +225,24 @@ public function printTO($travelOrderId)
             o.organization_head_position,
             CONCAT(oh.first_name, " ", oh.last_name) AS organization_head_name
         ')
-        ->join('divisions d', 'd.division_id = to.division_id', 'left')
-        ->join('users dh', 'dh.user_id = d.division_head_id', 'left')
-        ->join('organization o', 'o.organization_id = to.organization_id', 'left')
-        ->join('users oh', 'oh.user_id = o.organization_head_id', 'left')
-        ->where('to.travel_order_id', $travelOrderId)
-        ->get()->getRowArray();
+            ->join('divisions d', 'd.division_id = to.division_id', 'left')
+            ->join('users dh', 'dh.user_id = d.division_head_id', 'left')
+            ->join('organization o', 'o.organization_id = to.organization_id', 'left')
+            ->join('users oh', 'oh.user_id = o.organization_head_id', 'left')
+            ->where('to.travel_order_id', $travelOrderId)
+            ->get()->getRowArray();
 
-    if (!$travel_order) {
-        return null;
+        if (!$travel_order) {
+            return null;
+        }
+
+        $travel_order['persons'] = $this->db->table('travel_order_users')
+            ->select('name, position, salary_grade')
+            ->where('travel_order_id', $travelOrderId)
+            ->get()->getResultArray();
+
+        return $travel_order;
     }
-
-    $travel_order['persons'] = $this->db->table('travel_order_users')
-        ->select('name, position, salary_grade')
-        ->where('travel_order_id', $travelOrderId)
-        ->get()->getResultArray();
-
-    return $travel_order;
-}
 
 
     /**

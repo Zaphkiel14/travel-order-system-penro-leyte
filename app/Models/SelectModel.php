@@ -56,7 +56,8 @@ class SelectModel extends Model
         return $organization;
     }
 
-    public function selectOrganization(){
+    public function selectOrganization()
+    {
         $builder = $this->db->table('organization');
         $builder->select('organization_id, organization_name');
         $builder->limit('1');
@@ -69,8 +70,9 @@ class SelectModel extends Model
         return $builder->get()->getResult();
     }
 
-    public function selectUnits(){
-                $builder = $this->db->table('units');
+    public function selectUnits()
+    {
+        $builder = $this->db->table('units');
         $builder->select('unit_id, unit_name');
         return $builder->get()->getResult();
     }
@@ -104,43 +106,45 @@ class SelectModel extends Model
 
 
     public function resolveHierarchy(string $type, int $id): array
-{
-    $result = [
-        'unit_id'         => null,
-        'division_id'     => null,
-        'organization_id' => null,
-    ];
+    {
+        $result = [
+            'unit_id'         => null,
+            'division_id'     => null,
+            'organization_id' => null,
+            'current_level' => null,
+        ];
 
-    if ($type === 'unit') {
-        $unit = $this->db->table('units u')
-            ->select('u.unit_id , d.division_id, d.organization_id')
-            ->join('divisions d', 'd.division_id = u.division_id')
-            ->where('u.unit_id', $id)
-            ->get()
-            ->getRow();
+        if ($type === 'unit') {
+            $unit = $this->db->table('units u')
+                ->select('u.unit_id , d.division_id, d.organization_id')
+                ->join('divisions d', 'd.division_id = u.division_id')
+                ->where('u.unit_id', $id)
+                ->get()
+                ->getRow();
 
-        if ($unit) {
-            $result['unit_id']         = $unit->unit_id;
-            $result['division_id']     = $unit->division_id;
-            $result['organization_id'] = $unit->organization_id;
+            if ($unit) {
+                $result['current_level'] = 'unit';
+                $result['unit_id']         = $unit->unit_id;
+                $result['division_id']     = $unit->division_id;
+                $result['organization_id'] = $unit->organization_id;
+            }
+        } elseif ($type === 'division') {
+            $division = $this->db->table('divisions')
+                ->select('division_id, organization_id')
+                ->where('division_id', $id)
+                ->get()
+                ->getRow();
+
+            if ($division) {
+                $result['current_level'] = 'division';
+                $result['division_id']     = $division->division_id;
+                $result['organization_id'] = $division->organization_id;
+            }
+        } elseif ($type === 'organization') {
+            $result['current_level'] = 'organization';
+            $result['organization_id'] = $id;
         }
 
-    } elseif ($type === 'division') {
-        $division = $this->db->table('divisions')
-            ->select('division_id, organization_id')
-            ->where('division_id', $id)
-            ->get()
-            ->getRow();
-
-        if ($division) {
-            $result['division_id']     = $division->division_id;
-            $result['organization_id'] = $division->organization_id;
-        }
-
-    } elseif ($type === 'organization') {
-        $result['organization_id'] = $id;
+        return $result;
     }
-
-    return $result;
-}
 }
