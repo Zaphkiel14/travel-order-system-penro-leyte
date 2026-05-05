@@ -54,22 +54,7 @@
               </a>
             </li>
             <!-- end:: ICS Management  -->
-            <!-- begin:: User Management -->
-            <li class="nav-item">
-              <a href="<?= route_to('view.user-management') ?>" class="nav-link <?= ($page == 'User Management') ? 'active' : '' ?>">
-                <i class="nav-icon bi bi-person-fill-gear"></i>
-                <p>User Management</p>
-              </a>
-            </li>
-            <!-- end:: User Management -->
-            <!-- begin:: Configuration -->
-            <li class="nav-item">
-              <a href="<?= route_to('view.configuration') ?>" class="nav-link <?= ($page == 'Configuration') ? 'active' : '' ?>">
-                <i class="nav-icon bi bi-gear-fill"></i>
-                <p>Configuration</p>
-              </a>
-            </li>
-            <!-- end:: Configuration -->
+
           </ul>
           <!--end::Sidebar Menu-->
         </nav>
