@@ -23,11 +23,11 @@ class DashboardController extends BaseController
         if ($role === 'admin') {
             return view('admin/dashboard', $data);
         } else if ($role === 'penro') {
-            return view('penro/dashboard', $data);
+            return view('organization/dashboard', $data);
         } else if ($role === 'division_chief') {
-            return view('division-chief/dashboard', $data);
+            return view('division/dashboard', $data);
         } else if ($role === 'unit-supervisor') {
-            return view('unit-supervisor/dashboard', $data);
+            return view('supervisor/dashboard', $data);
         } else if ($role === 'employee') {
             return view('client/dashboard', $data);
         } else {
@@ -42,7 +42,7 @@ public function travelOrderDetails(int $travelOrderId)
     }
 
     $userId = session()->get('user_id');
-    $model  = new TravelOrderModel();
+    $model  = new TravelOrderModel();   
     $order  = $model->getTravelOrderDetails($travelOrderId);
 
     // Security: only owner can view their own travel order
