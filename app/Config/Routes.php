@@ -13,9 +13,6 @@ use App\Controllers\UserManagementController;
  */
 $routes->get('/', 'Home::index');
 
-
-
-
 //auth routes
 $routes->group('', ['filter' => 'noauth'], function ($routes) {
     $routes->get('/login', [Auth::class, 'logIn'], ['as' => 'login']);
@@ -26,9 +23,7 @@ $routes->group('', ['filter' => 'noauth'], function ($routes) {
 
 // Authenticated routes
 $routes->group('', ['filter' => 'auth'],function ($routes) {
-
     $routes->get('logout', [Auth::class, 'logout']);
-
     // Begin :: dashboard route
     $routes->group('dashboard', function ($routes) {
         $routes->get('/', [DashboardController::class, 'index'], ['as' => 'view.dashboard']);
@@ -43,7 +38,6 @@ $routes->group('', ['filter' => 'auth'],function ($routes) {
         $routes->get('/', [ConfigController::class, 'index'] , ['as' => 'view.configuration']);
         $routes->post('add-division', [ConfigController::class, 'addDivision'], ['as' => 'add.division']);
         $routes->post('add-unit', [ConfigController::class, 'addUnit'], ['as' => 'add.unit']);
-
     });
     $routes->group('user-management', function($routes){
         $routes->get('/', [UserManagementController::class, 'index'], ['as' => 'view.user-management']);
@@ -52,7 +46,6 @@ $routes->group('', ['filter' => 'auth'],function ($routes) {
         $routes->post('update/(:num)', [UserManagementController::class, 'updateUserManagement/$1'], ['as' => 'update.userManagement']); 
         $routes->post('add',  [UserManagementController::class, 'registerUser'], ['as' => 'register.user']); 
     });
-
     $routes->group('profile', function($routes){
         $routes->get('/', [ProfileController::class, 'index'], ['as' => 'account-settings']);
         $routes->group('update', function ($routes){
@@ -64,17 +57,5 @@ $routes->group('', ['filter' => 'auth'],function ($routes) {
         $routes->post('email', [ProfileController::class, 'updateEmail'], ['as' => 'update.email']);
         });
     });
-
-
-
-
-    $routes->get('admin/organization/(:num)',        'ConfigController::viewOrganization/$1');
-    $routes->get('admin/organization/(:num)/edit',   'ConfigController::editOrganization/$1');
-
-    $routes->get('admin/division/(:num)',            'ConfigController::viewDivision/$1');
-    $routes->get('admin/division/(:num)/edit',       'ConfigController::editDivision/$1');
-
-    $routes->get('admin/unit/(:num)',                'ConfigController::viewUnit/$1');
-    $routes->get('admin/unit/(:num)/edit',           'ConfigController::editUnit/$1');
 
 });
