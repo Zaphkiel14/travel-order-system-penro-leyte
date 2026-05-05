@@ -26,6 +26,10 @@ class DashboardController extends BaseController
         $role = session()->get('role');
         if ($role === 'admin') {
             return view('admin/dashboard', $data);
+        } else if ($role === 'penro') {
+            return view('organization/dashboard', $data);
+        } else if ($role === 'division') {
+            return view('division/dashboard', $data);
         } else if ($role === 'supervisor') {
             return view('supervisor/dashboard', $data);
         } else if ($role === 'employee') {

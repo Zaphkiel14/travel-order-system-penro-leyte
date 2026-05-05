@@ -97,7 +97,7 @@
                     </a>
                 </div>
                 <!-- /.social-auth-links -->
-                <small class="text-muted"><i>First login: use Google Sign-In to connect your Drive.</i></small>
+                <small class="text-muted"><i>First login: use Google Sign-In to connect to the Drive.</i></small>
             </div>
             <!-- /.login-card-body -->
         </div>
