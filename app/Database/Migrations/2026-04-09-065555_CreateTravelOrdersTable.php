@@ -41,16 +41,20 @@ class CreateTravelOrdersTable extends Migration
             'status' => [
                 'type' => 'ENUM',
                 'constraint' => [
-                                    'Pending Supervisor',
-                                    'Approved by Supervisor',
-                                    'For Division Approval',
-                                    'Approved by Division Head',
-                                    'For PENRO Approval', 
-                                    'Approved', 
-                                    'Rejected by Supervisor',
-                                    'Rejected by Division Head',
-                                    'Rejected by PENRO'],
+                                    'Pending',
+                                    'Approved',
+                                    'Rejected'    
+                                ],
                 'default' => 'Pending Supervisor'
+            ],
+            'current_level' => [
+                'type' => 'ENUM',
+                'constraint' => [
+                                    'unit',
+                                    'division',
+                                    'organization',
+                                    'records'
+                ]
             ],
             'unit_id' => [
                 'type' => 'MEDIUMINT',
