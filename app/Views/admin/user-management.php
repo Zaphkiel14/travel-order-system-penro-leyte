@@ -192,8 +192,8 @@
                     </div>
                     <div class="row">
                             <div class="col-6">
-                                <label for="edit-role" class="form-label">System Role</label>
-                                <select class="form-select" id="edit-role" name="role" required>
+                                <label for="add-role" class="form-label">System Role</label>
+                                <select class="form-select" id="add-role" name="role" required>
                                     <option value="employee">Employee</option>
                                     <option value="supervisor">Supervisor</option>
                                     <option value="division_head">Division Head</option>
@@ -204,8 +204,8 @@
                                 <div class="invalid-feedback">Please select a role.</div>
                             </div>
                             <div class="col-6">
-                                <label for="edit-division_unit" class="form-label">Division Unit</label>
-                                <select class="form-select" id="edit-division_unit" name="division_unit" required>
+                                <label for="add-division_unit" class="form-label">Division Unit</label>
+                                <select class="form-select" id="add-division_unit" name="division_unit" required>
                                     <?php foreach ($divunits as $divunit): ?>
                                         <option value="<?= $divunit['type'] . '-id-' . $divunit['id'] ?>">
                                             <?= ucfirst($divunit['type']) . ': ' . $divunit['name'] ?>

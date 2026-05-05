@@ -10,8 +10,7 @@ class SelectModel extends Model
     {
         $year  = date('Y');
 
-        $base = "Travel-Order#-{$year}";
-
+        $base = "TO#-{$year}";
         $builder = $this->db->table('travel_orders');
 
         $builder->select('travel_order_number');
@@ -78,6 +77,11 @@ class SelectModel extends Model
 
     public function selectDivisionUnit()
     {
+        $orgBuilder = $this->db->table('organization');
+        $organization = $orgBuilder
+            ->select("'Organization' as type, organization_id as id, organization_name as name")
+            ->get()
+            ->getResultArray();
         // Select divisions
         $divBuilder = $this->db->table('divisions');
         $divisions = $divBuilder
@@ -93,7 +97,7 @@ class SelectModel extends Model
             ->getResultArray();
 
         // Merge both
-        $results = array_merge($divisions, $units);
+        $results = array_merge($organization, $divisions, $units);
 
         return $results;
     }

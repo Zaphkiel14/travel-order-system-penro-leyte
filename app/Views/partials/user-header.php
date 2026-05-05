@@ -28,7 +28,8 @@
                 $session = session();
                 $profilePicture = $session->get('profile_picture');
                 $fullName       = $session->get('full_name') ?? 'User';
-                $userRole       = $session->get('user_role') ?? '';
+                $userRole       = $session->get('role') ?? '';
+                $userPosition   = $session->get('position') ?? '';
                 $defaultAvatar = base_url('defaultProfile.jpg');
                 if (!empty($profilePicture) && file_exists(FCPATH . $profilePicture)) {
                     $avatarSrc = base_url($profilePicture);
@@ -52,7 +53,7 @@
                                 alt="User Image" />
                             <p>
                                 <?= esc($fullName) ?>
-                                <?= $userRole ? ' - ' . esc(ucfirst($userRole)) : '' ?>
+                                <?= $userPosition ? ' - ' . esc(ucfirst($userPosition)) : '' ?>
                             </p>
                             <small>
                                 Member since:

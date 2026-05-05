@@ -15,18 +15,18 @@ class DashboardController extends BaseController
 {
     public function index()
     {
+        $model = new SelectModel();
+
         $data = [
             'title' => 'Travel Order | Dashboard',
             'page' => 'Dashboard',
+            'newTravelOrderNumber' => $model->generateNextTravelOrderID(),
+            'divunits' => $model->selectDivisionUnit()
         ];
         $role = session()->get('role');
         if ($role === 'admin') {
             return view('admin/dashboard', $data);
-        } else if ($role === 'penro') {
-            return view('organization/dashboard', $data);
-        } else if ($role === 'division_chief') {
-            return view('division/dashboard', $data);
-        } else if ($role === 'unit-supervisor') {
+        } else if ($role === 'supervisor') {
             return view('supervisor/dashboard', $data);
         } else if ($role === 'employee') {
             return view('client/dashboard', $data);
@@ -35,27 +35,27 @@ class DashboardController extends BaseController
         }
     }
 
-public function travelOrderDetails(int $travelOrderId)
-{
-    if (!$this->request->isAJAX()) {
-        return $this->response->setStatusCode(403)->setBody('Forbidden');
-    }
+    public function travelOrderDetails(int $travelOrderId)
+    {
+        if (!$this->request->isAJAX()) {
+            return $this->response->setStatusCode(403)->setBody('Forbidden');
+        }
 
-    $userId = session()->get('user_id');
-    $model  = new TravelOrderModel();   
-    $order  = $model->getTravelOrderDetails($travelOrderId);
+        $userId = session()->get('user_id');
+        $model  = new TravelOrderModel();
+        $order  = $model->getTravelOrderDetails($travelOrderId);
 
-    // Security: only owner can view their own travel order
-    if (!$order || (int)$order['user_id'] !== (int)$userId) {
+        // Security: only owner can view their own travel order
+        if (!$order || (int)$order['user_id'] !== (int)$userId) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Travel order not found.'
+            ])->setStatusCode(404);
+        }
+
         return $this->response->setJSON([
-            'success' => false,
-            'message' => 'Travel order not found.'
-        ])->setStatusCode(404);
+            'success' => true,
+            'data'    => $order,
+        ]);
     }
-
-    return $this->response->setJSON([
-        'success' => true,
-        'data'    => $order,
-    ]);
-}
 }

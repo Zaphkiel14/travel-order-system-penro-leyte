@@ -27,7 +27,7 @@ class NoAuth implements FilterInterface
     {
         if (session()->get('isLoggedIn')) {
             if (session()->get('isLoggedIn')) {
-                return redirect()->route('dashboard');
+                return redirect()->to(route_to('view.dashboard'));
             }
             return redirect()->route('login'); // fallback
         }
