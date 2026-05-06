@@ -12,6 +12,130 @@ use App\Services\PrintService;
 
 class TravelOrderController extends BaseController
 {
+
+    private function getUserScope(): array
+    {
+        $userId = session()->get('user_id');
+        $role   = session()->get('role');
+
+        $model = new SelectModel();
+        $data  = $model->getManagedByRole($role, $userId);
+
+        if (!$data) {
+            throw new \RuntimeException('User is not assigned to any ' . $role);
+        }
+
+        return [
+            'level' => $role,
+            'name' => $data->name,
+            'id'    => $data->id
+        ];
+    }
+
+    public function incomingTravelOrders()
+    {
+        if (!session()->get('isLoggedIn')) {
+            return $this->renderError(
+                $this->errorHandler->unauthorized()
+            );
+        }
+        $data = [
+            'title' => 'Travel Order | Incoming Travel Orders',
+            'page' => 'Incoming Travel Orders',
+        ];
+        $role = session()->get('role');
+        if ($role === 'penro') {
+            return view('organization/incoming-travel-orders', $data);
+        } else if ($role === 'division') {
+            return view('division/incoming-travel-orders', $data);
+        } else if ($role === 'unit') {
+            return view('unit/incoming-travel-orders', $data);
+        } else {
+            return $this->renderError(
+                $this->errorHandler->forbidden('Unauthorized Access')
+            );
+        }
+    }
+
+
+    public function incomingTravelOrderData()
+    {
+        try {
+            $scope = $this->getUserScope();
+        } catch (\RuntimeException $e) {
+    return $this->response->setJSON([
+        'draw' => 1,
+        'recordsTotal' => 0,
+        'recordsFiltered' => 0,
+        'data' => [],
+        'error' => $e->getMessage()
+    ]);
+        }
+
+        $draw     = (int) ($this->request->getPost('draw') ?? 1);
+        $start    = (int) ($this->request->getPost('start') ?? 0);
+        $length   = (int) ($this->request->getPost('length') ?? 10);
+        $search   = $this->request->getPost('search')['value'] ?? '';
+        $orderCol = (int) ($this->request->getPost('order')[0]['column'] ?? 0);
+        $orderDir = $this->request->getPost('order')[0]['dir'] ?? 'desc';
+
+        $columns = [
+            0 => 'created_at',
+            1 => 'travel_order_number',
+            2 => 'destination',
+            3 => 'travel_dates',
+            4 => 'status',
+        ];
+        $orderBy = $columns[$orderCol] ?? 'created_at';
+
+        $model = new TravelOrderModel();
+
+
+
+        // Total
+        $total = $model->getIncomingByScopeQuery($scope['level'], $scope['id'])
+                ->countAllResults(false);
+
+
+        $query = $model->getIncomingByScopeQuery($scope['level'], $scope['id']);
+        if ($search !== '') {
+            $query->groupStart()
+                ->like('travel_order_number', $search)
+                ->orLike('destination', $search)
+                ->groupEnd();
+        }
+
+        // Filtered
+        $filtered = $query->countAllResults(false);
+
+        $rows = $query->orderBy($orderBy, $orderDir)
+            ->findAll($length, $start);
+
+        $data = array_map(function ($row) {
+            return [
+                'created_at'          => date('M j, Y', strtotime($row['created_at'])),
+                'travel_order_number' => esc($row['travel_order_number']),
+                'destination'         => esc($row['destination']),
+                'travel_dates'        => date('M j, Y', strtotime($row['departure_date']))
+                    . ' – '
+                    . date('M j, Y', strtotime($row['arrival_date'])),
+                'status'              => '<span class="badge bg-warning">' . esc($row['status']) . '</span>',
+                'actions' => '<button type="button"
+                                class="btn btn-sm btn-primary btn-view-travel-order"
+                                data-id="' . $row['travel_order_id'] . '">
+                                <i class="bi bi-eye"></i> View
+                                </button>',
+            ];
+        }, $rows);
+        return $this->response->setJSON([
+            'draw'            => $draw,
+            'recordsTotal'    => $total,
+            'recordsFiltered' => $filtered,
+            'data'            => $data,
+        ]);
+    }
+
+
     public function index()
     {
         //
@@ -209,7 +333,7 @@ class TravelOrderController extends BaseController
             ]);
         }
 
-        $privilegedRoles = ['admin', 'penro', 'division_head', 'supervisor', 'records'];
+        $privilegedRoles = ['admin', 'penro', 'division_head', 'unit', 'records'];
 
         if (!in_array($role, $privilegedRoles) && (int) $order['user_id'] !== $userId) {
             return $this->response->setStatusCode(403)->setJSON([

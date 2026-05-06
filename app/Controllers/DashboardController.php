@@ -30,8 +30,8 @@ class DashboardController extends BaseController
             return view('organization/dashboard', $data);
         } else if ($role === 'division') {
             return view('division/dashboard', $data);
-        } else if ($role === 'supervisor') {
-            return view('supervisor/dashboard', $data);
+        } else if ($role === 'unit') {
+            return view('unit/dashboard', $data);
         } else if ($role === 'employee') {
             return view('client/dashboard', $data);
         } else {

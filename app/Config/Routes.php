@@ -58,4 +58,11 @@ $routes->group('', ['filter' => 'auth'],function ($routes) {
         });
     });
 
+
+    $routes->group('incoming-travel-orders', function($routes){
+        $routes->get('/', [TravelOrderController::class, 'incomingTravelOrders'], ['as' => 'view.incomingTravelOrders']);
+        $routes->post('data', [TravelOrderController::class, 'incomingTravelOrderData'], ['as' => 'data.incomingTravelOrders']);
+
+    });
+
 });

@@ -19,6 +19,7 @@ class TravelOrderModel extends Model
         'arrival_date',
         'destination',
         'purpose_of_travel',
+        'current_level',
         'status',
         'unit_id',
         'approved_by_supervisor',
@@ -243,6 +244,37 @@ class TravelOrderModel extends Model
 
         return $travel_order;
     }
+
+
+
+
+
+
+    public function getIncomingByScopeQuery(string $level, int $id)
+    {
+        return $this->select('
+            travel_order_id,
+            travel_order_number,
+            departure_date,
+            arrival_date,
+            destination,
+            purpose_of_travel,
+            status,
+            created_at
+        ')
+            ->where('current_level', $level)
+            ->where($level . '_id', $id)
+            ->where('status', 'pending');
+    }
+
+
+    // public function getIncomingByScopeQuery(string $level, int $id)
+    // {
+    //     return $this->builder()
+    //         ->where('current_level', $level)
+    //         ->where($level . '_id', $id)
+    //         ->where('status', 'pending');
+    // }
 
 
     /**

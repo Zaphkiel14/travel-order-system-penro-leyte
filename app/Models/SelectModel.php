@@ -147,4 +147,33 @@ class SelectModel extends Model
 
         return $result;
     }
+
+    public function getManagedByRole(string $role, int $userId)
+    {
+        switch ($role) {
+            case 'unit':
+                return $this->db->table('units')
+                    ->select('unit_id as id, unit_name as name')
+                    ->where('unit_head_id', $userId)
+                    ->get()
+                    ->getRow();
+
+            case 'division':
+                return $this->db->table('divisions')
+                    ->select('division_id as id, division_name as name')
+                    ->where('division_head_id', $userId)
+                    ->get()
+                    ->getRow();
+
+            case 'penro':
+                return $this->db->table('organizations')
+                    ->select('organization_id as id, organization_name as name')
+                    ->where('organization_head_id', $userId)
+                    ->get()
+                    ->getRow();
+
+            default:
+                return null;
+        }
+    }
 }
