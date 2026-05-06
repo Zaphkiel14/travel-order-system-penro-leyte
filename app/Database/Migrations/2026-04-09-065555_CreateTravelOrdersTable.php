@@ -41,11 +41,11 @@ class CreateTravelOrdersTable extends Migration
             'status' => [
                 'type' => 'ENUM',
                 'constraint' => [
-                                    'Pending',
-                                    'Approved',
-                                    'Rejected'    
+                                    'pending',
+                                    'approved',
+                                    'rejected'    
                                 ],
-                'default' => 'Pending Supervisor'
+                'default' => 'pending'
             ],
             'current_level' => [
                 'type' => 'ENUM',

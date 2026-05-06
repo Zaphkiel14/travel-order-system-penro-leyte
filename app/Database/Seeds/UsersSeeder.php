@@ -51,7 +51,7 @@ class UsersSeeder extends Seeder
                 'email' => 'supervisor@example.com',
                 'password' => password_hash('supervisor123', PASSWORD_DEFAULT),
                 'position' => 'Supervisor',
-                'role' => 'supervisor',
+                'role' => 'unit',
                 'created_at' => date('Y-m-d H:i:s'),
             ]
 

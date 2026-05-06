@@ -24,13 +24,13 @@ class CreateUnitsTable extends Migration
                 'type' => 'VARCHAR',
                 'constraint' => 255
             ],
-            'unit_supervisor_id' => [
+            'unit_head_id' => [
                 'type' => 'MEDIUMINT',
                 'constraint' => 8,
                 'unsigned' => true,
                 'null' => true
             ],
-            'unit_supervisor_position' => [
+            'unit_head_position' => [
                 'type' => 'VARCHAR',
                 'constraint' => 255,
                 'null' => true
