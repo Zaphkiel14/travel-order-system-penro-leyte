@@ -4,7 +4,6 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
-
 use App\Models\TravelOrderModel;
 use App\Models\SelectModel;
 use App\Services\GoogleDriveService;
@@ -57,19 +56,18 @@ class TravelOrderController extends BaseController
         }
     }
 
-
     public function incomingTravelOrderData()
     {
         try {
             $scope = $this->getUserScope();
         } catch (\RuntimeException $e) {
-    return $this->response->setJSON([
-        'draw' => 1,
-        'recordsTotal' => 0,
-        'recordsFiltered' => 0,
-        'data' => [],
-        'error' => $e->getMessage()
-    ]);
+            return $this->response->setJSON([
+                'draw' => 1,
+                'recordsTotal' => 0,
+                'recordsFiltered' => 0,
+                'data' => [],
+                'error' => $e->getMessage()
+            ]);
         }
 
         $draw     = (int) ($this->request->getPost('draw') ?? 1);
@@ -94,7 +92,7 @@ class TravelOrderController extends BaseController
 
         // Total
         $total = $model->getIncomingByScopeQuery($scope['level'], $scope['id'])
-                ->countAllResults(false);
+            ->countAllResults(false);
 
 
         $query = $model->getIncomingByScopeQuery($scope['level'], $scope['id']);
@@ -119,7 +117,7 @@ class TravelOrderController extends BaseController
                 'travel_dates'        => date('M j, Y', strtotime($row['departure_date']))
                     . ' – '
                     . date('M j, Y', strtotime($row['arrival_date'])),
-                'status'              => '<span class="badge bg-warning">' . esc($row['status']) . '</span>',
+                'status'              => '<span class="badge bg-warning">' . esc($row['current_status']) . '</span>',
                 'actions' => '<button type="button"
                                 class="btn btn-sm btn-primary btn-view-travel-order"
                                 data-id="' . $row['travel_order_id'] . '">
@@ -134,7 +132,6 @@ class TravelOrderController extends BaseController
             'data'            => $data,
         ]);
     }
-
 
     public function index()
     {
@@ -226,6 +223,7 @@ class TravelOrderController extends BaseController
             $this->request->getPost('destination'),
             $this->request->getPost('travel_purpose'),
             $attachments,
+            $hierarchy['current_status'],
             $hierarchy['current_level'],
             $hierarchy['unit_id'],
             $hierarchy['division_id'],
@@ -239,7 +237,6 @@ class TravelOrderController extends BaseController
                 : "Failed to create '{$newTravelOrderNumber}'.",
         ]);
     }
-
 
     public function travelOrdersData()
     {
@@ -292,12 +289,19 @@ class TravelOrderController extends BaseController
                 'travel_dates'        => date('M j, Y', strtotime($row['departure_date']))
                     . ' – '
                     . date('M j, Y', strtotime($row['arrival_date'])),
-                'status'              => '<span class="badge bg-warning">' . esc($row['status']) . '</span>',
+                'status' => $this->getStatusBadge($row['current_status']),
                 'actions' => '<button type="button"
-                                class="btn btn-sm btn-primary btn-view-travel-order"
+                                class="btn btn-primary btn-view-travel-order"
                                 data-id="' . $row['travel_order_id'] . '">
-                                <i class="bi bi-eye"></i> View
-                                </button>',
+                                <i class="bi bi-eye"></i>
+                                </button>
+                                <button type="button"
+                                class="btn btn-success btn-edit-travel-order"
+                                data-id="' . $row['travel_order_id'] . '">
+                                <i class="bi bi-pencil-square"></i>
+                                </button>
+                                
+                                ',
             ];
         }, $rows);
         return $this->response->setJSON([
@@ -378,5 +382,31 @@ class TravelOrderController extends BaseController
     {
         $printService = new PrintService();
         return $printService->previewPrintTO($travelOrderId);
+    }
+    private function getStatusBadge($status)
+    {
+        if (!$status) {
+            return '<span class="badge bg-secondary text-white">—</span>';
+        }
+
+        $s = strtolower($status);
+
+        if (str_starts_with($s, 'forwarded to')) {
+            $class = 'bg-info-subtle text-info-emphasis';
+        } elseif (str_starts_with($s, 'rejected by')) {
+            $class = 'bg-danger-subtle text-danger-emphasis';
+        } elseif (str_starts_with($s, 'approved by')) {
+            $class = 'bg-success-subtle text-success-emphasis';
+        } elseif ($s === 'pending') {
+            $class = 'bg-warning-subtle text-warning-emphasis';
+        } elseif ($s === 'approved') {
+            $class = 'bg-success-subtle text-success-emphasis';
+        } elseif ($s === 'rejected') {
+            $class = 'bg-danger-subtle text-danger-emphasis';
+        } else {
+            $class = 'bg-secondary-subtle text-white-emphasis';
+        }
+
+        return '<span class="badge ' . $class . '">' . esc($status) . '</span>';
     }
 }

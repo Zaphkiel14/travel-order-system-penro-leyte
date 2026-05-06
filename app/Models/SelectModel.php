@@ -81,7 +81,7 @@ class SelectModel extends Model
     {
         $orgBuilder = $this->db->table('organization');
         $organization = $orgBuilder
-            ->select("'Organization' as type, organization_id as id, organization_name as name")
+            ->select("'organization' as type, organization_id as id, organization_name as name")
             ->get()
             ->getResultArray();
         // Select divisions
@@ -116,7 +116,7 @@ class SelectModel extends Model
 
         if ($type === 'unit') {
             $unit = $this->db->table('units u')
-                ->select('u.unit_id , d.division_id, d.organization_id')
+                ->select('u.unit_id, u.unit_name , d.division_id, d.organization_id')
                 ->join('divisions d', 'd.division_id = u.division_id')
                 ->where('u.unit_id', $id)
                 ->get()
@@ -124,24 +124,27 @@ class SelectModel extends Model
 
             if ($unit) {
                 $result['current_level'] = 'unit';
+                $result['current_status'] = 'Forwarded to ' . $unit->unit_name;
                 $result['unit_id']         = $unit->unit_id;
                 $result['division_id']     = $unit->division_id;
                 $result['organization_id'] = $unit->organization_id;
             }
         } elseif ($type === 'division') {
             $division = $this->db->table('divisions')
-                ->select('division_id, organization_id')
+                ->select('division_id, division_name, organization_id')
                 ->where('division_id', $id)
                 ->get()
                 ->getRow();
 
             if ($division) {
                 $result['current_level'] = 'division';
+                $result['current_status'] = 'Forwarded to ' . $division->division_name;
                 $result['division_id']     = $division->division_id;
                 $result['organization_id'] = $division->organization_id;
             }
         } elseif ($type === 'organization') {
             $result['current_level'] = 'organization';
+            $result['current_status'] = 'Forwarded to PENRO';
             $result['organization_id'] = $id;
         }
 

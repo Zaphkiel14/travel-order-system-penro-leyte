@@ -166,7 +166,7 @@
                         <div class="col-12">
                             <div class="mb-3">
                                 <label for="unit_division_organization" class="form-label">ROUTE TO: Unit/Division/PENRO</label>
-                                    <select class="form-select" id="add-unit_division_organization" name="unit_division_organization" required>
+                                <select class="form-select" id="add-unit_division_organization" name="unit_division_organization" required>
                                     <?php foreach ($divunits as $divunit): ?>
                                         <option value="<?= $divunit['type'] . '-id-' . $divunit['id'] ?>">
                                             <?= ucfirst($divunit['type']) . ': ' . $divunit['name'] ?>
@@ -434,7 +434,7 @@
                                     style="letter-spacing:.05em">Current Status</p>
                                 <div id="to-status-banner" class="d-flex align-items-center gap-2">
                                     <i id="to-status-icon" class="bi fs-5"></i>
-                                    <span id="to-status-badge" class="badge fs-6 px-3 py-2"></span>
+                                    <span id="to-status-badge" class="badge fs-5 px-3 py-2"></span>
                                 </div>
                             </div>
 
@@ -442,65 +442,10 @@
                             <div class="border rounded p-3">
                                 <p class="mb-3 small text-muted text-uppercase fw-semibold"
                                     style="letter-spacing:.05em">Approval Progress</p>
-
-                                <!-- Supervisor step -->
-                                <div class="d-flex align-items-start gap-2 mb-3">
-                                    <div class="flex-shrink-0 mt-1">
-                                        <i id="to-step-icon-supervisor" class="bi bi-clock text-muted fs-5"></i>
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <p class="mb-0 fw-semibold small">Supervisor</p>
-                                        <p class="mb-0 small text-muted" id="to-step-name-supervisor">Pending</p>
-                                        <p class="mb-0 small fst-italic text-muted"
-                                            id="to-step-remarks-supervisor"></p>
-                                    </div>
-                                    <div class="flex-shrink-0">
-                                        <span id="to-step-badge-supervisor"
-                                            class="badge bg-secondary-subtle text-secondary-emphasis small">
-                                            Pending
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <!-- Division Head step -->
-                                <div class="d-flex align-items-start gap-2 mb-3">
-                                    <div class="flex-shrink-0 mt-1">
-                                        <i id="to-step-icon-division" class="bi bi-clock text-muted fs-5"></i>
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <p class="mb-0 fw-semibold small">Division Head</p>
-                                        <p class="mb-0 small text-muted" id="to-step-name-division">Pending</p>
-                                        <p class="mb-0 small fst-italic text-muted"
-                                            id="to-step-remarks-division"></p>
-                                    </div>
-                                    <div class="flex-shrink-0">
-                                        <span id="to-step-badge-division"
-                                            class="badge bg-secondary-subtle text-secondary-emphasis small">
-                                            Pending
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <!-- PENRO step -->
-                                <div class="d-flex align-items-start gap-2">
-                                    <div class="flex-shrink-0 mt-1">
-                                        <i id="to-step-icon-org" class="bi bi-clock text-muted fs-5"></i>
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <p class="mb-0 fw-semibold small">PENRO</p>
-                                        <p class="mb-0 small text-muted" id="to-step-name-org">Pending</p>
-                                        <p class="mb-0 small fst-italic text-muted"
-                                            id="to-step-remarks-org"></p>
-                                    </div>
-                                    <div class="flex-shrink-0">
-                                        <span id="to-step-badge-org"
-                                            class="badge bg-secondary-subtle text-secondary-emphasis small">
-                                            Pending
-                                        </span>
-                                    </div>
+                                <div id="to-approval-steps">
+                                    <!-- JS-rendered approval steps -->
                                 </div>
                             </div>
-
                             <!-- Tracking History / Timeline -->
                             <div class="border rounded p-3">
                                 <p class="mb-3 small text-muted text-uppercase fw-semibold"
@@ -641,53 +586,59 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
 
-        var STATUS_CONFIG = {
-            'Pending Supervisor': {
-                badge: 'bg-warning text-dark',
-                icon: 'bi-clock-history text-warning',
-                callout: 'warning'
-            },
-            'Approved by Supervisor': {
-                badge: 'bg-info text-white',
-                icon: 'bi-check-circle text-info',
-                callout: 'info'
-            },
-            'For Division Approval': {
-                badge: 'bg-primary text-white',
-                icon: 'bi-clock-history text-primary',
-                callout: 'info'
-            },
-            'Approved by Division Head': {
-                badge: 'bg-info text-white',
-                icon: 'bi-check-circle text-info',
-                callout: 'info'
-            },
-            'For PENRO Approval': {
-                badge: 'bg-primary text-white',
-                icon: 'bi-clock-history text-primary',
-                callout: 'info'
-            },
-            'Approved': {
-                badge: 'bg-success text-white',
-                icon: 'bi-check-circle-fill text-success',
-                callout: 'success'
-            },
-            'Rejected by Supervisor': {
-                badge: 'bg-danger text-white',
-                icon: 'bi-x-circle-fill text-danger',
-                callout: 'danger'
-            },
-            'Rejected by Division Head': {
-                badge: 'bg-danger text-white',
-                icon: 'bi-x-circle-fill text-danger',
-                callout: 'danger'
-            },
-            'Rejected by PENRO': {
-                badge: 'bg-danger text-white',
-                icon: 'bi-x-circle-fill text-danger',
-                callout: 'danger'
-            },
-        };
+        // ── Current Status banner ──────────────────────────────────────────
+        function getStatusConfig(status) {
+            if (!status) return {
+                badge: 'bg-secondary text-white',
+                icon: 'bi-question-circle text-muted'
+            };
+
+            var s = status.toLowerCase();
+
+            if (s.startsWith('forwarded to')) {
+                return {
+                    badge: 'bg-info-subtle text-info-emphasis',
+                    icon: 'bi-arrow-right-circle-fill text-info'
+                };
+            }
+            if (s.startsWith('rejected by')) {
+                return {
+                    badge: 'bg-danger-subtle text-danger-emphasis',
+                    icon: 'bi-x-circle-fill text-danger'
+                };
+            }
+            if (s.startsWith('approved by')) {
+                return {
+                    badge: 'bg-success-subtle text-success-emphasis',
+                    icon: 'bi-check-circle-fill text-success'
+                };
+            }
+
+            // fallback for plain values
+            if (s === 'pending') {
+                return {
+                    badge: 'bg-warning-subtle text-warning-emphasis',
+                    icon: 'bi-clock-history text-warning'
+                };
+            }
+            if (s === 'approved') {
+                return {
+                    badge: 'bg-success-subtle text-success-emphasis',
+                    icon: 'bi-check-circle-fill text-success'
+                };
+            }
+            if (s === 'rejected') {
+                return {
+                    badge: 'bg-danger-subtle text-danger-emphasis',
+                    icon: 'bi-x-circle-fill text-danger'
+                };
+            }
+
+            return {
+                badge: 'bg-secondary-subtle text-white-emphasis',
+                icon: 'bi-question-circle text-muted'
+            };
+        }
 
         var ATTACHMENT_ICONS = {
             'request_memo': 'bi-file-text',
@@ -755,34 +706,92 @@
             });
         }
 
-        // ── Render approval step ───────────────────────────────────────────
-        function renderStep(suffix, approverName, remarks, status) {
-            var iconEl = document.getElementById('to-step-icon-' + suffix);
-            var nameEl = document.getElementById('to-step-name-' + suffix);
-            var remarksEl = document.getElementById('to-step-remarks-' + suffix);
-            var badgeEl = document.getElementById('to-step-badge-' + suffix);
+        function buildApprovalSteps(d) {
+            var container = document.getElementById('to-approval-steps');
+            container.innerHTML = '';
 
-            if (approverName) {
-                if (status === 'rejected') {
-                    iconEl.className = 'bi bi-x-circle-fill text-danger fs-5';
-                    badgeEl.className = 'badge bg-danger-subtle text-danger-emphasis small';
-                    badgeEl.textContent = 'Rejected';
-                } else {
-                    iconEl.className = 'bi bi-check2-all text-success fs-5';
-                    badgeEl.className = 'badge bg-success-subtle text-success-emphasis small';
-                    badgeEl.textContent = 'Approved';
-                }
-                nameEl.textContent = approverName;
-                remarksEl.textContent = remarks ? '"' + remarks + '"' : '';
-            } else {
-                iconEl.className = 'bi bi-clock text-muted fs-5';
-                nameEl.textContent = 'Pending';
-                remarksEl.textContent = '';
-                badgeEl.className = 'badge bg-secondary-subtle text-secondary-emphasis small';
-                badgeEl.textContent = 'Pending';
+            var steps = [];
+
+            if (d.unit_id) {
+                steps.push({
+                    position: d.unit_head_position || 'Unit Supervisor',
+                    personName: d.unit_head_name || null,
+                    approvedBy: d.assigned_to_unit_head || null,
+                    remarks: d.supervisor_remarks || null,
+                    status: d.unit_status || 'pending',
+                });
             }
-        }
 
+            if (d.division_id) {
+                steps.push({
+                    position: d.division_head_position || 'Division Head',
+                    personName: d.division_head_name || null,
+                    approvedBy: d.assigned_to_division_head || null,
+                    remarks: d.division_head_remarks || null,
+                    status: d.division_status || 'pending',
+                });
+            }
+
+            if (d.organization_id) {
+                steps.push({
+                    position: d.organization_head_position || 'PENRO Officer',
+                    personName: d.organization_head_name || null,
+                    approvedBy: d.assigned_to_organization_head || null,
+                    remarks: d.organization_head_remarks || null,
+                    status: d.organization_status || 'pending',
+                });
+            }
+
+            if (steps.length === 0) {
+                container.innerHTML = '<p class="text-muted fst-italic small mb-0">No approval levels assigned.</p>';
+                return;
+            }
+
+            steps.forEach(function(step, idx) {
+                var iconClass, badgeClass, badgeText;
+
+                if (step.status === 'approved') {
+                    iconClass = 'bi-check2-all text-success';
+                    badgeClass = 'bg-success-subtle text-success-emphasis';
+                    badgeText = 'Approved';
+                } else if (step.status === 'rejected') {
+                    iconClass = 'bi-x-circle-fill text-danger';
+                    badgeClass = 'bg-danger-subtle text-danger-emphasis';
+                    badgeText = 'Rejected';
+                } else {
+                    iconClass = 'bi-clock text-muted';
+                    badgeClass = 'bg-secondary-subtle text-secondary-emphasis';
+                    badgeText = 'Pending';
+                }
+
+                var isLast = (idx === steps.length - 1);
+                var marginClass = isLast ? '' : 'mb-3';
+
+                var remarksHtml = step.remarks ?
+                    '<p class="mb-0 small fst-italic text-muted">"' + step.remarks + '"</p>' :
+                    '';
+
+                var nameHtml = step.approvedBy ?
+                    '<p class="mb-0 small text-muted">' + step.approvedBy + '</p>' :
+                    (step.personName ?
+                        '<p class="mb-0 small text-muted">' + step.personName + '</p>' :
+                        '<p class="mb-0 small text-muted fst-italic">Unassigned</p>');
+
+                var html = '<div class="d-flex align-items-start gap-2 ' + marginClass + '">' +
+                    '<div class="flex-shrink-0 mt-1"><i class="bi ' + iconClass + ' fs-5"></i></div>' +
+                    '<div class="flex-grow-1">' +
+                    '<p class="mb-0 fw-semibold small">' + step.position + '</p>' +
+                    nameHtml +
+                    remarksHtml +
+                    '</div>' +
+                    '<div class="flex-shrink-0">' +
+                    '<span class="badge ' + badgeClass + ' small">' + badgeText + '</span>' +
+                    '</div>' +
+                    '</div>';
+
+                container.insertAdjacentHTML('beforeend', html);
+            });
+        }
         // ── Build timeline ─────────────────────────────────────────────────
         function buildTimeline(d) {
             var container = document.getElementById('to-timeline');
@@ -809,33 +818,33 @@
                 'Travel Order Submitted',
                 (d.applicant_name || 'Applicant') + ' &mdash; ' + (d.applicant_position || '') + '<br>' + fmtDateTime(d.created_at));
 
-            if (d.approved_by_supervisor) {
+            if (d.assigned_to_unit_head) {
                 var supRejected = d.status === 'Rejected by Supervisor';
                 addItem(
                     supRejected ? 'bi-x-fill' : 'bi-check-lg',
                     supRejected ? 'text-danger' : 'text-success',
                     (supRejected ? 'Rejected' : 'Approved') + ' by Supervisor',
-                    d.approved_by_supervisor + (d.supervisor_remarks ? ' &bull; "' + d.supervisor_remarks + '"' : '')
+                    d.assigned_to_unit_head + (d.supervisor_remarks ? ' &bull; "' + d.supervisor_remarks + '"' : '')
                 );
             }
 
-            if (d.approved_by_division_head) {
+            if (d.assigned_to_division_head) {
                 var divRejected = d.status === 'Rejected by Division Head';
                 addItem(
                     divRejected ? 'bi-x-fill' : 'bi-check-lg',
                     divRejected ? 'text-danger' : 'text-success',
                     (divRejected ? 'Rejected' : 'Approved') + ' by Division Head',
-                    d.approved_by_division_head + (d.division_head_remarks ? ' &bull; "' + d.division_head_remarks + '"' : '')
+                    d.assigned_to_division_head + (d.division_head_remarks ? ' &bull; "' + d.division_head_remarks + '"' : '')
                 );
             }
 
-            if (d.approved_by_organization_head) {
+            if (d.assigned_to_organization_head) {
                 var orgRejected = d.status === 'Rejected by PENRO';
                 addItem(
                     orgRejected ? 'bi-x-fill' : 'bi-check-lg',
                     orgRejected ? 'text-danger' : 'text-success',
                     (orgRejected ? 'Rejected' : 'Approved') + ' by PENRO',
-                    d.approved_by_organization_head + (d.organization_head_remarks ? ' &bull; "' + d.organization_head_remarks + '"' : '')
+                    d.assigned_to_organization_head + (d.organization_head_remarks ? ' &bull; "' + d.organization_head_remarks + '"' : '')
                 );
             }
 
@@ -848,11 +857,6 @@
 
         // ── Populate entire modal ──────────────────────────────────────────
         function populateModal(d) {
-            var cfg = STATUS_CONFIG[d.status] || {
-                badge: 'bg-secondary text-white',
-                icon: 'bi-question-circle text-muted',
-                callout: ''
-            };
 
             setText('to-modal-number', d.travel_order_number);
             setText('to-doc-number', d.travel_order_number);
@@ -861,13 +865,13 @@
             setText('to-doc-departure', fmtDate(d.departure_date));
             setText('to-doc-arrival', fmtDate(d.arrival_date));
             setText('to-doc-purpose', d.purpose_of_travel);
-
+            // Signatories — use whoever is the division-level and org-level approver
             setText('to-sig-division',
-                d.approved_by_division_head || d.division_head_name || '___________________');
+                d.assigned_to_division_head || d.division_head_name || '___________________');
             setText('to-sig-division-position',
                 d.division_head_position || 'Division Chief');
             setText('to-sig-penro',
-                d.approved_by_organization_head || d.organization_head_name || '___________________');
+                d.assigned_to_organization_head || d.organization_head_name || '___________________');
             setText('to-sig-penro-position',
                 d.organization_head_position || 'PENRO Officer');
 
@@ -897,21 +901,15 @@
 
             setText('to-doc-office', d.organization_name || 'PENRO Leyte');
 
+            var cfg = getStatusConfig(d.current_status);
             var iconEl = document.getElementById('to-status-icon');
             var badgeEl = document.getElementById('to-status-badge');
-            iconEl.className = 'bi ' + cfg.icon + ' fs-5';
-            badgeEl.className = 'badge px-3 py-2 ' + cfg.badge;
-            badgeEl.textContent = d.status;
+            iconEl.className = 'bi ' + cfg.icon + ' fs-3';
+            badgeEl.className = 'badge px-3 py-2 fs-5 ' + cfg.badge;
+            badgeEl.textContent = d.current_status || '—';
 
-            renderStep('supervisor',
-                d.approved_by_supervisor, d.supervisor_remarks,
-                d.status === 'Rejected by Supervisor' ? 'rejected' : 'approved');
-            renderStep('division',
-                d.approved_by_division_head, d.division_head_remarks,
-                d.status === 'Rejected by Division Head' ? 'rejected' : 'approved');
-            renderStep('org',
-                d.approved_by_organization_head, d.organization_head_remarks,
-                d.status === 'Rejected by PENRO' ? 'rejected' : 'approved');
+
+            buildApprovalSteps(d);
 
             buildTimeline(d);
 
@@ -977,6 +975,8 @@
                     if (!json.success) throw new Error(json.message || 'Unknown error.');
                     populateModal(json.data);
                     showState('content');
+                    // Preload print frame as soon as modal content is ready
+                    loadPrintFrame(id);
                 })
                 .catch(function(err) {
                     document.getElementById('to-error-msg').textContent =
@@ -985,30 +985,41 @@
                 });
         });
         // ── Print ──────────────────────────────────────────────────────────
-        function printTO(travel_order_id) {
-            fetch('<?= route_to('print.to', 0) ?>'.replace('/0', '/' + travel_order_id))
-                .then(function(response) {
-                    return response.text();
-                })
-                .then(function(html) {
-                    var iframe = document.getElementById('print-frame');
-                    var doc = iframe.contentDocument || iframe.contentWindow.document;
-                    doc.open();
-                    doc.write(html);
-                    doc.close();
-                    setTimeout(function() {
-                        iframe.contentWindow.focus();
-                        iframe.contentWindow.print();
-                    }, 200);
-                })
-                .catch(function(err) {
-                    console.error('Error printing Travel Order:', err);
-                });
+        var printReady = false;
+        var printIframe = document.getElementById('print-frame');
+
+        function loadPrintFrame(travel_order_id) {
+            printReady = false;
+            printIframe.onload = function() {
+                printReady = true;
+            };
+            printIframe.src = '<?= route_to('print.to', 0) ?>'.replace('/0', '/' + travel_order_id);
+        }
+
+        function printTO() {
+            if (!printReady) {
+                var btn = document.getElementById('to-btn-print');
+                var original = btn.innerHTML;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Loading...';
+                btn.disabled = true;
+
+                var check = setInterval(function() {
+                    if (printReady) {
+                        clearInterval(check);
+                        btn.innerHTML = original;
+                        btn.disabled = false;
+                        printIframe.contentWindow.focus();
+                        printIframe.contentWindow.print();
+                    }
+                }, 100);
+            } else {
+                printIframe.contentWindow.focus();
+                printIframe.contentWindow.print();
+            }
         }
 
         document.getElementById('to-btn-print').addEventListener('click', function() {
-            var id = this.getAttribute('data-id');
-            if (id) printTO(id);
+            printTO();
         });
     });
 </script>

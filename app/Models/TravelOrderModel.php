@@ -20,15 +20,18 @@ class TravelOrderModel extends Model
         'destination',
         'purpose_of_travel',
         'current_level',
-        'status',
+        'current_status',
         'unit_id',
-        'approved_by_supervisor',
+        'unit_status',
+        'assigned_to_unit_head',
         'supervisor_remarks',
         'division_id',
-        'approved_by_division_head',
+        'division_status',
+        'assigned_to_division_head',
         'division_head_remarks',
         'organization_id',
-        'approved_by_organization_head',
+        'organization_status',
+        'assigned_to_organization_head',
         'organization_head_remarks'
     ];
 
@@ -71,6 +74,7 @@ class TravelOrderModel extends Model
         string $destination,
         string $travel_purpose,
         array  $attachments,
+        ?string $current_status,
         ?string $current_level,
         ?int $unit_id,
         ?int $division_id,
@@ -87,6 +91,7 @@ class TravelOrderModel extends Model
             'arrival_date'        => $arrival_date,
             'destination'         => $destination,
             'purpose_of_travel'   => $travel_purpose,
+            'current_status'      => $current_status,
             'current_level'     => $current_level,
             'unit_id'              => $unit_id,
             'division_id'          => $division_id,
@@ -101,7 +106,6 @@ class TravelOrderModel extends Model
                 'user_id'         => null,
                 'name'            => trim($person['name']),
                 'salary_grade'    => trim($person['salary_grade']),
-                // 'division'        => trim($person['division_section_unit']),
                 'position'        => trim($person['position']),
             ]);
         }
@@ -132,39 +136,53 @@ class TravelOrderModel extends Model
      * @param int $travelOrderId
      * @return array
      */
-
     public function getTravelOrderDetails($travelOrderId)
     {
         $order = $this->db->table('travel_orders to')
             ->select('
-            to.travel_order_id,
-            to.travel_order_number,
-            to.user_id,
-            to.departure_date,
-            to.arrival_date,
-            to.destination,
-            to.purpose_of_travel,
-            to.status,
-            to.unit_id,
-            u.unit_supervisor_position,
-            to.approved_by_supervisor,
-            to.supervisor_remarks,
-            to.division_id,
-            d.division_head_position,
-            to.approved_by_division_head,
-            to.division_head_remarks,
-            to.organization_id,
-            o.organization_head_position,
-            to.approved_by_organization_head,
-            to.organization_head_remarks,
-            CONCAT(us.first_name, " ", us.last_name) AS applicant_name,
-            us.position AS applicant_position,
-            to.created_at
-        ')
+        to.travel_order_id,
+        to.travel_order_number,
+        to.user_id,
+        to.departure_date,
+        to.arrival_date,
+        to.destination,
+        to.purpose_of_travel,
+        to.current_status,
+        to.current_level,
+
+        to.unit_id,
+        to.unit_status,
+        u.unit_head_position,
+        CONCAT(uh.first_name, " ", uh.last_name) AS unit_head_name,
+        to.assigned_to_unit_head,
+        to.supervisor_remarks,
+
+        to.division_id,
+        to.division_status,
+        d.division_head_position,
+        CONCAT(dh.first_name, " ", dh.last_name) AS division_head_name,
+        to.assigned_to_division_head,
+        to.division_head_remarks,
+
+        to.organization_id,
+        to.organization_status,
+        o.organization_head_position,
+        CONCAT(oh.first_name, " ", oh.last_name) AS organization_head_name,
+        to.assigned_to_organization_head,
+        to.organization_head_remarks,
+
+        CONCAT(ap.first_name, " ", ap.last_name) AS applicant_name,
+        ap.position AS applicant_position,
+        o.organization_name,
+        to.created_at
+    ')
             ->join('units u', 'u.unit_id = to.unit_id', 'left')
+            ->join('users uh', 'uh.user_id = u.unit_head_id', 'left')
             ->join('divisions d', 'd.division_id = to.division_id', 'left')
+            ->join('users dh', 'dh.user_id = d.division_head_id', 'left')
             ->join('organization o', 'o.organization_id = to.organization_id', 'left')
-            ->join('users us', 'us.user_id = to.user_id', 'left')
+            ->join('users oh', 'oh.user_id = o.organization_head_id', 'left')
+            ->join('users ap', 'ap.user_id = to.user_id', 'left')
             ->where('to.travel_order_id', $travelOrderId)
             ->get()->getRowArray();
 
@@ -172,13 +190,11 @@ class TravelOrderModel extends Model
             return null;
         }
 
-        // Fetch persons
         $order['persons'] = $this->db->table('travel_order_users')
             ->select('name, position, salary_grade')
             ->where('travel_order_id', $travelOrderId)
             ->get()->getResultArray();
 
-        // Fetch attachments — join to get file_id from google drive
         $order['attachments'] = $this->db->table('travel_order_attachments ta')
             ->select('ta.attachment_type, ta.file_id, ta.attachment_name')
             ->where('ta.travel_order_id', $travelOrderId)
@@ -186,7 +202,6 @@ class TravelOrderModel extends Model
 
         return $order;
     }
-
     /**
      * Summary of getMyTravelOrders
      * - fetches travel orders of the currently logged in user
@@ -203,7 +218,7 @@ class TravelOrderModel extends Model
             arrival_date,
             destination,
             purpose_of_travel,
-            status,
+            current_status,
             created_at
         ')
             ->where('user_id', $userId);
@@ -259,22 +274,13 @@ class TravelOrderModel extends Model
             arrival_date,
             destination,
             purpose_of_travel,
-            status,
+            current_status,
             created_at
         ')
             ->where('current_level', $level)
             ->where($level . '_id', $id)
-            ->where('status', 'pending');
+            ->where($level . '_status', 'pending');
     }
-
-
-    // public function getIncomingByScopeQuery(string $level, int $id)
-    // {
-    //     return $this->builder()
-    //         ->where('current_level', $level)
-    //         ->where($level . '_id', $id)
-    //         ->where('status', 'pending');
-    // }
 
 
     /**
@@ -294,13 +300,13 @@ class TravelOrderModel extends Model
             purpose_of_travel,
             status,
             unit_id,
-            approved_by_supervisor,
+            assigned_to_unit_head,
             supervisor_remarks,
             division_id,
-            approved_by_division_head,
+            assigned_to_division_head,
             division_head_remarks,
             organization_id,
-            approved_by_organization_head,
+            assigned_to_organization_head,
             organization_head_remarks,
             created_at
         ')
@@ -325,13 +331,13 @@ class TravelOrderModel extends Model
             purpose_of_travel,
             status,
             unit_id,
-            approved_by_supervisor,
+            assigned_to_unit_head,
             supervisor_remarks,
             division_id,
-            approved_by_division_head,
+            assigned_to_division_head,
             division_head_remarks,
             organization_id,
-            approved_by_organization_head,
+            assigned_to_organization_head,
             organization_head_remarks,
             created_at
         ')
@@ -356,13 +362,13 @@ class TravelOrderModel extends Model
                 purpose_of_travel,
                 status,
                 unit_id,
-                approved_by_supervisor,
+                assigned_to_unit_head,
                 supervisor_remarks,
                 division_id,
-                approved_by_division_head,
+                assigned_to_division_head,
                 division_head_remarks,
                 organization_id,
-                approved_by_organization_head,
+                assigned_to_organization_head,
                 organization_head_remarks,
                 created_at
             ')
@@ -375,7 +381,7 @@ class TravelOrderModel extends Model
         $this->db->transStart();
         $data = [
             'status' => 'Approved by Supervisor',
-            'approved_by_supervisor' => $supervisorName,
+            'assigned_to_unit_head' => $supervisorName,
             'supervisor_remarks' => $remarks
         ];
         $this->update($travelOrderId, $data);
@@ -388,7 +394,7 @@ class TravelOrderModel extends Model
         $this->db->transStart();
         $data = [
             'status' => 'Rejected by Supervisor',
-            'approved_by_supervisor' => $supervisorName,
+            'assigned_to_unit_head' => $supervisorName,
             'supervisor_remarks' => $remarks
         ];
         $this->update($travelOrderId, $data);
@@ -401,7 +407,7 @@ class TravelOrderModel extends Model
         $this->db->transStart();
         $data = [
             'status' => 'Approved by Division Head',
-            'approved_by_division_head' => $divisionHeadName,
+            'assigned_to_division_head' => $divisionHeadName,
             'division_head_remarks' => $remarks
         ];
         $this->update($travelOrderId, $data);
@@ -414,7 +420,7 @@ class TravelOrderModel extends Model
         $this->db->transStart();
         $data = [
             'status' => 'Rejected by Division Head',
-            'approved_by_division_head' => $divisionHeadName,
+            'assigned_to_division_head' => $divisionHeadName,
             'division_head_remarks' => $remarks
         ];
         $this->update($travelOrderId, $data);
@@ -427,7 +433,7 @@ class TravelOrderModel extends Model
         $this->db->transStart();
         $data = [
             'status' => 'Approved by Organization Head',
-            'approved_by_organization_head' => $organizationHeadName,
+            'assigned_to_organization_head' => $organizationHeadName,
             'organization_head_remarks' => $remarks
         ];
         $this->update($travelOrderId, $data);
@@ -439,7 +445,7 @@ class TravelOrderModel extends Model
         $this->db->transStart();
         $data = [
             'status' => 'Rejected by Organization Head',
-            'approved_by_organization_head' => $organizationHeadName,
+            'assigned_to_organization_head' => $organizationHeadName,
             'organization_head_remarks' => $remarks
         ];
         $this->update($travelOrderId, $data);
