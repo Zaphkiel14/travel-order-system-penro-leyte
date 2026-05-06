@@ -227,7 +227,7 @@
   </style>
 </head>
 
-<body onload="window.print()">
+<body>
 
   <!-- HEADER -->
   <div class="header font-times">
