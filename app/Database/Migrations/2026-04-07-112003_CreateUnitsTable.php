@@ -49,7 +49,7 @@ class CreateUnitsTable extends Migration
             ]
         ]);
         $this->forge->addKey('unit_id', true);
-        $this->forge->addForeignKey('unit_supervisor_id', 'users', 'user_id', 'CASCADE', 'CASCADE');
+        $this->forge->addForeignKey('unit_head_id', 'users', 'user_id', 'CASCADE', 'CASCADE');
         $this->forge->addForeignKey('division_id', 'divisions', 'division_id', 'CASCADE', 'CASCADE');
         $this->forge->createTable('units');
 

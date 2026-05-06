@@ -38,14 +38,10 @@ class CreateTravelOrdersTable extends Migration
             'purpose_of_travel' => [
                 'type' => 'TEXT'
             ],
-            'status' => [
-                'type' => 'ENUM',
-                'constraint' => [
-                                    'pending',
-                                    'approved',
-                                    'rejected'    
-                                ],
-                'default' => 'pending'
+            'current_status' => [
+                'type' => 'VARCHAR',
+                'constraint' => 100,
+                'null' => 'true'
             ],
             'current_level' => [
                 'type' => 'ENUM',
@@ -62,14 +58,15 @@ class CreateTravelOrdersTable extends Migration
                 'unsigned' => true,
                 'null' => true
             ],
-            'approved_by_supervisor' => [
+            'unit_status' => [
+                'type' => 'ENUM',
+                'constraint' => ['pending', 'approved', 'rejected'],
+                'default' => 'pending'
+            ],
+            'assigned_to_unit_head' => [
                 'type' => 'VARCHAR',
                 'constraint' => 255,
                 'null' => true
-            ],
-            'is_approved_by_supervisor' => [
-                'type' => 'BOOLEAN',
-                'default' => false
             ],
             'supervisor_remarks' => [
                 'type' => 'TEXT',
@@ -81,14 +78,15 @@ class CreateTravelOrdersTable extends Migration
                 'unsigned' => true,
                 'null' => true
             ],
-            'approved_by_division_head' => [
+            'division_status' => [
+                'type' => 'ENUM',
+                'constraint' => ['pending', 'approved', 'rejected'],
+                'default' => 'pending'
+            ],
+            'assigned_to_division_head' => [
                 'type' => 'VARCHAR',
                 'constraint' => 255,
                 'null' => true
-            ],
-            'is_approved_by_division_head' => [
-                'type' => 'BOOLEAN',
-                'default' => false
             ],
             'division_head_remarks' => [
                 'type' => 'TEXT',
@@ -100,15 +98,17 @@ class CreateTravelOrdersTable extends Migration
                 'unsigned' => true,
                 'null' => true
             ],
-            'approved_by_organization_head' => [
+            'organization_status' => [
+                'type' => 'ENUM',
+                'constraint' => ['pending', 'approved', 'rejected'],
+                'default' => 'pending'
+            ],
+            'assigned_to_organization_head' => [
                 'type' => 'VARCHAR',
                 'constraint' => 255,
                 'null' => true
             ],
-            'is_approved_by_organization_head' => [
-                'type' => 'BOOLEAN',
-                'default' => false
-            ],
+
             'organization_head_remarks' => [
                 'type' => 'TEXT',
                 'null' => true
