@@ -169,7 +169,7 @@ class SelectModel extends Model
                     ->getRow();
 
             case 'penro':
-                return $this->db->table('organizations')
+                return $this->db->table('organization')
                     ->select('organization_id as id, organization_name as name')
                     ->where('organization_head_id', $userId)
                     ->get()
@@ -178,5 +178,30 @@ class SelectModel extends Model
             default:
                 return null;
         }
+    }
+
+    public function getDivisionById(int $divisionId)
+    {
+        return $this->db->table('divisions')
+            ->select('division_id, division_name')
+            ->where('division_id', $divisionId)
+            ->get()
+            ->getRowArray();
+    }
+    public function getOrganizationById(int $organizationId)
+    {
+        return $this->db->table('organization')
+            ->select('organization_id, organization_name')
+            ->where('organization_id', $organizationId)
+            ->get()
+            ->getRowArray();
+    }
+    public function getUnitById(int $unitId)
+    {
+        return $this->db->table('units')
+            ->select('unit_id, unit_name')
+            ->where('unit_id', $unitId)
+            ->get()
+            ->getRowArray();
     }
 }

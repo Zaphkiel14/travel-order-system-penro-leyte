@@ -25,11 +25,22 @@ class TravelOrderController extends BaseController
         }
 
         return [
-            'level' => $role,
+            'level' => $this->normalizeRole($role),
             'name' => $data->name,
             'id'    => $data->id
         ];
     }
+    public function normalizeRole($role){
+    if ($role === 'penro') {
+            return 'organization';
+        } elseif ($role === 'division') {
+            return 'division';
+        } elseif ($role === 'unit') {
+            return 'unit';
+        }
+        return null;
+    }
+
 
     public function incomingTravelOrders()
     {
@@ -238,6 +249,225 @@ class TravelOrderController extends BaseController
         ]);
     }
 
+    public function updateAttachments(int $travelOrderId)
+    {
+        if (!session()->get('isLoggedIn')) {
+            return $this->response->setStatusCode(401)->setJSON([
+                'success' => false,
+                'message' => 'Unauthorized.'
+            ]);
+        }
+
+        $userId = (int) session()->get('user_id');
+        $model  = new TravelOrderModel();
+        $order  = $model->find($travelOrderId);
+
+        if (!$order || (int) $order['user_id'] !== $userId) {
+            return $this->response->setStatusCode(403)->setJSON([
+                'success' => false,
+                'message' => 'Access denied.'
+            ]);
+        }
+
+        $drive = new GoogleDriveService();
+        try {
+            $drive->setUser($userId);
+        } catch (\Exception $e) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Google Drive not connected. Please re-link your Google account.'
+            ]);
+        }
+
+        $folderId = getenv('drive.folderId');
+
+        $fileFields = [
+            'request_memo'          => 'REQUEST_MEMO',
+            'special_order'         => 'SPECIAL_ORDER',
+            'request_letter'        => 'REQUEST_LETTER',
+            'invitation_letter'     => 'INVITATION_LETTER',
+            'training_notification' => 'TRAINING_NOTIFICATION',
+            'meeting_notice'        => 'MEETING_NOTICE',
+            'conference_program'    => 'CONFERENCE_PROGRAM',
+            'other_document'        => 'OTHER_DOCUMENT',
+        ];
+
+        $travelOrderNumber = $order['travel_order_number'];
+
+        // 🔹 SAME STRUCTURE AS CREATE
+        $attachments = [];
+
+        foreach ($fileFields as $fieldName => $suffix) {
+            $file = $this->request->getFile($fieldName);
+            $attachments[$fieldName] = null;
+
+            if (!$file || !$file->isValid()) {
+                continue;
+            }
+
+            try {
+                $fileName = $travelOrderNumber . '_' . $suffix . '.' . $file->getExtension();
+
+                $fileId = $drive->uploadFileFromContent(
+                    file_get_contents($file->getTempName()),
+                    $fileName,
+                    $file->getClientMimeType(),
+                    $folderId
+                );
+
+                $attachments[$fieldName] = [
+                    'file_id'   => $fileId,
+                    'file_name' => $fileName,
+                ];
+            } catch (\Exception $e) {
+                log_message('error', "[TO Update] Failed {$fieldName}: " . $e->getMessage());
+            }
+        }
+
+        $result = $model->updateTravelOrderAttachments($travelOrderId, $attachments);
+
+        if (!$result) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'No files were uploaded.'
+            ]);
+        }
+
+        return $this->response->setJSON([
+            'success' => true,
+            'message' => "Attachments for '{$travelOrderNumber}' updated successfully."
+        ]);
+    }
+
+
+
+    public function reviewTravelOrder(int $travelOrderId)
+    {
+        if (!session()->get('isLoggedIn')) {
+            return $this->response->setStatusCode(401)->setJSON([
+                'success' => false,
+                'message' => 'Unauthorized.'
+            ]);
+        }
+
+        if (!$this->request->isAJAX()) {
+            return $this->response->setStatusCode(403)->setJSON([
+                'success' => false,
+                'message' => 'Forbidden.'
+            ]);
+        }
+
+        $body   = $this->request->getJSON(true);
+        $action  = $body['action']  ?? '';
+        $remarks = trim($body['remarks'] ?? '');
+
+        if (!in_array($action, ['approve', 'reject'])) {
+            return $this->response->setStatusCode(422)->setJSON([
+                'success' => false,
+                'message' => 'Invalid action.'
+            ]);
+        }
+
+        $userId   = (int) session()->get('user_id');
+        $fullName = session()->get('full_name') ?? 'Unknown';
+        $role     = session()->get('role');
+
+        $model = new TravelOrderModel();
+        $order = $model->find($travelOrderId);
+
+        if (!$order) {
+            return $this->response->setStatusCode(404)->setJSON([
+                'success' => false,
+                'message' => 'Travel order not found.'
+            ]);
+        }
+
+        // Make sure this order is currently sitting at the reviewer's level
+        $expectedLevel = match ($role) {
+            'unit'     => 'unit',
+            'division' => 'division',
+            'penro'    => 'organization',
+            default    => null,
+        };
+
+        if (!$expectedLevel || $order['current_level'] !== $expectedLevel) {
+            return $this->response->setStatusCode(403)->setJSON([
+                'success' => false,
+                'message' => 'This travel order is not pending your review.'
+            ]);
+        }
+
+        $statusVerb = $action === 'approve' ? 'Approved' : 'Rejected';
+
+        $selectModel = new SelectModel();
+
+        $divisionName = null;
+        $organizationName = null;
+
+        if ($order['division_id']) {
+            $division = $selectModel->getDivisionById($order['division_id']);
+            $divisionName = $division['division_name'] ?? 'Division';
+        }
+
+        if ($order['organization_id']) {
+            $organization = $selectModel->getOrganizationById($order['organization_id']);
+            $organizationName = $organization['organization_name'] ?? 'PENRO';
+        }
+
+        $unit = $selectModel->getUnitById($order['unit_id']);
+        $unitName = $unit['unit_name'] ?? 'Unit';
+
+
+        $updateData = match ($role) {
+            'unit' => [
+                'unit_status'           => $action === 'approve' ? 'approved' : 'rejected',
+                'assigned_to_unit_head' => $fullName,
+                'supervisor_remarks'    => $remarks,
+                'current_status' => $action === 'approve'
+                    ? 'Forwarded to ' . $divisionName
+                    : 'Rejected by ' . $unitName,
+                // On approve, bubble up to division if one exists
+                'current_level' => $action === 'approve' && $order['division_id']
+                    ? 'division'
+                    : $order['current_level'],
+            ],
+            'division' => [
+                'division_status'           => $action === 'approve' ? 'approved' : 'rejected',
+                'assigned_to_division_head' => $fullName,
+                'division_head_remarks'     => $remarks,
+                'current_status' => $action === 'approve'
+                    ? 'Forwarded to ' . $organizationName
+                    : 'Rejected by ' . $divisionName,
+                'current_level' => $action === 'approve' && $order['organization_id']
+                    ? 'organization'
+                    : $order['current_level'],
+            ],
+            'penro' => [
+                'organization_status'           => $action === 'approve' ? 'approved' : 'rejected',
+                'assigned_to_organization_head' => $fullName,
+                'organization_head_remarks'     => $remarks,
+                'current_status' => $action === 'approve'
+                    ? 'Approved by PENRO'
+                    : 'Rejected by PENRO',
+            ],
+            default => [],
+        };
+
+        if (empty($updateData)) {
+            return $this->response->setStatusCode(403)->setJSON([
+                'success' => false,
+                'message' => 'Your role cannot perform this action.'
+            ]);
+        }
+
+        $model->update($travelOrderId, $updateData);
+
+        return $this->response->setJSON([
+            'success' => true,
+            'message' => "Travel order {$statusVerb} successfully."
+        ]);
+    }
+
     public function travelOrdersData()
     {
         $draw     = (int) ($this->request->getPost('draw') ?? 1);
@@ -337,7 +567,7 @@ class TravelOrderController extends BaseController
             ]);
         }
 
-        $privilegedRoles = ['admin', 'penro', 'division_head', 'unit', 'records'];
+        $privilegedRoles = ['admin', 'penro', 'division', 'unit', 'records'];
 
         if (!in_array($role, $privilegedRoles) && (int) $order['user_id'] !== $userId) {
             return $this->response->setStatusCode(403)->setJSON([

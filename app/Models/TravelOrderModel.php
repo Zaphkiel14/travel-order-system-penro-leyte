@@ -130,6 +130,34 @@ class TravelOrderModel extends Model
         return $this->db->transStatus() ? $travelOrderId : false;
     }
 
+    public function updateTravelOrderAttachments(int $travelOrderId, array $attachments): bool
+    {
+        $hasUpdate = false;
+
+        foreach ($attachments as $type => $fileData) {
+            if (!$fileData) {
+                continue;
+            }
+
+            $hasUpdate = true;
+
+            // Delete existing attachment of same type
+            $this->db->table('travel_order_attachments')
+                ->where('travel_order_id', $travelOrderId)
+                ->where('attachment_type', $type)
+                ->delete();
+
+            // Insert new one
+            $this->db->table('travel_order_attachments')->insert([
+                'travel_order_id' => $travelOrderId,
+                'file_id'         => $fileData['file_id'],
+                'attachment_name' => $fileData['file_name'],
+                'attachment_type' => $type,
+            ]);
+        }
+
+        return $hasUpdate;
+    }
     /**
      *  Summary of getTravelOrderDetails
      * - fetches full detail of a travel order including its attachments

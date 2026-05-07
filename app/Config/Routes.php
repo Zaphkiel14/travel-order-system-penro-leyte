@@ -32,6 +32,8 @@ $routes->group('', ['filter' => 'auth'],function ($routes) {
         $routes->post('create-travel-order', [TravelOrderController::class, 'createTravelOrder'], ['as' => 'create.TravelOrder']);
         $routes->get('travel-orders/attachment/download/(:any)', [TravelOrderController::class, 'downloadAttachment'], ['as' => 'download.travelOrder']);
         $routes->get('travel-orders/print/(:num)', [TravelOrderController::class, 'printTO/$1'], ['as' => 'print.to']);
+        $routes->post('travel-orders/update-attachments/(:num)', [TravelOrderController::class, 'updateAttachments/$1'], ['as' => 'update.travelOrderAttachments']);
+
     });
     // End :: Dashboard route
     $routes->group('configuration',function($routes){
@@ -62,7 +64,7 @@ $routes->group('', ['filter' => 'auth'],function ($routes) {
     $routes->group('incoming-travel-orders', function($routes){
         $routes->get('/', [TravelOrderController::class, 'incomingTravelOrders'], ['as' => 'view.incomingTravelOrders']);
         $routes->post('data', [TravelOrderController::class, 'incomingTravelOrderData'], ['as' => 'data.incomingTravelOrders']);
-
+        $routes->post('review/(:num)', [TravelOrderController::class, 'reviewTravelOrder/$1'], ['as' => 'review.travelOrder']);
     });
 
 });
