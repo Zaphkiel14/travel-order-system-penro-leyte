@@ -67,4 +67,13 @@ $routes->group('', ['filter' => 'auth'],function ($routes) {
         $routes->post('review/(:num)', [TravelOrderController::class, 'reviewTravelOrder/$1'], ['as' => 'review.travelOrder']);
     });
 
+    $routes->group('processed-travel-orders', function($routes){
+        $routes->get('/', [TravelOrderController::class, 'processedTravelOrders'], ['as' => 'view.processedTravelOrders']);
+        $routes->post('data', [TravelOrderController::class, 'processedTravelOrderData'], ['as' => 'data.processedTravelOrders']);
+
+
+
+        
+});
+
 });

@@ -41,6 +41,109 @@ class TravelOrderController extends BaseController
         return null;
     }
 
+    public function processedTravelOrders(){
+        if (!session()->get('isLoggedIn')) {
+            return $this->renderError(
+                $this->errorHandler->unauthorized()
+            );
+        }
+
+        $data = [
+            'title' => 'Travel Order | Processed Travel Orders',
+            'page' => 'Processed Travel Orders',
+        ];
+
+        $role = session()->get('role');
+        if ($role === 'penro') {
+            return view('organization/processed-travel-orders', $data);
+        } else if ($role === 'division') {
+            return view('division/processed-travel-orders', $data);
+        } else if ($role === 'unit') {
+            return view('unit/processed-travel-orders', $data);
+        } else {
+            return $this->renderError(
+                $this->errorHandler->forbidden('Unauthorized Access')
+            );
+        }
+    }
+
+
+    public function processedTravelOrderData(){
+        try {
+            $scope = $this->getUserScope();
+        } catch (\RuntimeException $e) {
+            return $this->response->setJSON([
+                'draw' => 1,
+                'recordsTotal' => 0,
+                'recordsFiltered' => 0,
+                'data' => [],
+                'error' => $e->getMessage()
+            ]);
+        }
+
+        $draw     = (int) ($this->request->getPost('draw') ?? 1);
+        $start    = (int) ($this->request->getPost('start') ?? 0);
+        $length   = (int) ($this->request->getPost('length') ?? 10);
+        $search   = $this->request->getPost('search')['value'] ?? '';
+        $orderCol = (int) ($this->request->getPost('order')[0]['column'] ?? 0);
+        $orderDir = $this->request->getPost('order')[0]['dir'] ?? 'desc';
+
+        $columns = [
+            0 => 'created_at',
+            1 => 'travel_order_number',
+            2 => 'destination',
+            3 => 'travel_dates',
+            4 => 'status',
+        ];
+        $orderBy = $columns[$orderCol] ?? 'created_at';
+
+        $model = new TravelOrderModel();
+
+        $total = $model->getProcessedByScopeQuery($scope['level'], $scope['id'])
+            ->countAllResults(false);
+
+        $query = $model->getProcessedByScopeQuery($scope['level'], $scope['id']);
+        if ($search !== '') {
+            $query->groupStart()
+                ->like('travel_order_number', $search)
+                ->orLike('destination', $search)
+                ->orLike('current_status', $search)
+                ->groupEnd();
+        }
+
+        // Filtered
+        $filtered = $query->countAllResults(false);
+
+        $rows = $query->orderBy($orderBy, $orderDir)
+            ->findAll($length, $start);
+
+        $data = array_map(function ($row) {
+            return [
+                'created_at'          => date('M j, Y', strtotime($row['created_at'])),
+                'travel_order_number' => esc($row['travel_order_number']),
+                'destination'         => esc($row['destination']),
+                'travel_dates'        => date('M j, Y', strtotime($row['departure_date']))
+                    . ' – '
+                    . date('M j, Y', strtotime($row['arrival_date'])),
+                 'status' => $this->getStatusBadge($row['current_status']),
+                'actions' => '<button type="button"
+                                class="btn btn-primary btn-view-travel-order"
+                                data-id="' . $row['travel_order_id'] . '">
+                                <i class="bi bi-eye"></i> View
+                                </button>',
+            ];
+        }, $rows);
+        return $this->response->setJSON([
+            'draw'            => $draw,
+            'recordsTotal'    => $total,
+            'recordsFiltered' => $filtered,
+            'data'            => $data,
+        ]);
+
+
+    }
+
+
 
     public function incomingTravelOrders()
     {
@@ -111,6 +214,7 @@ class TravelOrderController extends BaseController
             $query->groupStart()
                 ->like('travel_order_number', $search)
                 ->orLike('destination', $search)
+                ->orLike('current_status', $search)
                 ->groupEnd();
         }
 
@@ -128,9 +232,9 @@ class TravelOrderController extends BaseController
                 'travel_dates'        => date('M j, Y', strtotime($row['departure_date']))
                     . ' – '
                     . date('M j, Y', strtotime($row['arrival_date'])),
-                'status'              => '<span class="badge bg-warning">' . esc($row['current_status']) . '</span>',
+                'status'              => $this->getStatusBadge($row['current_status']),
                 'actions' => '<button type="button"
-                                class="btn btn-sm btn-primary btn-view-travel-order"
+                                class="btn btn-primary btn-view-travel-order"
                                 data-id="' . $row['travel_order_id'] . '">
                                 <i class="bi bi-eye"></i> View
                                 </button>',
@@ -500,7 +604,7 @@ class TravelOrderController extends BaseController
             $query->groupStart()
                 ->like('travel_order_number', $search)
                 ->orLike('destination', $search)
-                ->orLike('status', $search)
+                ->orLike('current_status', $search)
                 ->groupEnd();
         }
 

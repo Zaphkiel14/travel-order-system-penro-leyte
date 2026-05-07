@@ -289,7 +289,21 @@ class TravelOrderModel extends Model
     }
 
 
-
+    public function getProcessedByScopeQuery(string $level, int $id)
+    {
+        return $this->select('
+            travel_order_id,
+            travel_order_number,
+            departure_date,
+            arrival_date,
+            destination,
+            purpose_of_travel,
+            current_status,
+            created_at
+        ')
+            ->where($level . '_id', $id)
+            ->whereIn($level . '_status', ['approved', 'rejected']);
+    }
 
 
 
