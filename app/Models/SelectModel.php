@@ -284,7 +284,12 @@ class SelectModel extends Model
 
         // 1. Get user info
         $user = $db->table('users')
-            ->select('user_id, name, email, position, role')
+            ->select('
+            user_id, 
+            CONCAT(first_name, " ", last_name) as full_name,
+            email,
+            position,
+            role')
             ->where('user_id', $userId)
             ->get()
             ->getRowArray();

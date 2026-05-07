@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Config\Services;
 
+
 class EmailService
 {
     /**
@@ -49,5 +50,39 @@ class EmailService
             log_message('error', 'EmailServices failed: ' . $e->getMessage());
             return false;
         }
+    }
+
+
+    public function sendPendingTravelOrderEmail(string $to, string $name, array $order): bool
+    {
+        log_message('debug', '[EmailService] sendPending called');
+        log_message('debug', '[EmailService] Parameters: to=' . $to . ', name=' . $name);
+
+
+        $email = Services::email();
+        $email->setFrom('no-reply@penr-travel-order-system.com', 'Travel Order System - PENRO Leyte');
+        
+        $message = view('emails/pending-travel-order-reminder', array_merge($emailData, [
+            'full_name' => $full_name,
+            'position' => $position,
+            'manages_unit_div_org' => $manages_unit_div_org,
+            'pending_count' => $pending_count,
+            'storeBranchCode' => $storeBranchCode,
+        ]));
+
+        $email->setTo($to);
+        $email->setSubject('Pending Travel Order Reminder — PENRO Leyte');
+        $email->setMessage($message);
+        $email->setNewline("\r\n");
+        $email->setCRLF("\r\n");
+
+        log_message('debug', '[EmailService] Attempting to send pending travel order reminder email...');
+        if ($email->send()) {
+            log_message('debug', '[EmailService] Pending travel order reminder email sent successfully to ' . $to);
+            return true;
+        }
+
+        log_message('error', '[EmailService] Pending travel order reminder email failed: ' . $email->printDebugger(['headers', 'subject', 'body']));
+        return false;
     }
 }
