@@ -1,4 +1,4 @@
-<?= $this->extend('layouts/user-base') ?>
+<?= $this->extend('layouts/users-base') ?>
 
 <?= $this->section('content') ?>
 <div class="container-fluid">
@@ -324,6 +324,182 @@
 <!-- END :: modal add travel order -->
 
 
+<!-- BEGIN :: modal edit travel order -->
+<div class="modal fade" id="modal-edit-travel-order">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form id="form-edit-travel-order" method="POST" enctype="multipart/form-data" novalidate>
+                <?= csrf_field() ?>
+                <input type="hidden" id="edit-to-id" name="travel_order_id">
+                <div class="modal-header">
+                    <h4 class="modal-title">Edit Travel Order</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <!-- Loading state -->
+                    <div id="edit-to-state-loading" class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status"></div>
+                        <p class="mt-3 text-muted mb-0">Loading travel order...</p>
+                    </div>
+
+                    <!-- Error state -->
+                    <div id="edit-to-state-error" class="text-center py-5 d-none">
+                        <i class="bi bi-exclamation-triangle-fill text-danger" style="font-size:2.5rem"></i>
+                        <p class="mt-3 text-danger mb-0" id="edit-to-error-msg">Failed to load details.</p>
+                    </div>
+
+                    <!-- Content state -->
+                    <div id="edit-to-state-content" class="d-none">
+
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="callout callout-info mb-3">
+                                    <p class="fs-6 mb-0">Travel Order Number</p>
+                                    <p class="fs-3 mb-0"><b id="edit-to-number">—</b></p>
+                                    <small class="mb-0 text-muted">Fields are read-only. Only supporting documents can be updated.</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr>
+                        <!-- BEGIN :: Personal Information (READ-ONLY) -->
+                        <div class="row">
+                            <label class="form-label fs-4 mb-2">Personal Information</label>
+                        </div>
+                        <div id="edit-person-container"></div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label class="form-label">Route To</label>
+                                    <input type="text" class="form-control" id="edit-to-route" disabled>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- END :: Personal Information -->
+
+                        <hr>
+                        <!-- BEGIN :: Travel Details (READ-ONLY) -->
+                        <div class="row">
+                            <label class="form-label fs-4">Travel Details</label>
+                            <div class="col-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Departure Date</label>
+                                    <input type="text" class="form-control" id="edit-to-departure" disabled>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Arrival Date</label>
+                                    <input type="text" class="form-control" id="edit-to-arrival" disabled>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label class="form-label">Destination</label>
+                                    <input type="text" class="form-control" id="edit-to-destination" disabled>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label class="form-label">Travel Purpose</label>
+                                    <textarea class="form-control" id="edit-to-purpose" rows="3" disabled></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- END :: Travel Details -->
+
+                        <hr>
+                        <!-- BEGIN :: Supporting Documents (EDITABLE) -->
+                        <div class="row">
+                            <label class="form-label fs-4">Supporting Documents</label>
+                            <p class="text-muted small mb-3">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Uploading a new file will replace the existing one for that document type.
+                                Leave blank to keep the current file.
+                            </p>
+                        </div>
+
+                        <!-- Existing attachments display -->
+                        <div id="edit-existing-attachments" class="mb-3"></div>
+
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Request Memo</label>
+                                    <input type="file" class="form-control" name="request_memo">
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Special Order</label>
+                                    <input type="file" class="form-control" name="special_order">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Request Letter</label>
+                                    <input type="file" class="form-control" name="request_letter">
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Invitation Letter</label>
+                                    <input type="file" class="form-control" name="invitation_letter">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Training Notification</label>
+                                    <input type="file" class="form-control" name="training_notification">
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Meeting Notice</label>
+                                    <input type="file" class="form-control" name="meeting_notice">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Conference Program</label>
+                                    <input type="file" class="form-control" name="conference_program">
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Other Document</label>
+                                    <input type="file" class="form-control" name="other_document">
+                                </div>
+                            </div>
+                        </div>
+                        <!-- END :: Supporting Documents -->
+
+                    </div><!-- /#edit-to-state-content -->
+                </div>
+
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" id="edit-to-submit-btn" disabled>
+                        <i class="bi bi-floppy2"></i> Update Attachments
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- END :: modal edit travel order -->
 <!-- BEGIN :: modal view travel order -->
 
 <!-- ── Travel Order Detail Modal ──────────────────────────────── -->
@@ -356,6 +532,7 @@
             <div id="to-state-content" class="d-none">
                 <div class="modal-body">
                     <div class="row g-3">
+                        
                         <div class="col-12 col-lg-8">
                             <div class="border rounded p-3 h-100 d-flex flex-column">
 
@@ -582,6 +759,218 @@
 </script>
 <!-- END :: Add Person Script -->
 
+<!-- BEGIN :: Edit Travel Order Script -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    var ATTACHMENT_LABELS = {
+        'request_memo':          'Request Memo',
+        'special_order':         'Special Order',
+        'request_letter':        'Request Letter',
+        'invitation_letter':     'Invitation Letter',
+        'training_notification': 'Training Notification',
+        'meeting_notice':        'Meeting Notice',
+        'conference_program':    'Conference Program',
+        'other_document':        'Other Document',
+    };
+
+    var ATTACHMENT_ICONS = {
+        'request_memo':          'bi-file-text',
+        'special_order':         'bi-file-ruled',
+        'request_letter':        'bi-envelope',
+        'invitation_letter':     'bi-envelope-open',
+        'training_notification': 'bi-mortarboard',
+        'meeting_notice':        'bi-calendar-event',
+        'conference_program':    'bi-journal-text',
+        'other_document':        'bi-paperclip',
+    };
+
+    var bsEditTOModal = new bootstrap.Modal(document.getElementById('modal-edit-travel-order'));
+
+    function showEditTOState(state) {
+        ['loading', 'error', 'content'].forEach(function (s) {
+            document.getElementById('edit-to-state-' + s)
+                .classList.toggle('d-none', s !== state);
+        });
+        document.getElementById('edit-to-submit-btn').disabled = (state !== 'content');
+    }
+
+    function fmtDate(str) {
+        if (!str || str === '0000-00-00') return '—';
+        return new Date(str + 'T00:00:00')
+            .toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+    }
+
+    function populateEditModal(d) {
+        // Travel order number callout
+        document.getElementById('edit-to-id').value         = d.travel_order_id;
+        document.getElementById('edit-to-number').textContent = d.travel_order_number || '—';
+
+        // Read-only travel details
+        document.getElementById('edit-to-departure').value  = fmtDate(d.departure_date);
+        document.getElementById('edit-to-arrival').value    = fmtDate(d.arrival_date);
+        document.getElementById('edit-to-destination').value = d.destination || '—';
+        document.getElementById('edit-to-purpose').value    = d.purpose_of_travel || '—';
+
+        // Route-to: derive a readable label from current_status
+        document.getElementById('edit-to-route').value = d.current_status || '—';
+
+        // Persons — read-only rows
+        var personContainer = document.getElementById('edit-person-container');
+        personContainer.innerHTML = '';
+
+        var persons = d.persons || [];
+        if (persons.length === 0) {
+            personContainer.innerHTML = '<p class="text-muted fst-italic small">No persons listed.</p>';
+        } else {
+            persons.forEach(function (p, i) {
+                var row = document.createElement('div');
+                row.className = 'person-group border rounded p-3 mb-3';
+                row.innerHTML =
+                    '<div class="d-flex justify-content-between align-items-center mb-2">' +
+                        '<span class="fw-semibold text-muted small">Person #' + (i + 1) + '</span>' +
+                    '</div>' +
+                    '<div class="row">' +
+                        '<div class="col-5">' +
+                            '<label class="form-label">Name</label>' +
+                            '<input type="text" class="form-control" value="' + (p.name || '') + '" disabled>' +
+                        '</div>' +
+                        '<div class="col-2">' +
+                            '<label class="form-label">Salary Grade</label>' +
+                            '<input type="text" class="form-control" value="' + (p.salary_grade || '') + '" disabled>' +
+                        '</div>' +
+                        '<div class="col-5">' +
+                            '<label class="form-label">Position</label>' +
+                            '<input type="text" class="form-control" value="' + (p.position || '') + '" disabled>' +
+                        '</div>' +
+                    '</div>';
+                personContainer.appendChild(row);
+            });
+        }
+
+        // Existing attachments summary
+        var existingEl = document.getElementById('edit-existing-attachments');
+        existingEl.innerHTML = '';
+
+        if (d.attachments && d.attachments.length > 0) {
+            var heading = document.createElement('p');
+            heading.className = 'mb-2 small text-muted text-uppercase fw-semibold';
+            heading.style.letterSpacing = '.05em';
+            heading.textContent = 'Current Attachments';
+            existingEl.appendChild(heading);
+
+            var list = document.createElement('div');
+            list.className = 'd-flex flex-wrap gap-2 mb-3';
+
+            d.attachments.forEach(function (a) {
+                var label   = ATTACHMENT_LABELS[a.attachment_type] || a.attachment_type || 'Document';
+                var iconCls = ATTACHMENT_ICONS[a.attachment_type]  || 'bi-file-earmark';
+
+                var badge = document.createElement('span');
+                badge.className = 'badge bg-secondary-subtle text-secondary-emphasis px-2 py-1';
+                badge.innerHTML = '<i class="bi ' + iconCls + ' me-1"></i>' + label;
+                list.appendChild(badge);
+            });
+
+            existingEl.appendChild(list);
+        } else {
+            var noAtch = document.createElement('p');
+            noAtch.className = 'text-muted fst-italic small mb-3';
+            noAtch.textContent = 'No existing attachments.';
+            existingEl.appendChild(noAtch);
+        }
+
+        // Reset all file inputs
+        document.querySelectorAll('#form-edit-travel-order input[type="file"]').forEach(function (el) {
+            el.value = '';
+        });
+
+        // Update form action with correct travel order id
+        document.getElementById('form-edit-travel-order').action =
+            '<?= site_url('dashboard/travel-orders/update-attachments') ?>/' + d.travel_order_id;
+    }
+
+    // Delegated click — open modal on .btn-edit-travel-order
+    document.addEventListener('click', function (e) {
+        var btn = e.target.closest('.btn-edit-travel-order');
+        if (!btn) return;
+
+        var id = btn.getAttribute('data-id');
+        if (!id) return;
+
+        showEditTOState('loading');
+        bsEditTOModal.show();
+
+        fetch('<?= site_url('dashboard/travel-orders/details') ?>/' + id, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json',
+            }
+        })
+        .then(function (res) {
+            if (!res.ok) throw new Error('Server returned ' + res.status);
+            return res.json();
+        })
+        .then(function (json) {
+            if (!json.success) throw new Error(json.message || 'Unknown error.');
+            populateEditModal(json.data);
+            showEditTOState('content');
+        })
+        .catch(function (err) {
+            document.getElementById('edit-to-error-msg').textContent =
+                err.message || 'Failed to load travel order.';
+            showEditTOState('error');
+        });
+    });
+
+    // Form submit
+    document.getElementById('form-edit-travel-order').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        var submitBtn = document.getElementById('edit-to-submit-btn');
+        var originalLabel = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Saving...';
+
+        var formData = new FormData(this);
+
+        fetch(this.action, {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            body: formData
+        })
+        .then(function (res) {
+            if (!res.ok) throw new Error('Server returned ' + res.status);
+            return res.json();
+        })
+        .then(function (json) {
+            submitBtn.innerHTML = originalLabel;
+            submitBtn.disabled = false;
+
+            if (!json.success) throw new Error(json.message || 'Update failed.');
+
+            bsEditTOModal.hide();
+
+            // Reload datatable
+            var dt = $('#my_travel_orders_table').DataTable();
+            if (dt) dt.ajax.reload(null, false);
+
+            // Show toast if available
+            // You can hook into your existing toast system here
+        })
+        .catch(function (err) {
+            submitBtn.innerHTML = originalLabel;
+            submitBtn.disabled = false;
+            document.getElementById('edit-to-error-msg').textContent =
+                err.message || 'Failed to update travel order.';
+            showEditTOState('error');
+        });
+    });
+
+});
+</script>
+<!-- END :: Edit Travel Order Script -->
 <!-- BEGIN :: View Travel Order Script -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
