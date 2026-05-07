@@ -38,22 +38,7 @@
             <!-- end::Dashboard -->
 
 
-            <!-- begin:: PAR Management  -->
-            <li class="nav-item">
-              <a href="<?= route_to('view.incoming-travel-orders') ?>" class="nav-link <?= ($page == 'Incoming Travel Orders') ? 'active' : '' ?>">
-                <i class="nav-icon bi bi-envelope-arrow-down-fill"></i>
-                <p>Incoming Travel Orders</p>
-              </a>
-            </li>
-            <!-- end:: PAR Management  -->
-            <!-- begin:: ICS Management  -->
-            <li class="nav-item">
-              <a href="<?= route_to('view.processed-travel-orders') ?>" class="nav-link <?= ($page == 'Processed Travel Orders') ? 'active' : '' ?>">
-                <i class="nav-icon bi bi-envelope-arrow-up-fill"></i>
-                <p>Processed Travel Orders</p>
-              </a>
-            </li>
-            <!-- end:: ICS Management  -->
+
             <!-- begin:: User Management -->
             <li class="nav-item">
               <a href="<?= route_to('view.user-management') ?>" class="nav-link <?= ($page == 'User Management') ? 'active' : '' ?>">
