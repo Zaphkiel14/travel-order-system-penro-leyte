@@ -26,7 +26,7 @@ $routes->group('', ['filter' => 'auth'],function ($routes) {
     $routes->get('logout', [Auth::class, 'logout']);
     // Begin :: dashboard route
     $routes->group('dashboard', function ($routes) {
-        $routes->get('/', [DashboardController::class, 'index'], ['as' => 'view.dashboard']);
+        $routes->get('/', [TravelOrderController::class, 'index'], ['as' => 'view.dashboard']);
         $routes->post('mytravelorders', [TravelOrderController::class, 'travelOrdersData'], ['as' => 'data.travelOrders']);
         $routes->get('travel-orders/details/(:num)', [TravelOrderController::class, 'travelOrderDetails'], ['as' => 'data.travelOrderDetails']);
         $routes->post('create-travel-order', [TravelOrderController::class, 'createTravelOrder'], ['as' => 'create.TravelOrder']);
@@ -70,10 +70,6 @@ $routes->group('', ['filter' => 'auth'],function ($routes) {
     $routes->group('processed-travel-orders', function($routes){
         $routes->get('/', [TravelOrderController::class, 'processedTravelOrders'], ['as' => 'view.processedTravelOrders']);
         $routes->post('data', [TravelOrderController::class, 'processedTravelOrderData'], ['as' => 'data.processedTravelOrders']);
-
-
-
-        
 });
-
+    $routes->post('approved-travel-orders/data', [TravelOrderController::class, 'approvedTravelOrderData'], ['as' => 'data.approvedTravelOrders']);
 });

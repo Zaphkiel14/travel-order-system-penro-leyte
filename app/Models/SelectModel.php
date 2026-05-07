@@ -32,6 +32,82 @@ class SelectModel extends Model
 
         return "{$base}-{$nextIncrementFormatted}";
     }
+
+
+    public function getCreatorTravelOrderStats(int $userId): array
+    {
+        return $this->db->table('travel_orders')
+            ->select("
+        COUNT(*) as total,
+
+        SUM(
+            CASE
+                WHEN LOWER(current_status) LIKE 'forwarded to%'
+                THEN 1
+                ELSE 0
+            END
+        ) as pending,
+
+        SUM(
+            CASE
+                WHEN LOWER(current_status) LIKE 'approved by%'
+                THEN 1
+                ELSE 0
+            END
+        ) as approved,
+
+        SUM(
+            CASE
+                WHEN LOWER(current_status) LIKE 'rejected by%'
+                THEN 1
+                ELSE 0
+            END
+        ) as rejected
+    ")
+            ->where('user_id', $userId)
+            ->get()
+            ->getRowArray();
+    }
+
+
+    public function getAssigneeTravelOrderStats(string $level, int $userId): array
+    {
+        $idColumn = $level . '_id';
+        $statusColumn = $level . '_status';
+
+        return $this->db->table('travel_orders')
+            ->select("
+        COUNT(*) as total,
+
+        SUM(
+            CASE
+                WHEN {$statusColumn} = 'pending'
+                THEN 1
+                ELSE 0
+            END
+        ) as pending,
+
+        SUM(
+            CASE
+                WHEN {$statusColumn} = 'approved'
+                THEN 1
+                ELSE 0
+            END
+        ) as approved,
+
+        SUM(
+            CASE
+                WHEN {$statusColumn} = 'rejected'
+                THEN 1
+                ELSE 0
+            END
+        ) as rejected
+    ")
+            ->where($idColumn, $userId)
+            ->get()
+            ->getRowArray();
+    }
+
     public function organizationStructure()
     {
         $orgBuilder = $this->db->table('organization');
@@ -160,21 +236,18 @@ class SelectModel extends Model
                     ->where('unit_head_id', $userId)
                     ->get()
                     ->getRow();
-
             case 'division':
                 return $this->db->table('divisions')
                     ->select('division_id as id, division_name as name')
                     ->where('division_head_id', $userId)
                     ->get()
                     ->getRow();
-
             case 'penro':
                 return $this->db->table('organization')
                     ->select('organization_id as id, organization_name as name')
                     ->where('organization_head_id', $userId)
                     ->get()
                     ->getRow();
-
             default:
                 return null;
         }
@@ -203,5 +276,48 @@ class SelectModel extends Model
             ->where('unit_id', $unitId)
             ->get()
             ->getRowArray();
+    }
+
+    public function getUserManagementSummary(int $userId, string $role): array
+    {
+        $db = $this->db;
+
+        // 1. Get user info
+        $user = $db->table('users')
+            ->select('user_id, name, email, position, role')
+            ->where('user_id', $userId)
+            ->get()
+            ->getRowArray();
+
+        // 2. Get what they manage (unit/division/organization)
+        $managed = $this->getManagedByRole($role, $userId);
+
+        // Normalize structure
+        $structure = [
+            'unit' => null,
+            'division' => null,
+            'organization' => null,
+        ];
+
+        if ($role === 'unit' && $managed) {
+            $structure['unit'] = $managed;
+        }
+
+        if ($role === 'division' && $managed) {
+            $structure['division'] = $managed;
+        }
+
+        if ($role === 'penro' && $managed) {
+            $structure['organization'] = $managed;
+        }
+
+        // 3. Get travel order stats (pending, approved, rejected)
+        $stats = $this->getAssigneeTravelOrderStats($role, $userId);
+
+        return [
+            'user' => $user,
+            'managed_structure' => $structure,
+            'travel_order_stats' => $stats
+        ];
     }
 }

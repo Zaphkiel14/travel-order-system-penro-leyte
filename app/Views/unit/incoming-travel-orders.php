@@ -2,6 +2,69 @@
 
 <?= $this->section('content') ?>
 <div class="container-fluid">
+
+
+    <div class="row">
+        <div class="col-12 col-sm-6 col-md-3">
+            <div class="info-box">
+                <span class="info-box-icon text-bg-primary shadow-sm">
+                    <i class="bi bi-bar-chart-fill"></i>
+                </span>
+
+                <div class="info-box-content">
+                    <span class="info-box-text mb-0 text-muted">Total</span>
+                    <span class="info-box-number fs-4 fw-bold">
+                        <?= esc($stats['total']) ?: 0 ?>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-md-3">
+            <div class="info-box">
+                <span class="info-box-icon text-bg-warning shadow-sm">
+                    <i class="bi bi-hourglass-split"></i>
+                </span>
+
+                <div class="info-box-content">
+                    <span class="info-box-text mb-0 text-muted">Pending</span>
+                    <span class="info-box-number fs-4 fw-bold">
+                        <?= esc($stats['pending']) ?: 0 ?>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-3">
+            <div class="info-box">
+                <span class="info-box-icon text-bg-success shadow-sm">
+                    <i class="bi bi-hand-thumbs-up-fill"></i>
+                </span>
+
+                <div class="info-box-content">
+                    <span class="info-box-text mb-0 text-muted">Approved</span>
+                    <span class="info-box-number fs-4 fw-bold">
+                        <?= esc($stats['approved']) ?: 0 ?>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-md-3">
+            <div class="info-box">
+                <span class="info-box-icon text-bg-danger shadow-sm">
+                    <i class="bi bi-hand-thumbs-down-fill"></i>
+                </span>
+
+                <div class="info-box-content">
+                    <span class="info-box-text mb-0 text-muted">Rejected</span>
+                    <span class="info-box-number fs-4 fw-bold">
+                        <?= esc($stats['rejected']) ?: 0 ?>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <div class="row">
         <div class="col-12">
             <div class="card mb-4">

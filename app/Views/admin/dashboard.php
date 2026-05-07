@@ -12,7 +12,7 @@
                 <div class="info-box-content">
                     <span class="info-box-text mb-0 text-muted">Total</span>
                     <span class="info-box-number fs-4 fw-bold">
-                        10
+                        <?= esc($stats['total']) ?: 0 ?>
                     </span>
                 </div>
             </div>
@@ -25,7 +25,9 @@
 
                 <div class="info-box-content">
                     <span class="info-box-text mb-0 text-muted">Pending</span>
-                    <span class="info-box-number fs-4 fw-bold">41</span>
+                    <span class="info-box-number fs-4 fw-bold">
+                        <?= esc($stats['pending']) ?: 0 ?>
+                    </span>
                 </div>
             </div>
         </div>
@@ -38,7 +40,9 @@
 
                 <div class="info-box-content">
                     <span class="info-box-text mb-0 text-muted">Approved</span>
-                    <span class="info-box-number fs-4 fw-bold">76</span>
+                    <span class="info-box-number fs-4 fw-bold">
+                        <?= esc($stats['approved']) ?: 0 ?>
+                    </span>
                 </div>
             </div>
         </div>
@@ -50,11 +54,14 @@
 
                 <div class="info-box-content">
                     <span class="info-box-text mb-0 text-muted">Rejected</span>
-                    <span class="info-box-number fs-4 fw-bold">20</span>
+                    <span class="info-box-number fs-4 fw-bold">
+                        <?= esc($stats['rejected']) ?: 0 ?>
+                    </span>
                 </div>
             </div>
         </div>
     </div>
+
 
     <div class="row">
         <div class="col-12">

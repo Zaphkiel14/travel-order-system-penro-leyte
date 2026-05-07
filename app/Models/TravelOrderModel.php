@@ -305,6 +305,21 @@ class TravelOrderModel extends Model
             ->whereIn($level . '_status', ['approved', 'rejected']);
     }
 
+    public function getCompletedTravelOrderQuery(){
+        
+        return $this->select('
+            travel_order_id,
+            travel_order_number,
+            departure_date,
+            arrival_date,
+            destination,
+            purpose_of_travel,
+            current_status,
+            created_at
+        ')
+            ->where('current_status', 'Approved by PENRO')
+            ->where('organization_status', 'approved');
+    }
 
 
     public function getIncomingByScopeQuery(string $level, int $id)
@@ -324,174 +339,4 @@ class TravelOrderModel extends Model
             ->where($level . '_status', 'pending');
     }
 
-
-    /**
-     * Summary of getSupervisorTravelOrders
-     * - fetches travel orders for a supervisor based on the unit they are supervising
-     * @param mixed $unitId
-     * @return array
-     */
-    public function getSupervisorTravelOrders($unitId)
-    {
-        $this->select('
-            travel_order_id,
-            travel_order_number,
-            departure_date,
-            arrival_date,
-            destination,
-            purpose_of_travel,
-            status,
-            unit_id,
-            assigned_to_unit_head,
-            supervisor_remarks,
-            division_id,
-            assigned_to_division_head,
-            division_head_remarks,
-            organization_id,
-            assigned_to_organization_head,
-            organization_head_remarks,
-            created_at
-        ')
-            ->where('unit_id', $unitId);
-        return $this->get()->getResult();
-    }
-
-    /**
-     * Summary of getDivisionHeadTravelOrders
-     * - fetches travel orders for a division head based on the division they are heading
-     * @param mixed $divisionId
-     * @return array
-     */
-    public function getDivisionHeadTravelOrders($divisionId)
-    {
-        $this->select('
-            travel_order_id,
-            travel_order_number,
-            departure_date,
-            arrival_date,
-            destination,
-            purpose_of_travel,
-            status,
-            unit_id,
-            assigned_to_unit_head,
-            supervisor_remarks,
-            division_id,
-            assigned_to_division_head,
-            division_head_remarks,
-            organization_id,
-            assigned_to_organization_head,
-            organization_head_remarks,
-            created_at
-        ')
-            ->where('division_id', $divisionId);
-        return $this->get()->getResult();
-    }
-
-    /**
-     * Summary of getOrganizationHeadTravelOrders
-     * - fetches travel orders for an organization head based on the organization they are heading
-     * @param mixed $organizationId
-     * @return array
-     */
-    public function getOrganizationHeadTravelOrders($organizationId)
-    {
-        $this->select('
-                travel_order_id,
-                travel_order_number,
-                departure_date,
-                arrival_date,
-                destination,
-                purpose_of_travel,
-                status,
-                unit_id,
-                assigned_to_unit_head,
-                supervisor_remarks,
-                division_id,
-                assigned_to_division_head,
-                division_head_remarks,
-                organization_id,
-                assigned_to_organization_head,
-                organization_head_remarks,
-                created_at
-            ')
-            ->where('organization_id', $organizationId);
-        return $this->get()->getResult();
-    }
-
-    public function approveBySupervisor($travelOrderId, $supervisorName, $remarks)
-    {
-        $this->db->transStart();
-        $data = [
-            'status' => 'Approved by Supervisor',
-            'assigned_to_unit_head' => $supervisorName,
-            'supervisor_remarks' => $remarks
-        ];
-        $this->update($travelOrderId, $data);
-        $this->db->transComplete();
-        return $this->db->transStatus() ? $travelOrderId : false;
-    }
-
-    public function rejectBySupervisor($travelOrderId, $supervisorName, $remarks)
-    {
-        $this->db->transStart();
-        $data = [
-            'status' => 'Rejected by Supervisor',
-            'assigned_to_unit_head' => $supervisorName,
-            'supervisor_remarks' => $remarks
-        ];
-        $this->update($travelOrderId, $data);
-        $this->db->transComplete();
-        return $this->db->transStatus() ? $travelOrderId : false;
-    }
-
-    public function approveByDivisionHead($travelOrderId, $divisionHeadName, $remarks)
-    {
-        $this->db->transStart();
-        $data = [
-            'status' => 'Approved by Division Head',
-            'assigned_to_division_head' => $divisionHeadName,
-            'division_head_remarks' => $remarks
-        ];
-        $this->update($travelOrderId, $data);
-        $this->db->transComplete();
-        return $this->db->transStatus() ? $travelOrderId : false;
-    }
-
-    public function rejectByDivisionHead($travelOrderId, $divisionHeadName, $remarks)
-    {
-        $this->db->transStart();
-        $data = [
-            'status' => 'Rejected by Division Head',
-            'assigned_to_division_head' => $divisionHeadName,
-            'division_head_remarks' => $remarks
-        ];
-        $this->update($travelOrderId, $data);
-        $this->db->transComplete();
-        return $this->db->transStatus() ? $travelOrderId : false;
-    }
-
-    public function approveByOrganizationHead($travelOrderId, $organizationHeadName, $remarks)
-    {
-        $this->db->transStart();
-        $data = [
-            'status' => 'Approved by Organization Head',
-            'assigned_to_organization_head' => $organizationHeadName,
-            'organization_head_remarks' => $remarks
-        ];
-        $this->update($travelOrderId, $data);
-        $this->db->transComplete();
-        return $this->db->transStatus() ? $travelOrderId : false;
-    }
-    public function rejectByOrganizationHead($travelOrderId, $organizationHeadName, $remarks)
-    {
-        $this->db->transStart();
-        $data = [
-            'status' => 'Rejected by Organization Head',
-            'assigned_to_organization_head' => $organizationHeadName,
-            'organization_head_remarks' => $remarks
-        ];
-        $this->update($travelOrderId, $data);
-        $this->db->transComplete();
-        return $this->db->transStatus() ? $travelOrderId : false;
-    }
 }
