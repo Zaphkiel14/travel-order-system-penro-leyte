@@ -53,22 +53,27 @@ class EmailService
     }
 
 
-    public function sendPendingTravelOrderEmail(string $to, string $name, array $order): bool
+    public function sendPendingTravelOrderEmail(string $to, string $full_name, string $position, string $managed_unit_div_org, string $pending_count): bool
     {
         log_message('debug', '[EmailService] sendPending called');
-        log_message('debug', '[EmailService] Parameters: to=' . $to . ', name=' . $name);
+        log_message('debug', '[EmailService] Parameters: to=' . $to . ', name=' . $full_name);
 
 
         $email = Services::email();
         $email->setFrom('no-reply@penr-travel-order-system.com', 'Travel Order System - PENRO Leyte');
-        
-        $message = view('emails/pending-travel-order-reminder', array_merge($emailData, [
+        // $email->setMailType('html');
+        // $path = FCPATH . 'denr_logo.png';
+        // $cid = 'denrlogo';
+        // $email->attach($path, 'inline', $cid);
+
+
+        $message = view('emails/pending_reminder', [
+            // 'logo_cid' => 'cid:' . $cid,
             'full_name' => $full_name,
             'position' => $position,
-            'manages_unit_div_org' => $manages_unit_div_org,
+            'managed_unit_div_org' => $managed_unit_div_org,
             'pending_count' => $pending_count,
-            'storeBranchCode' => $storeBranchCode,
-        ]));
+        ]);
 
         $email->setTo($to);
         $email->setSubject('Pending Travel Order Reminder — PENRO Leyte');

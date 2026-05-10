@@ -8,6 +8,9 @@ use App\Controllers\TravelOrderController;
 use App\Controllers\ProfileController;
 use App\Controllers\ConfigController;
 use App\Controllers\UserManagementController;
+
+use App\Controllers\TestController;
+
 /**
  * @var RouteCollection $routes
  */
@@ -21,6 +24,12 @@ $routes->group('', ['filter' => 'noauth'], function ($routes) {
     $routes->get('google/callback', [Auth::class, 'callback'], ['as' => 'google.callback']);
 });
 
+
+
+$routes->get('test', [TestController::class, 'index']);
+$routes->post('test-email', [TestController::class, 'testEmail'], ['as' => 'test.email.send']);
+$routes->get('test-dashboard', [TestController::class, 'testDashboard']);
+$routes->post('test-reminder', [TestController::class, 'testReminder'], ['as' => 'test.reminder']);
 // Authenticated routes
 $routes->group('', ['filter' => 'auth'],function ($routes) {
     $routes->get('logout', [Auth::class, 'logout']);

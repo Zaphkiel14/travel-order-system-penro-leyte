@@ -1,19 +1,16 @@
 <?= $this->extend('emails/layout') ?>
 
 <?= $this->section('content') ?>
-
-
-
     <!-- ================= BODY ================= -->
     <div style="padding:40px; color:#333333;">
 
         <p style="margin-top:0; font-size:15px;">
-            Good day <strong><?= esc($user_name ?? 'User') ?></strong>,
+            Good day <strong><?= esc($full_name ?? 'User') ?></strong>,
         </p>
 
         <p style="font-size:15px; line-height:1.7;">
             This is to formally notify you in your capacity as
-            <strong><?= esc($user_position ?? 'User Position') ?></strong>
+            <strong><?= esc($position ?? 'User Position') ?></strong>
             of the <strong><?= esc($managed_unit_div_org ?? 'Managed Unit/Division/Organization') ?></strong>,
             that there are currently
             <strong style="color:#d32f2f;"><?= esc($pending_count ?? 0) ?></strong>
@@ -43,5 +40,3 @@
     </div>
 
 <?= $this->endSection() ?>
-
-    
