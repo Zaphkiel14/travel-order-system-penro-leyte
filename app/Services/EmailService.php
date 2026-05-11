@@ -36,7 +36,7 @@ class EmailService
         // Use the SMTPUser as sender if not specified
         $this->email->setFrom(
             $from ?? config('Email')->SMTPUser,
-            $fromName ?? 'DICT ICT INVENTORY SYSTEM'
+            $fromName ?? 'PENRO TRAVEL ORDER SYSTEM'
         );
         $this->email->setTo($to);
         $this->email->setSubject($subject);
@@ -58,17 +58,10 @@ class EmailService
         log_message('debug', '[EmailService] sendPending called');
         log_message('debug', '[EmailService] Parameters: to=' . $to . ', name=' . $full_name);
 
-
         $email = Services::email();
         $email->setFrom('no-reply@penr-travel-order-system.com', 'Travel Order System - PENRO Leyte');
-        // $email->setMailType('html');
-        // $path = FCPATH . 'denr_logo.png';
-        // $cid = 'denrlogo';
-        // $email->attach($path, 'inline', $cid);
-
 
         $message = view('emails/pending_reminder', [
-            // 'logo_cid' => 'cid:' . $cid,
             'full_name' => $full_name,
             'position' => $position,
             'managed_unit_div_org' => $managed_unit_div_org,
