@@ -37,6 +37,7 @@ class ConfigController extends BaseController
             'unitusers'    => $selectModel->getUnitUsers(),
             'divisionusers' => $selectModel->getDivisionUsers(),
             'penrouser' => $selectModel->getPenroUsers(),
+            'orgData' => $selectModel->getOrganizationData()
         ];
 
         return view('admin/config', $data);

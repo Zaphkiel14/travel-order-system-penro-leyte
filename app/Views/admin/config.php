@@ -122,7 +122,7 @@
                         <div class="col-12">
                             <div class="form-group">
                                 <label for="organization_name" class="form-label">Organization Name:</label>
-                                <input type="text" class="form-control" name="organization_name" placeholder="Enter Organization Name" required>
+                                <input type="text" class="form-control" name="organization_name" placeholder="Enter Organization Name" value="<?= $orgData['organization_name'] ?>" required>
                             </div>
                         </div>
                     </div>
@@ -130,7 +130,7 @@
                         <div class="col-12">
                             <div class="form-group">
                                 <label for="organization_head_position" class="form-label">Organization Head Position:</label>
-                                <input type="text" class="form-control" name="organization_head_position" placeholder="Enter Organization Head Position" required>
+                                <input type="text" class="form-control" name="organization_head_position" placeholder="Enter Organization Head Position" value="<?= $orgData['organization_head_position'] ?>" required>
                             </div>
                         </div>
                     </div>

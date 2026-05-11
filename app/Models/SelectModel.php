@@ -557,4 +557,12 @@ class SelectModel extends Model
             ->get()
             ->getResult();
     }
+
+    public function getOrganizationData(){
+        return $this->db->table('organization')
+            ->select('organization_id, organization_name, organization_head_position, organization_head_id')
+            ->where('organization_id', 1)
+            ->get()
+            ->getRowArray();
+    }
 }
