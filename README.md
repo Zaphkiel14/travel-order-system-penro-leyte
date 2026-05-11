@@ -1,69 +1,217 @@
-# CodeIgniter 4 Application Starter
+# DENR Inventory System
 
-## What is CodeIgniter?
+## Overview
 
-CodeIgniter is a PHP full-stack web framework that is light, fast, flexible and secure.
-More information can be found at the [official site](https://codeigniter.com).
+The **PENRO Travel Order System** is a web-based application designed to create, manage, and monitor Travel Orders for the Provincial Environment and Natural Resources Office (PENRO) Leyte. The system improves operational efficiency by digitalizing the process and auto routing the document and also supporting multi-step approval. Allows users to print said travel orders, also allows them to upload supporting documents attachments to the Travel Order via drive.
 
-This repository holds a composer-installable app starter.
-It has been built from the
-[development repository](https://github.com/codeigniter4/CodeIgniter4).
+---
 
-More information about the plans for version 4 can be found in [CodeIgniter 4](https://forum.codeigniter.com/forumdisplay.php?fid=28) on the forums.
+## Features
 
-You can read the [user guide](https://codeigniter.com/user_guide/)
-corresponding to the latest version of the framework.
+* Role-Based Access Control
+* Google OAuth Authentication
+* Travel Order Management (Create, Update, Delete, Store, Print, Download)
+* Hierarchical Organization Structure
+* File Management with Google Drive integration
+* Report Generation and Printing
+* Automated Email Reminders
+* Audit Trail for user activity logging
 
-## Installation & updates
+---
 
-`composer create-project codeigniter4/appstarter` then `composer update` whenever
-there is a new release of the framework.
+## Tech Stack
 
-When updating, check the release notes to see if there are any changes you might need to apply
-to your `app` folder. The affected files can be copied or merged from
-`vendor/codeigniter4/framework/app`.
+* **Backend:** CodeIgniter 4 (PHP)
+* **Frontend:** HTML, CSS, Bootstrap, AdminLTE
+* **Database:** MySQL
+* **Authentication:** Session-based and Google OAuth
+* **Cloud Storage:** Google Drive API
 
-## Setup
+---
 
-Copy `env` to `.env` and tailor for your app, specifically the baseURL
-and any database settings.
+## Requirements
 
-## Important Change with index.php
+* PHP ^8.2
+* Composer ^2.8
+* MySQL Database
+* Google Cloud Console (OAuth Client + Service Account)
+* Gmail App Password (for SMTP email service)
 
-`index.php` is no longer in the root of the project! It has been moved inside the *public* folder,
-for better security and separation of components.
+---
 
-This means that you should configure your web server to "point" to your project's *public* folder, and
-not to the project root. A better practice would be to configure a virtual host to point there. A poor practice would be to point your web server to the project root and expect to enter *public/...*, as the rest of your logic and the
-framework are exposed.
+## Installation
 
-**Please** read the user guide for a better explanation of how CI4 works!
+### 1. Clone the Repository
 
-## Repository Management
+```bash
+git clone https://github.com/Zaphkiel14/travel-order-system-penro-leyte.git
+cd travel-order-system-penro-leyte
+```
 
-We use GitHub issues, in our main repository, to track **BUGS** and to track approved **DEVELOPMENT** work packages.
-We use our [forum](http://forum.codeigniter.com) to provide SUPPORT and to discuss
-FEATURE REQUESTS.
+### 2. Install Dependencies
 
-This repository is a "distribution" one, built by our release preparation script.
-Problems with it can be raised on our forum, or as issues in the main repository.
+```bash
+composer install
+```
 
-## Server Requirements
+### 3. Configure Environment
 
-PHP version 8.2 or higher is required, with the following extensions installed:
+Copy the `env` file and rename it to `.env`, then update the following:
 
-- [intl](http://php.net/manual/en/intl.requirements.php)
-- [mbstring](http://php.net/manual/en/mbstring.installation.php)
+#### Application Settings
 
-> [!WARNING]
-> - The end of life date for PHP 7.4 was November 28, 2022.
-> - The end of life date for PHP 8.0 was November 26, 2023.
-> - The end of life date for PHP 8.1 was December 31, 2025.
-> - If you are still using below PHP 8.2, you should upgrade immediately.
-> - The end of life date for PHP 8.2 will be December 31, 2026.
+```
+CI_ENVIRONMENT = development
+app.baseURL = 'http://localhost:8080/'
+```
 
-Additionally, make sure that the following extensions are enabled in your PHP:
+> Set `CI_ENVIRONMENT` to `production` when deploying.
 
-- json (enabled by default - don't turn it off)
-- [mysqlnd](http://php.net/manual/en/mysqlnd.install.php) if you plan to use MySQL
-- [libcurl](http://php.net/manual/en/curl.requirements.php) if you plan to use the HTTP\CURLRequest library
+#### Database Configuration
+
+```
+database.default.hostname = localhost
+database.default.database = your_database_name
+database.default.username = root
+database.default.password =
+```
+
+### 4. Run Migrations
+
+```bash
+php spark migrate
+```
+
+---
+
+## Email Configuration
+
+Add the following to your `.env` file:
+
+```
+email.protocol = smtp
+email.SMTPHost = smtp.gmail.com
+email.SMTPUser = youremail@example.com
+email.SMTPPass = your_app_password
+email.SMTPPort = 587
+email.SMTPCrypto = tls
+email.fromEmail = youremail@example.com
+email.fromName = "DENR Travel Order System"
+email.mailType = html
+email.charset = UTF-8
+email.wordWrap = true
+```
+
+### Automated Emails
+
+To enable scheduled email notifications, configure a scheduler:
+
+* **Linux:** Cron Job
+* **Windows:** Task Scheduler
+
+Command to run:
+
+```bash
+php spark tasks:run
+```
+
+This triggers the maintenance reminder command.
+
+---
+
+## Google Drive Integration
+
+### 1. Store Credentials
+
+Place your Google credentials in:
+
+```
+writable/keys/
+    client_secret.json
+    service_account.json
+```
+
+### 2. Configure `.env`
+
+```
+drive.folderId = 
+GOOGLE_CLIENT_SECRET_PATH = writable/keys/client_secret.json
+GOOGLE_SERVICE_ACCOUNT_PATH = writable/keys/service_account.json
+```
+
+> `drive.folderId` is the ID from your Google Drive folder URL.
+
+## Running the Application
+
+```bash
+php spark serve
+```
+
+---
+
+## Seeders
+
+### Default Setup
+
+```bash
+php spark db:seed UsersSeeder
+php spark db:seed DatabaseSeeder
+```
+
+---
+
+## Project Structure
+
+```
+/app        Application logic (Controllers, Models, Views)
+/public     Public assets
+/writable   Logs, cache, uploads, and secure files
+/tests      Automated tests
+```
+
+---
+
+## Core Modules
+
+### Travel Order Management
+
+Handles Travel Order crea, categorization, and stock tracking.
+
+### Audit Trail
+
+Records user activities for accountability.
+
+### Reporting
+
+Generates printable reports and data exports.
+
+---
+
+## Security Practices
+
+* Password hashing
+* Role-based access control
+* Input validation and sanitization
+* CSRF protection (CodeIgniter built-in)
+* Secure handling of API credentials via `.env`
+* Secure end-points with custom error handler
+
+
+
+---
+
+## License
+
+This project is intended for institutional use.
+
+---
+
+## Developers
+
+* Vincent Eleazar G. Uykieng (Zaphkiel14)
+
+---
+
+## Support
+
+For issues or inquiries, open an issue in the repository or contact the developers.
