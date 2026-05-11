@@ -9,7 +9,7 @@ class UnitsSeeder extends Seeder
     public function run()
     {
 
-        $MDS = $this->db->table('divisions')
+        $MSD = $this->db->table('divisions')
             ->where('division_name', 'MSD')
             ->get()
             ->getRow()
@@ -21,47 +21,47 @@ class UnitsSeeder extends Seeder
             ->division_id;
         $data = [
             [
-                'division_id' => $MDS,
+                'division_id' => $MSD,
                 'unit_name' => 'Accounting',
                 'created_at' => date('Y-m-d H:i:s'),
             ],
             [
-                'division_id' => $MDS,
+                'division_id' => $MSD,
                 'unit_name' => 'Budget',
                 'created_at' => date('Y-m-d H:i:s'),
             ],
             [
-                'division_id' => $MDS,
+                'division_id' => $MSD,
                 'unit_name' => 'Cashier',
                 'created_at' => date('Y-m-d H:i:s'),
             ],
             [
-                'division_id' => $MDS,
+                'division_id' => $MSD,
                 'unit_name' => 'HRD',
                 'created_at' => date('Y-m-d H:i:s'),
             ],
             [
-                'division_id' => $MDS,
+                'division_id' => $MSD,
                 'unit_name' => 'GSS',
                 'created_at' => date('Y-m-d H:i:s'),
             ],
             [
-                'division_id' => $MDS,
+                'division_id' => $MSD,
                 'unit_name' => 'Procurement & Supply',
                 'created_at' => date('Y-m-d H:i:s'),
             ],
             [
-                'division_id' => $MDS,
+                'division_id' => $MSD,
                 'unit_name' => 'Planning & Monitoring',
                 'created_at' => date('Y-m-d H:i:s'),
             ],
             [
-                'division_id' => $MDS,
+                'division_id' => $MSD,
                 'unit_name' => 'Records',
                 'created_at' => date('Y-m-d H:i:s'),
             ],
             [
-                'division_id' => $MDS,
+                'division_id' => $MSD,
                 'unit_name' => 'Receiving',
                 'created_at' => date('Y-m-d H:i:s'),
             ],
@@ -86,7 +86,7 @@ class UnitsSeeder extends Seeder
                 'created_at' => date('Y-m-d H:i:s'),
             ],
             [
-                'division_id' => $MDS,
+                'division_id' => $MSD,
                 'unit_name' => 'ICT',
                 'created_at' => date('Y-m-d H:i:s'),
             ]

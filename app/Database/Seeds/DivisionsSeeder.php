@@ -17,14 +17,14 @@ class DivisionsSeeder extends Seeder
             [
                 'organization_id' => $organizationId,
                 'division_name' => 'MSD',
-                'division_head_id' => 4, // Assuming user_id 4 is the Division Head
+                'division_head_id' => 4,
                 'division_head_position' => 'Division Head',
                 'created_at' => date('Y-m-d H:i:s'),
             ],
             [
                 'organization_id' => $organizationId,
                 'division_name' => 'TSD',
-                'division_head_id' => 5, // Assuming user_id 4 is the Division Head
+                'division_head_id' => 5,
                 'division_head_position' => 'Division Head',
                 'created_at' => date('Y-m-d H:i:s'),
             ],

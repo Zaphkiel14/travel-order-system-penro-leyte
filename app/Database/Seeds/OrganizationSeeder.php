@@ -11,7 +11,7 @@ class OrganizationSeeder extends Seeder
         $data = [
             [
                 'organization_name' => 'PENRO',
-                'organization_head_id' => 1, // Assuming user_id 1 is the admin
+                'organization_head_id' => 1,
                 'created_at' => date('Y-m-d H:i:s'),
             ]
         ];
