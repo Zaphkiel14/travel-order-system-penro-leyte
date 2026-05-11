@@ -53,6 +53,15 @@ class UsersSeeder extends Seeder
                 'position' => 'Supervisor',
                 'role' => 'unit',
                 'created_at' => date('Y-m-d H:i:s'),
+            ],
+            [
+                'first_name' => 'Records',
+                'last_name' => 'Records',
+                'email' => 'records@example.com',
+                'password' => password_hash('records123', PASSWORD_DEFAULT),
+                'position' => 'Records',
+                'role' => 'records',
+                'created_at' => date('Y-m-d H:i:s'),
             ]
 
 

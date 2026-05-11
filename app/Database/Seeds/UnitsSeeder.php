@@ -85,6 +85,11 @@ class UnitsSeeder extends Seeder
                 'unit_name' => 'RPS',
                 'created_at' => date('Y-m-d H:i:s'),
             ],
+            [
+                'division_id' => $MDS,
+                'unit_name' => 'ICT',
+                'created_at' => date('Y-m-d H:i:s'),
+            ]
         ];
 
         $this->db->table('units')->insertBatch($data);

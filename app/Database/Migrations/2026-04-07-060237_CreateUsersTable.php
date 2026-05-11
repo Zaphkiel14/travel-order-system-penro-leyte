@@ -45,6 +45,12 @@ class CreateUsersTable extends Migration
                 'constraint' => ['employee', 'unit', 'division', 'penro', 'records', 'admin'],
                 'default' => 'employee'
             ],
+            'organization_id' => [
+                'type' => 'MEDIUMINT',
+                'constraint' => 8,
+                'unsigned' => true,
+                'null' => true
+            ],
             'division_id' => [
                 'type' => 'MEDIUMINT',
                 'constraint' => 8,
