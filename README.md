@@ -1,4 +1,4 @@
-# DENR Inventory System
+# DENR Travel Order System
 
 ## Overview
 
@@ -115,7 +115,7 @@ Command to run:
 php spark tasks:run
 ```
 
-This triggers the maintenance reminder command.
+This triggers the pending travel order reminder command.
 
 ---
 
@@ -175,7 +175,7 @@ php spark db:seed DatabaseSeeder
 
 ### Travel Order Management
 
-Handles Travel Order crea, categorization, and stock tracking.
+Handles Travel Order creation, tracking, approval, printing, downloading attachments.
 
 ### Audit Trail
 
