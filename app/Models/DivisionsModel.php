@@ -55,13 +55,16 @@ class DivisionsModel extends Model
         int $parent_organization, 
         string $division_name, 
         string $division_head_position, 
+        ?int $division_head,
         array $linked_units)
     {
         $this->db->transStart();
         $this->insert([
             'organization_id' => $parent_organization, 
             'division_name' => $division_name, 
-            'division_head_position' => $division_head_position]);
+            'division_head_position' => $division_head_position,
+            'division_head_id' => $division_head
+        ]);
         $division_id = $this->getInsertID();
         if (!empty($linked_units)) {
             $LinkedUnits = [];

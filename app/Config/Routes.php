@@ -10,6 +10,9 @@ use App\Controllers\ConfigController;
 use App\Controllers\UserManagementController;
 
 use App\Controllers\TestController;
+use App\Controllers\AnalyticsController;
+use App\Libraries\ErrorHandler;
+
 
 /**
  * @var RouteCollection $routes
@@ -18,8 +21,8 @@ $routes->get('/', 'Home::index');
 
 //auth routes
 $routes->group('', ['filter' => 'noauth'], function ($routes) {
-    $routes->get('/login', [Auth::class, 'logIn'], ['as' => 'login']);
-    $routes->post('/login/auth', [Auth::class, 'auth'], ['as' => 'auth.submit']);
+    $routes->get('login', [Auth::class, 'logIn'], ['as' => 'login']);
+    $routes->post('login/auth', [Auth::class, 'auth'], ['as' => 'auth.submit']);
     $routes->get('google/login', [Auth::class, 'googleLogin'], ['as' => 'google.login']);
     $routes->get('google/callback', [Auth::class, 'callback'], ['as' => 'google.callback']);
 });
@@ -59,6 +62,7 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
     $routes->group('profile', function ($routes) {
         $routes->get('/', [ProfileController::class, 'index'], ['as' => 'account-settings']);
         $routes->group('update', function ($routes) {
+            $routes->post('/', [ProfileController::class, 'updateProfileInformation'], ['as' => 'user.update-profile-information']);
             $routes->post('profile-picture', [ProfileController::class, 'updateProfilePicture'], ['as' => 'user.update-profile-picture']);
             $routes->post('change-password', [ProfileController::class, 'changePassword'], ['as' => 'user.change-password']);
             $routes->post('delete-account', [ProfileController::class, 'deleteAccount'], ['as' => 'user.delete-account']);
@@ -88,4 +92,11 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
 
 
     $routes->post('approved-travel-orders/data', [TravelOrderController::class, 'approvedTravelOrderData'], ['as' => 'data.approvedTravelOrders']);
+});
+
+
+$routes->set404Override(function () {
+    $errorHandler = new ErrorHandler();
+
+    return view('error_page', $errorHandler->notFound());
 });

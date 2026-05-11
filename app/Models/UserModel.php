@@ -135,29 +135,20 @@ class UserModel extends Model
 
     public function updateUserInfo($user_id, $data)
     {
-        // ── Handle division/unit mapping ─────────────────────────────
         if (!empty($data['division_unit'])) {
 
             $value = $data['division_unit'];
-
-            // Expected formats:
-            // "division-id-5"
-            // "unit-id-3"
             $parts = explode('-', $value);
-
             if (count($parts) === 3) {
                 [$type,, $id] = $parts;
-
                 if ($type === 'division') {
                     $data['division_id'] = $id;
-                    $data['unit_id'] = null; // clear the other
+                    $data['unit_id'] = null; 
                 } elseif ($type === 'unit') {
                     $data['unit_id'] = $id;
-                    $data['division_id'] = null; // clear the other
+                    $data['division_id'] = null;
                 }
             }
-
-            // Remove the virtual field so it won't try to insert
             unset($data['division_unit']);
         }
 
@@ -173,8 +164,9 @@ class UserModel extends Model
     string $position,
     string $salary_grade,
     string $role,
-    $division_id = null,
-    $unit_id = null) 
+    ?int $division_id,
+    ?int $unit_id,
+    ?int $organization_id)
     {
 
     $this->db->transStart();
@@ -190,11 +182,12 @@ class UserModel extends Model
         'role' => $role,
         'division_id' => $division_id,
         'unit_id' => $unit_id,
+        'organization_id' => $organization_id
     ]);
     $user_id = $this->getInsertID();
             
     $this->db->transComplete();
 
-    return $this->db->transStatus() ? $user_id : false;
+    return $this->db->transStatus();
     }
 }

@@ -15,10 +15,14 @@ class Auth extends BaseController
 
     public function logIn()
     {
+        if (session()->get('isLoggedIn')) {
+            return redirect()->to(route_to('view.dashboard'));
+        }
         return view('auth/login');
     }
     public function auth()
     {
+
         $session = session();
         $userModel = new UserModel();
         $googleAccountModel = new GoogleAccountsModel();

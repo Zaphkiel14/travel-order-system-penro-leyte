@@ -16,7 +16,7 @@ class UnitsModel extends Model
         'division_id',
         'unit_name',
         'unit_head_id',
-        'unit_supervisor_position'
+        'unit_head_position'
     ];
 
     protected bool $allowEmptyInserts = false;
@@ -80,14 +80,16 @@ class UnitsModel extends Model
     public function insertUnit(
         int $parent_division,
         string $unit_name,
-        string $unit_head_position
+        string $unit_head_position,
+        ?int $unit_head
     )
     {
         $this->db->transStart();
         $this->insert([
             'division_id' => $parent_division,
             'unit_name' => $unit_name,
-            'unit_supervisor_position' => $unit_head_position 
+            'unit_head_position' => $unit_head_position,
+            'unit_head_id' => $unit_head
         ]);
         $unit_id = $this->getInsertID();
         $this->db->transComplete();

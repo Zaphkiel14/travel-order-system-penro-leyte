@@ -498,4 +498,63 @@ class SelectModel extends Model
 
         return $builder->get()->getResultArray();
     }
+
+
+    public function getUnitUsers()
+    {
+        return $this->db->table('users u')
+            ->select('
+            u.user_id,
+            CONCAT(u.first_name, " ", u.last_name) as full_name,
+            un.unit_name
+        ')
+            ->select("
+            CASE 
+                WHEN un.unit_head_id IS NOT NULL THEN 1 
+                ELSE 0 
+            END as is_managing_unit
+        ", false)
+            ->join('units un', 'un.unit_head_id = u.user_id', 'left')
+            ->where('u.role', 'unit')
+            ->get()
+            ->getResult();
+    }
+    public function getDivisionUsers()
+    {
+        return $this->db->table('users u')
+            ->select('
+            u.user_id,
+            CONCAT(u.first_name, " ", u.last_name) as full_name,
+            d.division_name
+            ')
+            ->select("
+            CASE 
+                WHEN d.division_head_id IS NOT NULL THEN 1
+                ELSE 0
+            END as is_managing_division
+        ", false)
+            ->join('divisions d', 'd.division_head_id = u.user_id', 'left')
+            ->where('u.role', 'division')
+            ->get()
+            ->getResult();
+    }
+    public function getPenroUsers()
+    {
+        return $this->db->table('users u')
+            ->select('
+            u.user_id, 
+            CONCAT(u.first_name, " ", u.last_name) as full_name,
+            o.organization_name,
+            ')
+            ->select("
+            CASE 
+                WHEN o.organization_head_id IS NOT NULL THEN 1
+                ELSE 0
+            END as is_managing_organization
+            ", false)
+            ->join('organization o', 'o.organization_head_id = u.user_id', 'left')
+            ->where('u.role', 'penro')
+            ->get()
+            ->getResult();
+    }
 }

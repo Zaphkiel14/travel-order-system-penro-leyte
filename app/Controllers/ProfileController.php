@@ -10,7 +10,6 @@ class ProfileController extends BaseController
 {
     public function index()
     {
-        // Get user data from database
         $userModel = new UserModel();
         $userId = session()->get('user_id');
         $user = $userModel->find($userId);

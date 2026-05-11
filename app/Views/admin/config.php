@@ -29,8 +29,8 @@
                             <tr>
                                 <th style="width: 20%;">Organization</th>
                                 <th style="width: 20%;">Division</th>
-                                <th style="width: 40%;">Unit</th>
-                                <th style="width: 15%;">Actions</th>
+                                <th style="width: 50%;">Unit</th>
+                                <th style="width: 10%;">Actions</th>
                             </tr>
                         </thead>
 
@@ -48,9 +48,9 @@
                                     <button class="btn btn-primary btn-view"
                                         data-type="organization"
                                         data-id="<?= $orgstructure->organization_id ?>"><i class="bi bi-eye"></i></button>
-                                    <button class="btn btn-success btn-edit"
+                                    <!-- <button class="btn btn-success btn-edit"
                                         data-type="organization"
-                                        data-id="<?= $orgstructure->organization_id ?>"><i class="bi bi-pencil-square"></i></button>
+                                        data-id="<?= $orgstructure->organization_id ?>"><i class="bi bi-pencil-square"></i></button> -->
                                 </td>
                             </tr>
 
@@ -69,9 +69,9 @@
                                         <button class="btn btn-primary btn-view"
                                             data-type="division"
                                             data-id="<?= $division->division_id ?>"><i class="bi bi-eye"></i></button>
-                                        <button class="btn btn-success btn-edit"
+                                        <!-- <button class="btn btn-success btn-edit"
                                             data-type="division"
-                                            data-id="<?= $division->division_id ?>"><i class="bi bi-pencil-square"></i></button>
+                                            data-id="<?= $division->division_id ?>"><i class="bi bi-pencil-square"></i></button> -->
                                     </td>
                                 </tr>
 
@@ -86,9 +86,9 @@
                                             <button class="btn btn-primary btn-view"
                                                 data-type="unit"
                                                 data-id="<?= $unit->unit_id ?>"><i class="bi bi-eye"></i></button>
-                                            <button class="btn btn-success btn-edit"
+                                            <!-- <button class="btn btn-success btn-edit"
                                                 data-type="unit"
-                                                data-id="<?= $unit->unit_id ?>"><i class="bi bi-pencil-square"></i></button>
+                                                data-id="<?= $unit->unit_id ?>"><i class="bi bi-pencil-square"></i></button> -->
                                         </td>
                                     </tr>
 
@@ -260,6 +260,28 @@
                             <div class="form-group">
                                 <label for="unit_head_position " class="form-label">Unit Head Position:</label>
                                 <input type="text" class="form-control" name="unit_head_position" placeholder="Enter Unit Head Position" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label for="unit_head" class="form-label">Unit Head:</label>
+                                <select class="form-control" style="width: 100%;" id="unit_head" data-placeholder="Select unit head" name="unit_head">
+                                    <?php if (!empty($unitusers)) : ?>
+                                        <?php foreach ($unitusers as $user) : ?>
+                                            <?php
+                                            $label = $user->full_name;
+                                            if (!empty($user->unit_name)) {
+                                                $label .= " - " . $user->unit_name;
+                                            }
+                                            ?>
+                                            <option value="<?= esc($user->user_id) ?>">
+                                                <?= esc($label) ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </select>
                             </div>
                         </div>
                     </div>

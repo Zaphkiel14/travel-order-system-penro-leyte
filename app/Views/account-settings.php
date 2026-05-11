@@ -4,6 +4,10 @@ $role = session()->get('role');
 $layouts = [
     'user' => 'layouts/user-base',
     'admin' => 'layouts/admin-base',
+    'records' => 'layouts/records-base',
+    'unit' => 'layouts/unit-base',
+    'division' => 'layouts/division-base',
+    'penro' => 'layouts/organization-base'
 ];
 
 $layout = $layouts[$role];

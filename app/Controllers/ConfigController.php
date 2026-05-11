@@ -32,7 +32,10 @@ class ConfigController extends BaseController
             'orgstructure' => $selectModel->organizationStructure(),
             'organizations' => $selectModel->selectOrganization(),
             'divisions'    => $selectModel->selectDivisions(),
-            'units'        => $selectModel->selectUnits()
+            'units'        => $selectModel->selectUnits(),
+            'unitusers'    => $selectModel->getUnitUsers(),
+            'divisionusers' => $selectModel->getDivisionUsers(),
+            'penrouser' => $selectModel->getPenroUsers(),
         ];
 
         return view('admin/config', $data);
@@ -45,6 +48,7 @@ class ConfigController extends BaseController
             'parent_organization' => $this->request->getPost('parent_organization'),
             'division_name' => $this->request->getPost('division_name') ,
             'division_head_position' => $this->request->getPost('division_head_position'),
+            'division_head' => $this->request->getPost('division_head'),
             'linked_units' => $this->request->getPost('linked_units') ?? []
         ];
 
@@ -53,6 +57,7 @@ class ConfigController extends BaseController
             $data['parent_organization'], 
             $data['division_name'], 
             $data['division_head_position'], 
+            $data['division_head'] ?? null,
             $data['linked_units'] ?? '');
 
         return redirect()->back()->with('toast', [
@@ -66,13 +71,16 @@ class ConfigController extends BaseController
             'parent_division' => $this->request->getPost('parent_division'),
             'unit_name' => $this->request->getPost('unit_name'),
             'unit_head_position' => $this->request->getPost('unit_head_position'),
+            'unit_head' => $this->request->getPost('unit_head'),
         ];
 
         $model = new UnitsModel();
         $model->insertUnit(
             $data['parent_division'], 
             $data['unit_name'], 
-            $data['unit_head_position']);
+            $data['unit_head_position'],
+            $data['unit_head'] ?? null
+            );
         return redirect()->back()->with('toast', [
             'type' => 'success',
             'message' => "Unit '{$data['unit_name']}' created successfully"

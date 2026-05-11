@@ -260,6 +260,7 @@ class UserManagementController extends BaseController
 
         $division_id = null;
         $unit_id     = null;
+        $organization_id = null;
 
         $divisionUnit = $this->request->getPost('division_unit');
 
@@ -273,6 +274,8 @@ class UserManagementController extends BaseController
                     $division_id = $id;
                 } elseif ($type === 'unit') {
                     $unit_id = $id;
+                } elseif ($type === 'organization') {
+                    $organization_id = $id;
                 }
             }
         }
@@ -292,6 +295,7 @@ class UserManagementController extends BaseController
             'role'         => $this->request->getPost('role'),
             'division_id'  => $division_id,
             'unit_id'      => $unit_id,
+            'organization_id' => $organization_id ?? null
         ];
 
         $model  = new UserModel();
@@ -304,7 +308,8 @@ class UserManagementController extends BaseController
             $data['salary_grade'],
             $data['role'],
             $data['division_id'],
-            $data['unit_id']
+            $data['unit_id'],
+            $data['organization_id']
         );
 
         return redirect()->back()->with('toast', [
