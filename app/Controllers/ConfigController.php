@@ -41,8 +41,6 @@ class ConfigController extends BaseController
         return view('admin/config', $data);
     }
 
-
-    public function addOrganization() {}
     public function addDivision() {
         $data = [
             'parent_organization' => $this->request->getPost('parent_organization'),

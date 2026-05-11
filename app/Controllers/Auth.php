@@ -15,6 +15,7 @@ class Auth extends BaseController
 
     public function logIn()
     {
+        // Check if already logged in if so redirect to their dashboard
         if (session()->get('isLoggedIn')) {
             return redirect()->to(route_to('view.dashboard'));
         }
@@ -23,9 +24,12 @@ class Auth extends BaseController
     public function auth()
     {
 
+        // Initialize session and models
         $session = session();
         $userModel = new UserModel();
         $googleAccountModel = new GoogleAccountsModel();
+
+
         $email = $this->request->getPost('email');
         $password = $this->request->getPost('password');
 
@@ -62,8 +66,6 @@ class Auth extends BaseController
             return redirect()->back()->withInput();
         }
 
-
-
         $session->set([
             'user_id'    => $user['user_id'],
             'first_name' => $user['first_name'],
@@ -74,7 +76,6 @@ class Auth extends BaseController
             'created_at' => $user['created_at'],
             'isLoggedIn' => true,
         ]);
-
 
         //  initialize alerts array for flashdata
         $alerts = session()->getFlashdata('alerts') ?? [];
@@ -141,78 +142,6 @@ class Auth extends BaseController
     {
         session()->destroy();
         return redirect()->to('login');
-    }
-
-    public function register()
-    {
-        $validation = Services::validation();
-        $validation->setRules([
-            'first_name'       => 'required|min_length[2]',
-            'last_name'        => 'required|min_length[2]',
-            'email'            => 'required|valid_email|is_unique[users.email]',
-            'password'         => 'required|min_length[6]',
-            'confirm_password' => 'required|matches[password]',
-            'position'         => 'required',
-            'role'             => 'required',
-            'field_office'     => 'required',
-        ]);
-
-        // Validation check
-        if (!$validation->withRequest($this->request)->run()) {
-            $errors = $validation->getErrors();
-
-            // Get old flash alerts or empty array
-            $alerts = session()->getFlashdata('alerts') ?? [];
-
-            // Add new validation alert
-            $alerts[] = [
-                'type'    => 'danger',
-                'title'   => 'Validation Error',
-                'message' => implode('<br>', $errors)
-            ];
-
-            // Save back as flash data
-            session()->setFlashdata('alerts', $alerts);
-
-            return redirect()->back()->withInput();
-        }
-
-        // Prepare user data
-        $rawPassword  = $this->request->getPost('password');
-        $passwordHash = password_hash($rawPassword, PASSWORD_DEFAULT);
-
-        $data = [
-            'first_name'   => $this->request->getPost('first_name'),
-            'last_name'    => $this->request->getPost('last_name'),
-            'email'        => $this->request->getPost('email'),
-            'password'     => $passwordHash,
-            'role'         => $this->request->getPost('role'),
-            'position'     => $this->request->getPost('position'),
-            'field_office' => $this->request->getPost('field_office'),
-        ];
-
-        // Save user
-        $model  = new UserModel();
-        $result = $model->useradd(
-            $data['first_name'],
-            $data['last_name'],
-            $data['email'],
-            $data['password'],
-            $data['position'],
-            $data['role'],
-            $data['field_office'],
-        );
-
-        // Add success/failure alert
-        $alerts = session()->getFlashdata('alerts') ?? [];
-        $alerts[] = [
-            'type'    => $result ? 'success' : 'danger',
-            'title'   => $result ? 'Account Creation' : 'Error!',
-            'message' => $result ? 'User registered successfully.' : 'Failed to register user.'
-        ];
-        session()->setFlashdata('alerts', $alerts);
-
-        return redirect()->back();
     }
 
     public function googleLogin()

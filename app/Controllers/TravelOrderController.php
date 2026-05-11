@@ -42,6 +42,32 @@ class TravelOrderController extends BaseController
         }
     }
 
+        private function getStatusBadge($status)
+    {
+        if (!$status) {
+            return '<span class="badge bg-secondary text-white">—</span>';
+        }
+
+        $s = strtolower($status);
+
+        if (str_starts_with($s, 'forwarded to')) {
+            $class = 'bg-info-subtle text-info-emphasis';
+        } elseif (str_starts_with($s, 'rejected by')) {
+            $class = 'bg-danger-subtle text-danger-emphasis';
+        } elseif (str_starts_with($s, 'approved by')) {
+            $class = 'bg-success-subtle text-success-emphasis';
+        } elseif ($s === 'pending') {
+            $class = 'bg-warning-subtle text-warning-emphasis';
+        } elseif ($s === 'approved') {
+            $class = 'bg-success-subtle text-success-emphasis';
+        } elseif ($s === 'rejected') {
+            $class = 'bg-danger-subtle text-danger-emphasis';
+        } else {
+            $class = 'bg-secondary-subtle text-white-emphasis';
+        }
+
+        return '<span class="badge ' . $class . '">' . esc($status) . '</span>';
+    }
     private function getUserScope(): array
     {
         $userId = session()->get('user_id');
@@ -155,7 +181,7 @@ class TravelOrderController extends BaseController
                 'travel_dates'        => date('M j, Y', strtotime($row['departure_date']))
                     . ' – '
                     . date('M j, Y', strtotime($row['arrival_date'])),
-                 'status' => $this->getStatusBadge($row['current_status']),
+                'status' => $this->getStatusBadge($row['current_status']),
                 'actions' => '<button type="button"
                                 class="btn btn-primary btn-view-travel-order"
                                 data-id="' . $row['travel_order_id'] . '">
@@ -175,8 +201,6 @@ class TravelOrderController extends BaseController
 
     public function approvedTravelOrderData()
     {
-
-
         $draw     = (int) ($this->request->getPost('draw') ?? 1);
         $start    = (int) ($this->request->getPost('start') ?? 0);
         $length   = (int) ($this->request->getPost('length') ?? 10);
@@ -195,11 +219,9 @@ class TravelOrderController extends BaseController
 
         $model = new TravelOrderModel();
 
-
         // Total
             $total = $model->getCompletedTravelOrderQuery()
                 ->countAllResults(false);
-
 
         $query = $model->getCompletedTravelOrderQuery();
         if ($search !== '') {
@@ -254,10 +276,7 @@ class TravelOrderController extends BaseController
                 $this->errorHandler->forbidden($e->getMessage()));
         }
 
-
         $select = new SelectModel();
-        
-        
 
         $data = [
             'title' => 'Travel Order | Incoming Travel Orders',
@@ -311,12 +330,9 @@ class TravelOrderController extends BaseController
 
         $model = new TravelOrderModel();
 
-
-
         // Total
         $total = $model->getIncomingByScopeQuery($scope['level'], $scope['id'])
             ->countAllResults(false);
-
 
         $query = $model->getIncomingByScopeQuery($scope['level'], $scope['id']);
         if ($search !== '') {
@@ -369,10 +385,11 @@ class TravelOrderController extends BaseController
                 'message' => 'User not logged in.',
             ]);
         }
+        
         $selectModel = new SelectModel();
         $newTravelOrderNumber = $selectModel->generateNextTravelOrderID();
-
         $drive = new GoogleDriveService();
+
         try {
             $drive->setUser($userId);
         } catch (\Exception $e) {
@@ -382,7 +399,6 @@ class TravelOrderController extends BaseController
             ]);
         }
 
-        // ── File field config ──────────────────────────────────────────────
         // field name => filename suffix used for both the Drive filename and DB record
         $fileFields = [
             'request_memo'          => 'REQUEST_MEMO',
@@ -427,13 +443,10 @@ class TravelOrderController extends BaseController
             }
         }
 
-
-
         $selection = $this->request->getPost('unit_division_organization');
         [$type,, $id] = explode('-', $selection);
-
         $hierarchy = $selectModel->resolveHierarchy($type, (int)$id);
-        // ── Insert ─────────────────────────────────────────────────────────
+        
         $model  = new TravelOrderModel();
         $result = $model->insertTravelOrder(
             $newTravelOrderNumber,
@@ -503,7 +516,6 @@ class TravelOrderController extends BaseController
 
         $travelOrderNumber = $order['travel_order_number'];
 
-        // 🔹 SAME STRUCTURE AS CREATE
         $attachments = [];
 
         foreach ($fileFields as $fieldName => $suffix) {
@@ -580,7 +592,6 @@ class TravelOrderController extends BaseController
         $userId   = (int) session()->get('user_id');
         $fullName = session()->get('full_name') ?? 'Unknown';
         $role     = session()->get('role');
-
         $model = new TravelOrderModel();
         $order = $model->find($travelOrderId);
 
@@ -591,7 +602,6 @@ class TravelOrderController extends BaseController
             ]);
         }
 
-        // Make sure this order is currently sitting at the reviewer's level
         $expectedLevel = match ($role) {
             'unit'     => 'unit',
             'division' => 'division',
@@ -635,7 +645,6 @@ class TravelOrderController extends BaseController
                 'current_status' => $action === 'approve'
                     ? 'Forwarded to ' . $divisionName
                     : 'Rejected by ' . $unitName,
-                // On approve, bubble up to division if one exists
                 'current_level' => $action === 'approve' && $order['division_id']
                     ? 'division'
                     : $order['current_level'],
@@ -686,7 +695,6 @@ class TravelOrderController extends BaseController
         $orderCol = (int) ($this->request->getPost('order')[0]['column'] ?? 0);
         $orderDir = $this->request->getPost('order')[0]['dir'] ?? 'desc';
 
-        // Map DataTable column index → actual DB column
         $columns = [
             0 => 'created_at',
             1 => 'travel_order_number',
@@ -699,11 +707,9 @@ class TravelOrderController extends BaseController
         $userId = session()->get('user_id');
         $model  = new TravelOrderModel();
 
-        // Total records for this user (no filters)
         $total = $model->getMyTravelOrdersQuery($userId)
             ->countAllResults(false);
 
-        // Apply search filter on top of the base query
         $query = $model->getMyTravelOrdersQuery($userId);
         if ($search !== '') {
             $query->groupStart()
@@ -713,10 +719,8 @@ class TravelOrderController extends BaseController
                 ->groupEnd();
         }
 
-        // Filtered count (before pagination)
         $filtered = $query->countAllResults(false);
 
-        // Paginated results
         $rows = $query->orderBy($orderBy, $orderDir)
             ->findAll($length, $start);
 
@@ -822,30 +826,5 @@ class TravelOrderController extends BaseController
         $printService = new PrintService();
         return $printService->previewPrintTO($travelOrderId);
     }
-    private function getStatusBadge($status)
-    {
-        if (!$status) {
-            return '<span class="badge bg-secondary text-white">—</span>';
-        }
 
-        $s = strtolower($status);
-
-        if (str_starts_with($s, 'forwarded to')) {
-            $class = 'bg-info-subtle text-info-emphasis';
-        } elseif (str_starts_with($s, 'rejected by')) {
-            $class = 'bg-danger-subtle text-danger-emphasis';
-        } elseif (str_starts_with($s, 'approved by')) {
-            $class = 'bg-success-subtle text-success-emphasis';
-        } elseif ($s === 'pending') {
-            $class = 'bg-warning-subtle text-warning-emphasis';
-        } elseif ($s === 'approved') {
-            $class = 'bg-success-subtle text-success-emphasis';
-        } elseif ($s === 'rejected') {
-            $class = 'bg-danger-subtle text-danger-emphasis';
-        } else {
-            $class = 'bg-secondary-subtle text-white-emphasis';
-        }
-
-        return '<span class="badge ' . $class . '">' . esc($status) . '</span>';
-    }
 }

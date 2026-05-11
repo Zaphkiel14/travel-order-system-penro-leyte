@@ -3,7 +3,6 @@
 use CodeIgniter\Router\RouteCollection;
 
 use App\Controllers\Auth;
-use App\Controllers\DashboardController;
 use App\Controllers\TravelOrderController;
 use App\Controllers\ProfileController;
 use App\Controllers\ConfigController;
@@ -12,12 +11,13 @@ use App\Controllers\UserManagementController;
 use App\Controllers\TestController;
 use App\Controllers\AnalyticsController;
 use App\Libraries\ErrorHandler;
+use App\Controllers\Home;
 
 
 /**
  * @var RouteCollection $routes
  */
-$routes->get('/', 'Home::index');
+$routes->get('/', [Home::class, 'index'], ['as' => 'home']);
 
 //auth routes
 $routes->group('', ['filter' => 'noauth'], function ($routes) {
