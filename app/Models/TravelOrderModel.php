@@ -78,12 +78,11 @@ class TravelOrderModel extends Model
         ?string $current_level,
         ?int $unit_id,
         ?int $division_id,
-        int $organization_id     // ['request_memo' => ['file_id' => ..., 'file_name' => ...], ...]
+        int $organization_id
     ): int|false {
 
         $this->db->transStart();
 
-        // ── Travel order record ────────────────────────────────────────────
         $this->insert([
             'travel_order_number' => $travel_order_number,
             'user_id'             => session()->get('user_id'),
@@ -99,7 +98,6 @@ class TravelOrderModel extends Model
         ]);
         $travelOrderId = $this->getInsertID();
 
-        // ── Persons ────────────────────────────────────────────────────────
         foreach ($persons as $person) {
             $this->db->table('travel_order_users')->insert([
                 'travel_order_id' => $travelOrderId,
@@ -110,9 +108,7 @@ class TravelOrderModel extends Model
             ]);
         }
 
-        // ── Attachments ────────────────────────────────────────────────────
         foreach ($attachments as $type => $file) {
-            // Skip fields where no file was uploaded
             if (!$file || empty($file['file_id'])) {
                 continue;
             }
@@ -141,13 +137,11 @@ class TravelOrderModel extends Model
 
             $hasUpdate = true;
 
-            // Delete existing attachment of same type
             $this->db->table('travel_order_attachments')
                 ->where('travel_order_id', $travelOrderId)
                 ->where('attachment_type', $type)
                 ->delete();
 
-            // Insert new one
             $this->db->table('travel_order_attachments')->insert([
                 'travel_order_id' => $travelOrderId,
                 'file_id'         => $fileData['file_id'],
@@ -158,6 +152,7 @@ class TravelOrderModel extends Model
 
         return $hasUpdate;
     }
+
     /**
      *  Summary of getTravelOrderDetails
      * - fetches full detail of a travel order including its attachments
@@ -230,6 +225,7 @@ class TravelOrderModel extends Model
 
         return $order;
     }
+
     /**
      * Summary of getMyTravelOrders
      * - fetches travel orders of the currently logged in user
@@ -250,8 +246,6 @@ class TravelOrderModel extends Model
             created_at
         ')
             ->where('user_id', $userId);
-        // Returns the model itself (query builder state), NOT results yet
-        // Caller decides whether to count, paginate, or fetch
     }
 
     public function printTO($travelOrderId)

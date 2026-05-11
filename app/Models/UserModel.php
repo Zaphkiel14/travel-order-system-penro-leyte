@@ -152,7 +152,6 @@ class UserModel extends Model
             unset($data['division_unit']);
         }
 
-        // ── Perform update ───────────────────────────────────────────
         return $this->update($user_id, $data);
     }
 

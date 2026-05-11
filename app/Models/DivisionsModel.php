@@ -49,8 +49,6 @@ class DivisionsModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
-
-    
     public function insertDivision(
         int $parent_organization, 
         string $division_name, 
