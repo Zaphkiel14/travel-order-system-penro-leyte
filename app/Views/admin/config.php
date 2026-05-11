@@ -112,9 +112,9 @@
 <div class="modal fade" id="modal-update-organization">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form action="<?= route_to('') ?>" method="POST" class="needs-validation" novalidate>
+            <form action="<?= route_to('update.organization') ?>" method="POST" class="needs-validation" novalidate>
                 <div class="modal-header">
-                    <h4 class="modal-title">Add Organization</h4>
+                    <h4 class="modal-title">Update Organization</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -134,6 +134,30 @@
                             </div>
                         </div>
                     </div>
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label for="organization_head" class="form-label">Organization Head:</label>
+                                <select class="form-control" style="width: 100%;" id="organization_head" data-placeholder="Select organization head" name="organization_head">
+                                    <?php if (!empty($penrouser)) : ?>
+                                        <?php foreach ($penrouser as $user) : ?>
+                                            <?php
+                                            $label = $user->full_name;
+                                            if (!empty($user->organization_name)) {
+                                                $label .= " - " . $user->organization_name;
+                                            }
+                                            ?>
+                                            <option value="<?= esc($user->user_id) ?>">
+                                                <?= esc($label) ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+
                     <div class="row mb-3">
                         <div class="col-12">
                             <div class="form-group">
@@ -208,8 +232,8 @@
                                         <?php foreach ($divisionusers as $user) : ?>
                                             <?php
                                             $label = $user->full_name;
-                                            if (!empty($user->unit_name)) {
-                                                $label .= " - " . $user->unit_name;
+                                            if (!empty($user->division_name)) {
+                                                $label .= " - " . $user->division_name;
                                             }
                                             ?>
                                             <option value="<?= esc($user->user_id) ?>">

@@ -43,8 +43,10 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
     // End :: Dashboard route
     $routes->group('configuration', function ($routes) {
         $routes->get('/', [ConfigController::class, 'index'], ['as' => 'view.configuration']);
+        $routes->post('update-organization', [ConfigController::class, 'updateOrganization'], ['as' => 'update.organization']);
         $routes->post('add-division', [ConfigController::class, 'addDivision'], ['as' => 'add.division']);
         $routes->post('add-unit', [ConfigController::class, 'addUnit'], ['as' => 'add.unit']);
+        
     });
     $routes->group('user-management', function ($routes) {
         $routes->get('/', [UserManagementController::class, 'index'], ['as' => 'view.user-management']);

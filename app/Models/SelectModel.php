@@ -538,7 +538,7 @@ class SelectModel extends Model
             ->get()
             ->getResult();
     }
-    public function getPenroUsers()
+    public function getPenroUsers() 
     {
         return $this->db->table('users u')
             ->select('
