@@ -50,33 +50,34 @@ class DivisionsModel extends Model
     protected $afterDelete    = [];
 
     public function insertDivision(
-        int $parent_organization, 
-        string $division_name, 
-        string $division_head_position, 
+        int $parent_organization,
+        string $division_name,
+        string $division_head_position,
         ?int $division_head,
-        array $linked_units)
-    {
+        array $linked_units
+    ) {
         $this->db->transStart();
         $this->insert([
-            'organization_id' => $parent_organization, 
-            'division_name' => $division_name, 
+            'organization_id' => $parent_organization,
+            'division_name' => $division_name,
             'division_head_position' => $division_head_position,
             'division_head_id' => $division_head
         ]);
         $division_id = $this->getInsertID();
         if (!empty($linked_units)) {
-            $LinkedUnits = [];
-            foreach ($LinkedUnits as $unit_id) {
-                $LinkedUnits[] = [
-                    'division_id' => $division_id,
-                    'unit_id' => $unit_id
+            $batch = [];
+
+            foreach ($linked_units as $unit_id) {
+                $batch[] = [
+                    'unit_id' => $unit_id,     
+                    'division_id' => $division_id  
                 ];
             }
-            $this->db->table('units')->insertBatch($LinkedUnits);
+
+            $this->db->table('units')->updateBatch($batch, 'unit_id');
         }
         $this->db->transComplete();
-        return $this->db->transStatus() ? $division_id : false;
-        
+        return $this->db->transStatus();
     }
     public function updateDivision(
         int $division_id,
@@ -84,7 +85,7 @@ class DivisionsModel extends Model
         string $division_name,
         int $division_head_id,
         string $division_head_position
-    ){
+    ) {
         $this->db->transStart();
 
         $this->update($division_id, [
@@ -95,7 +96,7 @@ class DivisionsModel extends Model
         ]);
 
         $this->db->transComplete();
-        
+
         return $this->db->transStatus() ? $organization_id : false;
     }
 }

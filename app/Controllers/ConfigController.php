@@ -56,7 +56,7 @@ class ConfigController extends BaseController
             $data['division_name'], 
             $data['division_head_position'], 
             $data['division_head'] ?? null,
-            $data['linked_units'] ?? '');
+            $data['linked_units'] ?? []);
 
         return redirect()->back()->with('toast', [
             'type' => 'success',

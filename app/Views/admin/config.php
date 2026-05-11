@@ -202,6 +202,28 @@
                     <div class="row mb-3">
                         <div class="col-12">
                             <div class="form-group">
+                                <label for="division_head" class="form-label">Division Head:</label>
+                                <select class="form-control" style="width: 100%;" id="division_head" data-placeholder="Select division head" name="division_head">
+                                    <?php if (!empty($divisionusers)) : ?>
+                                        <?php foreach ($divisionusers as $user) : ?>
+                                            <?php
+                                            $label = $user->full_name;
+                                            if (!empty($user->unit_name)) {
+                                                $label .= " - " . $user->unit_name;
+                                            }
+                                            ?>
+                                            <option value="<?= esc($user->user_id) ?>">
+                                                <?= esc($label) ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <div class="form-group">
                                 <label for="update-linked-units" class="form-label">Linked Units:</label>
                                 <select class="form-control select2" style="width: 100%;" id="update-linked-units" multiple="multiple" data-placeholder="Select units/s" name="linked_units[]">
                                     <?php if (!empty($units)) : ?>
