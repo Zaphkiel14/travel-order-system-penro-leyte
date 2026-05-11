@@ -43,7 +43,14 @@
             <li class="nav-item">
               <a href="<?= route_to('view.incomingTravelOrders') ?>" class="nav-link <?= ($page == 'Incoming Travel Orders') ? 'active' : '' ?>">
                 <i class="nav-icon bi bi-envelope-arrow-down-fill"></i>
-                <p>Incoming Travel Orders</p>
+                <p>Incoming Travel<br>Orders</p>
+                <?php $count = pending_count(); ?>
+
+                <?php if ($count > 0): ?>
+                  <span class="nav-badge badge text-bg-danger me-3">
+                    <?= $count ?>
+                  </span>
+                <?php endif; ?>
               </a>
             </li>
             <!-- end:: PAR Management  -->
@@ -51,10 +58,11 @@
             <li class="nav-item">
               <a href="<?= route_to('view.processedTravelOrders') ?>" class="nav-link <?= ($page == 'Processed Travel Orders') ? 'active' : '' ?>">
                 <i class="nav-icon bi bi-envelope-arrow-up-fill"></i>
-                <p>Processed Travel Orders</p>
+                <p>Processed Travel<br>Orders</p>
               </a>
             </li>
             <!-- end:: ICS Management  -->
+
           </ul>
           <!--end::Sidebar Menu-->
         </nav>

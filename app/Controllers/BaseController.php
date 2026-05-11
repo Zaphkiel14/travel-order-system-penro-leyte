@@ -7,6 +7,7 @@ use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use App\Libraries\ErrorHandler;
+use App\Models\SelectModel;
 
 /**
  * BaseController provides a convenient place for loading components
@@ -36,10 +37,13 @@ abstract class BaseController extends Controller
      * @return void
      */
 
-    
+    protected array $globalData = [];
     protected ErrorHandler $errorHandler;
-    public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
-    {
+    public function initController(
+        RequestInterface $request,
+        ResponseInterface $response,
+        LoggerInterface $logger
+    ) {
         // Load here all helpers you want to be available in your controllers that extend BaseController.
         // Caution: Do not put the this below the parent::initController() call below.
         // $this->helpers = ['form', 'url'];
@@ -47,17 +51,31 @@ abstract class BaseController extends Controller
         // Caution: Do not edit this line.
         parent::initController($request, $response, $logger);
 
-        // Preload any models, libraries, etc, here.
-        // $this->session = service('session');
-
-    $this->errorHandler = new ErrorHandler();
+        $this->errorHandler = new ErrorHandler();
+        
+        helper('dashboard');
+        $this->loadGlobalData();
     }
 
-protected function renderError(array $error)
-{
-    return response()
-        ->setStatusCode($error['error_code'])
-        ->setBody(view('error_page', $error));
-}
-    
+    protected function renderError(array $error)
+    {
+        return response()
+            ->setStatusCode($error['error_code'])
+            ->setBody(view('error_page', $error));
+    }
+
+    protected function loadGlobalData()
+    {
+        $role   = session()->get('role');
+        $userId = session()->get('user_id');
+
+        if (!$role || !$userId) {
+            $this->globalData['pendingSummary'] = null;
+            return;
+        }
+
+        $model = new SelectModel();
+
+        $this->globalData['pendingSummary'] = $model->getUserPendingSummary($userId, $role);
+    }
 }

@@ -281,8 +281,6 @@ class SelectModel extends Model
     public function getUserManagementSummary(int $userId, string $role): array
     {
         $db = $this->db;
-
-        // 1. Get user info
         $user = $db->table('users')
             ->select('
             user_id, 
@@ -293,11 +291,8 @@ class SelectModel extends Model
             ->where('user_id', $userId)
             ->get()
             ->getRowArray();
-
-        // 2. Get what they manage (unit/division/organization)
         $managed = $this->getManagedByRole($role, $userId);
 
-        // Normalize structure
         $structure = [
             'unit' => null,
             'division' => null,
@@ -324,5 +319,128 @@ class SelectModel extends Model
             'managed_structure' => $structure,
             'travel_order_stats' => $stats
         ];
+    }
+
+
+    public function getAllPendingReminderRecipients(): array
+    {
+
+        $unit = $this->db->table('travel_orders t')
+            ->select('
+            u.user_id,
+            CONCAT(u.first_name, " ", u.last_name) as full_name,
+            u.email,
+            u.position,
+            un.unit_name as managed_unit_div_org,
+            COUNT(t.travel_order_id) as pending_count
+        ')
+            ->join('units un', 'un.unit_id = t.unit_id')
+            ->join('users u', 'u.user_id = un.unit_head_id AND u.role = "unit"')
+            ->where('t.current_level', 'unit')
+            ->where('t.unit_status', 'pending')
+            ->groupBy('un.unit_id')
+            ->getCompiledSelect();
+
+        $division = $this->db->table('travel_orders t')
+            ->select('
+            u.user_id,
+            CONCAT(u.first_name, " ", u.last_name) as full_name,
+            u.email,
+            u.position,
+            d.division_name as managed_unit_div_org,
+            COUNT(t.travel_order_id) as pending_count
+        ')
+            ->join('divisions d', 'd.division_id = t.division_id')
+            ->join('users u', 'u.user_id = d.division_head_id AND u.role = "division"')
+            ->where('t.current_level', 'division')
+            ->where('t.division_status', 'pending')
+            ->groupBy('d.division_id')
+            ->getCompiledSelect();
+
+        $org = $this->db->table('travel_orders t')
+            ->select('
+            u.user_id,
+            CONCAT(u.first_name, " ", u.last_name) as full_name,
+            u.email,
+            u.position,
+            o.organization_name as managed_unit_div_org,
+            COUNT(t.travel_order_id) as pending_count
+        ')
+            ->join('organization o', 'o.organization_id = t.organization_id')
+            ->join('users u', 'u.user_id = o.organization_head_id AND u.role = "penro"')
+            ->where('t.current_level', 'organization')
+            ->where('t.organization_status', 'pending')
+            ->groupBy('o.organization_id')
+            ->getCompiledSelect();
+
+        $query = $this->db->query("
+        {$unit}
+        UNION ALL
+        {$division}
+        UNION ALL
+        {$org}
+    ");
+
+        return $query->getResultArray();
+    }
+
+
+    public function getUserPendingSummary(int $userId, string $role)
+    {
+        $managed = $this->getManagedByRole($role, $userId);
+
+        if (!$managed) {
+            return null;
+        }
+
+        switch ($role) {
+            case 'unit':
+                $column = 'unit_id';
+                $statusColumn = 'unit_status';
+                break;
+
+            case 'division':
+                $column = 'division_id';
+                $statusColumn = 'division_status';
+                break;
+
+            case 'penro':
+                $column = 'organization_id';
+                $statusColumn = 'organization_status';
+                break;
+
+            default:
+                return null;
+        }
+
+        $count = $this->db->table('travel_orders')
+            ->where('current_level', $role)
+            ->where($statusColumn, 'pending')
+            ->where($column, $managed->id)
+            ->countAllResults();
+
+        return [
+            'user_id' => $userId,
+            'managed_id' => $managed->id,
+            'managed_name' => $managed->name,
+            'role' => $role,
+            'pending_count' => $count
+        ];
+    }
+
+        public function getProcessedByScopeQuery(string $level, int $id)
+    {
+        return $this->select('
+            travel_order_id,
+            travel_order_number,
+            departure_date,
+            arrival_date,
+            destination,
+            purpose_of_travel,
+            current_status,
+            created_at
+        ')
+            ->where($level . '_id', $id)
+            ->whereIn($level . '_status', ['approved', 'rejected']);
     }
 }

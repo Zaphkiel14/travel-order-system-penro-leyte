@@ -173,9 +173,6 @@ class TravelOrderController extends BaseController
 
     }
 
-
-
-
     public function approvedTravelOrderData()
     {
 

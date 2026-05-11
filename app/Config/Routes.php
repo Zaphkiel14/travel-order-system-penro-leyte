@@ -26,10 +26,10 @@ $routes->group('', ['filter' => 'noauth'], function ($routes) {
 
 
 
-$routes->get('test', [TestController::class, 'index']);
-$routes->post('test-email', [TestController::class, 'testEmail'], ['as' => 'test.email.send']);
-$routes->get('test-dashboard', [TestController::class, 'testDashboard']);
-$routes->post('test-reminder', [TestController::class, 'testReminder'], ['as' => 'test.reminder']);
+// $routes->get('test', [TestController::class, 'index']);
+// $routes->post('test-email', [TestController::class, 'testEmail'], ['as' => 'test.email.send']);
+// $routes->get('test-dashboard', [TestController::class, 'testDashboard']);
+// $routes->post('test-reminder', [TestController::class, 'testReminder'], ['as' => 'test.reminder']);
 // Authenticated routes
 $routes->group('', ['filter' => 'auth'],function ($routes) {
     $routes->get('logout', [Auth::class, 'logout']);

@@ -51,10 +51,10 @@ class TestController extends BaseController
             $emailService = new EmailService();
             $emailService->sendPendingTravelOrderEmail(
                 'vincenteleazar.uykieng@evsu.edu.ph',
-                'test name',
+                'test user',
                 'test position',
                 'test unit/div/org',
-                'test count');
+                '15');
     }
 
 }
