@@ -428,7 +428,7 @@ class SelectModel extends Model
         ];
     }
 
-        public function getProcessedByScopeQuery(string $level, int $id)
+    public function getProcessedByScopeQuery(string $level, int $id)
     {
         return $this->select('
             travel_order_id,
@@ -442,5 +442,60 @@ class SelectModel extends Model
         ')
             ->where($level . '_id', $id)
             ->whereIn($level . '_status', ['approved', 'rejected']);
+    }
+
+
+    public function getAllTravelOrderStats()
+    {
+        return $this->db->table('travel_orders')
+            ->select("
+        COUNT(*) as total,
+
+        SUM(
+            CASE
+                WHEN LOWER(current_status) LIKE 'forwarded to%'
+                THEN 1
+                ELSE 0
+            END
+        ) as pending,
+
+        SUM(
+            CASE
+                WHEN LOWER(current_status) LIKE 'approved by%'
+                THEN 1
+                ELSE 0
+            END
+        ) as approved,
+
+        SUM(
+            CASE
+                WHEN LOWER(current_status) LIKE 'rejected by%'
+                THEN 1
+                ELSE 0
+            END
+        ) as rejected
+    ")
+            ->get()
+            ->getRowArray();
+    }
+
+    public function getTravelOrderStatsByDate($month = null, $year = null)
+    {
+        $builder = $this->db->table('travel_orders');
+
+        $builder->select("
+        DATE(created_at) as date,
+        COUNT(*) as total,
+        SUM(CASE WHEN LOWER(current_status) LIKE 'forwarded to%' THEN 1 ELSE 0 END) as pending,
+        SUM(CASE WHEN LOWER(current_status) LIKE 'approved by%' THEN 1 ELSE 0 END) as approved,
+        SUM(CASE WHEN LOWER(current_status) LIKE 'rejected by%' THEN 1 ELSE 0 END) as rejected
+    ");
+
+        if ($year)  $builder->where('YEAR(created_at)', $year);
+        if ($month) $builder->where('MONTH(created_at)', $month);
+
+        $builder->groupBy('DATE(created_at)')->orderBy('DATE(created_at)', 'ASC');
+
+        return $builder->get()->getResultArray();
     }
 }
