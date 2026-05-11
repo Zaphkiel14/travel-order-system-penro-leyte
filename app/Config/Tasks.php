@@ -45,8 +45,8 @@ class Tasks extends BaseTasks
      */
     public function init(Scheduler $schedule)
     {
-        $schedule->command('test:task')
+        $schedule->command('email:send-pending-tos')
             ->daily('8:00 am')
-            ->named('Test Task');
+            ->named('send-pending-travel-order-reminders');
     }
 }
