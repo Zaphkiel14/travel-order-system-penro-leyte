@@ -141,8 +141,8 @@
                                 <label for="add-role" class="form-label">System Role</label>
                                 <select class="form-select" id="add-role" name="role" required>
                                     <option value="employee">Employee</option>
-                                    <option value="supervisor">Supervisor</option>
-                                    <option value="division_head">Division Head</option>
+                                    <option value="unit">Supervisor</option>
+                                    <option value="division">Division Head</option>
                                     <option value="penro">PENRO</option>
                                     <option value="records">Records</option>
                                     <option value="admin">Admin</option>
@@ -383,8 +383,8 @@
                                 <label for="edit-role" class="form-label">System Role</label>
                                 <select class="form-select" id="edit-role" name="role" required>
                                     <option value="employee">Employee</option>
-                                    <option value="supervisor">Supervisor</option>
-                                    <option value="division_head">Division Head</option>
+                                    <option value="unit">Supervisor</option>
+                                    <option value="division">Division Head</option>
                                     <option value="penro">PENRO</option>
                                     <option value="records">Records</option>
                                     <option value="admin">Admin</option>

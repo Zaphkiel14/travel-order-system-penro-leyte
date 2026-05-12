@@ -178,7 +178,7 @@ class UserManagementController extends BaseController
             'last_name'  => 'required|min_length[2]',
             'email'      => "required|valid_email|is_unique[users.email,user_id,{$user_id}]",
             'position'   => 'required',
-            'role'       => 'required|in_list[employee,supervisor,division_head,penro,records,admin]',
+            'role'       => 'required|in_list[employee,unit,division,penro,records,admin]',
         ];
 
         if (!$this->validate($rules)) {
@@ -270,12 +270,12 @@ class UserManagementController extends BaseController
             if (count($parts) === 2) {
                 [$type, $id] = $parts;
 
-                if ($type === 'division') {
+                if ($type === 'organization') {
+                    $organization_id = $id;
+                } elseif($type === 'division') {
                     $division_id = $id;
                 } elseif ($type === 'unit') {
                     $unit_id = $id;
-                } elseif ($type === 'organization') {
-                    $organization_id = $id;
                 }
             }
         }
@@ -293,8 +293,8 @@ class UserManagementController extends BaseController
             'position'     => $this->request->getPost('position'),
             'salary_grade' => $this->request->getPost('salary_grade'),
             'role'         => $this->request->getPost('role'),
-            'division_id'  => $division_id,
-            'unit_id'      => $unit_id,
+            'division_id'  => $division_id ?? null,
+            'unit_id'      => $unit_id ?? null,
             'organization_id' => $organization_id ?? null
         ];
 

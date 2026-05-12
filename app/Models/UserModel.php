@@ -22,6 +22,7 @@ class UserModel extends Model
         'role',
         'division_id',
         'unit_id',
+        'organization_id',
         'created_at',
         'updated_at',
         'deleted_at',
@@ -141,7 +142,12 @@ class UserModel extends Model
             $parts = explode('-', $value);
             if (count($parts) === 3) {
                 [$type,, $id] = $parts;
-                if ($type === 'division') {
+                if ($type === 'organization') {
+                    $data['organization_id'] = $id;
+                    $data['division_id'] = null; 
+                    $data['unit_id'] = null; 
+                }
+                elseif ($type === 'division') {
                     $data['division_id'] = $id;
                     $data['unit_id'] = null; 
                 } elseif ($type === 'unit') {
