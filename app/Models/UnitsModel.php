@@ -95,4 +95,45 @@ class UnitsModel extends Model
         $this->db->transComplete();
         return $this->db->transStatus() ? $unit_id : false;
     }
+      public function getDetails($id)
+    {
+        $db = \Config\Database::connect();
+
+        $unit = $db->table('units u')
+            ->select('
+                u.unit_id,
+                u.unit_name,
+                u.unit_head_position,
+                CONCAT(us.first_name, " ", us.last_name) as unit_head_name,
+                d.division_name,
+                o.organization_name
+            ')
+            ->join('users us', 'us.user_id = u.unit_head_id', 'left')
+            ->join('divisions d', 'd.division_id = u.division_id')
+            ->join('organization o', 'o.organization_id = d.organization_id')
+            ->where('u.unit_id', $id)
+            ->get()->getRow();
+
+        if (!$unit) return null;
+
+        $members = $db->table('users')
+            ->select('
+                user_id,
+                CONCAT(first_name," ",last_name) as full_name,
+                position,
+                role
+            ')
+            ->where('unit_id', $id)
+            ->get()->getResult();
+
+        return [
+            'unit_id' => $unit->unit_id,
+            'unit_name' => $unit->unit_name,
+            'unit_head_position' => $unit->unit_head_position,
+            'unit_head_name' => $unit->unit_head_name,
+            'division_name' => $unit->division_name,
+            'organization_name' => $unit->organization_name,
+            'members' => $members
+        ];
+    }
 }

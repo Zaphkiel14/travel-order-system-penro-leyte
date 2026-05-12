@@ -48,9 +48,6 @@
                                     <button class="btn btn-primary btn-view"
                                         data-type="organization"
                                         data-id="<?= $orgstructure->organization_id ?>"><i class="bi bi-eye"></i></button>
-                                    <!-- <button class="btn btn-success btn-edit"
-                                        data-type="organization"
-                                        data-id="<?= $orgstructure->organization_id ?>"><i class="bi bi-pencil-square"></i></button> -->
                                 </td>
                             </tr>
 
@@ -69,9 +66,6 @@
                                         <button class="btn btn-primary btn-view"
                                             data-type="division"
                                             data-id="<?= $division->division_id ?>"><i class="bi bi-eye"></i></button>
-                                        <!-- <button class="btn btn-success btn-edit"
-                                            data-type="division"
-                                            data-id="<?= $division->division_id ?>"><i class="bi bi-pencil-square"></i></button> -->
                                     </td>
                                 </tr>
 
@@ -86,9 +80,6 @@
                                             <button class="btn btn-primary btn-view"
                                                 data-type="unit"
                                                 data-id="<?= $unit->unit_id ?>"><i class="bi bi-eye"></i></button>
-                                            <!-- <button class="btn btn-success btn-edit"
-                                                data-type="unit"
-                                                data-id="<?= $unit->unit_id ?>"><i class="bi bi-pencil-square"></i></button> -->
                                         </td>
                                     </tr>
 
@@ -105,7 +96,53 @@
         </div>
     </div>
 </div>
-                                    
+
+<!-- ══════════════════════════════════════════════════════════
+    VIEW DETAIL MODAL  (shared for org / division / unit)
+══════════════════════════════════════════════════════════ -->
+<div class="modal fade" id="modal-view-detail" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <div class="modal-header py-2">
+                <div>
+                    <h5 class="modal-title mb-0" id="view-detail-title">Details</h5>
+                    <small id="view-detail-subtitle" class="text-muted fw-semibold"></small>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <!-- Loading -->
+            <div id="vd-state-loading" class="modal-body text-center py-5">
+                <div class="spinner-border text-primary" role="status"></div>
+                <p class="mt-3 text-muted mb-0">Loading details...</p>
+            </div>
+
+            <!-- Error -->
+            <div id="vd-state-error" class="modal-body text-center py-5 d-none">
+                <i class="bi bi-exclamation-triangle-fill text-danger" style="font-size:2.5rem"></i>
+                <p class="mt-3 text-danger mb-0" id="vd-error-msg">Failed to load details.</p>
+            </div>
+
+            <!-- Content -->
+            <div id="vd-state-content" class="d-none">
+                <div class="modal-body">
+                    <div class="row g-3" id="vd-body">
+                        <!-- Dynamically populated -->
+                    </div>
+                </div>
+                <div class="modal-footer py-2">
+                    <button type="button" class="btn btn-default btn-sm" data-bs-dismiss="modal">
+                        <i class="bi bi-x-lg me-1"></i> Close
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- END VIEW DETAIL MODAL -->
+
 <!-- BEGIN : Update Organization Modal -->
 <div class="modal fade" id="modal-update-organization">
     <div class="modal-dialog">
@@ -154,8 +191,6 @@
                             </div>
                         </div>
                     </div>
-
-
                     <div class="row mb-3">
                         <div class="col-12">
                             <div class="form-group">
@@ -173,12 +208,12 @@
                 </div>
                 <div class="modal-footer justify-content-between">
                     <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary" name="submit"><i class="bi bi-floppy2"></i>Update Organization</button>
+                    <button type="submit" class="btn btn-primary" name="submit"><i class="bi bi-floppy2"></i> Update Organization</button>
                 </div>
             </form>
         </div>
     </div>
-</div>  
+</div>
 
 <div class="modal fade" id="modal-add-division">
     <div class="modal-dialog">
@@ -258,7 +293,7 @@
                 </div>
                 <div class="modal-footer justify-content-between">
                     <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary" name="submit"><i class="bi bi-floppy2"></i>Update Organization</button>
+                    <button type="submit" class="btn btn-primary" name="submit"><i class="bi bi-floppy2"></i> Add Division</button>
                 </div>
             </form>
         </div>
@@ -279,7 +314,6 @@
                             <div class="form-group">
                                 <label for="parent_division" class="form-label">Parent Division:</label>
                                 <select class="form-control" style="width: 100%;" id="parent_division" data-placeholder="Select division" name="parent_division">
-
                                     <?php if (!empty($divisions)) : ?>
                                         <?php foreach ($divisions as $division) : ?>
                                             <option value="<?= esc($division->division_id) ?>"><?= esc($division->division_name) ?></option>
@@ -300,7 +334,7 @@
                     <div class="row mb-3">
                         <div class="col-12">
                             <div class="form-group">
-                                <label for="unit_head_position " class="form-label">Unit Head Position:</label>
+                                <label for="unit_head_position" class="form-label">Unit Head Position:</label>
                                 <input type="text" class="form-control" name="unit_head_position" placeholder="Enter Unit Head Position" required>
                             </div>
                         </div>
@@ -330,7 +364,7 @@
                 </div>
                 <div class="modal-footer justify-content-between">
                     <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary" name="submit"><i class="bi bi-floppy2"></i>Update Organization</button>
+                    <button type="submit" class="btn btn-primary" name="submit"><i class="bi bi-floppy2"></i> Add Unit</button>
                 </div>
             </form>
         </div>
@@ -338,11 +372,11 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
 
-        // Tree toggle
+        // ── Tree toggle ──────────────────────────────────────────────────────
         document.querySelectorAll('.expand-toggle').forEach(row => {
-            row.addEventListener('click', function(e) {
+            row.addEventListener('click', function (e) {
                 if (e.target.closest('button')) return;
 
                 const target = this.dataset.target;
@@ -369,54 +403,198 @@
             });
         });
 
-        // View buttons
-        document.querySelectorAll('.btn-view').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const type = this.dataset.type;
-                const id = this.dataset.id;
+        // ── View modal ───────────────────────────────────────────────────────
+        var bsViewModal = new bootstrap.Modal(document.getElementById('modal-view-detail'));
 
-                const routes = {
-                    organization: `/admin/organization/${id}`,
-                    division: `/admin/division/${id}`,
-                    unit: `/admin/unit/${id}`,
-                };
-
-                window.location.href = routes[type];
+        function showVDState(state) {
+            ['loading', 'error', 'content'].forEach(function (s) {
+                document.getElementById('vd-state-' + s).classList.toggle('d-none', s !== state);
             });
-        });
+        }
 
-        // Edit buttons
-        document.querySelectorAll('.btn-edit').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const type = this.dataset.type;
-                const id = this.dataset.id;
+        function infoRow(label, value) {
+            return '<div class="col-6 mb-3">' +
+                '<p class="mb-0 small text-muted text-uppercase fw-semibold" style="letter-spacing:.04em">' + label + '</p>' +
+                '<p class="mb-0 fw-semibold">' + (value || '<span class="text-muted fst-italic">—</span>') + '</p>' +
+                '</div>';
+        }
 
-                const routes = {
-                    organization: `/admin/organization/${id}/edit`,
-                    division: `/admin/division/${id}/edit`,
-                    unit: `/admin/unit/${id}/edit`,
-                };
+        function badge(text, color) {
+            color = color || 'secondary';
+            return '<span class="badge bg-' + color + '-subtle text-' + color + '-emphasis px-2 py-1">' + text + '</span>';
+        }
 
-                window.location.href = routes[type];
+        function renderOrganization(d) {
+            document.getElementById('view-detail-title').textContent = 'Organization Details';
+            document.getElementById('view-detail-subtitle').textContent = d.organization_name || '';
+
+            var members = (d.members || []).map(function (m) {
+                return '<li class="list-group-item d-flex justify-content-between align-items-center py-2 px-3">' +
+                    '<div>' +
+                    '<p class="mb-0 fw-semibold small">' + (m.full_name || '—') + '</p>' +
+                    '<p class="mb-0 text-muted" style="font-size:11px">' + (m.position || '') + '</p>' +
+                    '</div>' +
+                    '<span class="badge bg-secondary-subtle text-secondary-emphasis small">' + (m.role || '') + '</span>' +
+                    '</li>';
+            }).join('');
+
+            var divisions = (d.divisions || []).map(function (dv) {
+                return '<li class="list-group-item py-2 px-3 small">' + (dv.division_name || '—') + '</li>';
+            }).join('');
+
+            document.getElementById('vd-body').innerHTML =
+                '<div class="col-12 col-md-6">' +
+                    '<div class="border rounded p-3 h-100">' +
+                        '<p class="mb-2 small text-muted text-uppercase fw-semibold" style="letter-spacing:.04em">Organization Info</p>' +
+                        '<div class="row">' +
+                            infoRow('Name', d.organization_name) +
+                            infoRow('Head Position', d.organization_head_position) +
+                            infoRow('Head', d.organization_head_name) +
+                        '</div>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="col-12 col-md-6 d-flex flex-column gap-3">' +
+                    '<div class="border rounded p-3">' +
+                        '<p class="mb-2 small text-muted text-uppercase fw-semibold" style="letter-spacing:.04em">Linked Divisions (' + (d.divisions || []).length + ')</p>' +
+                        (divisions
+                            ? '<ul class="list-group list-group-flush">' + divisions + '</ul>'
+                            : '<p class="text-muted fst-italic small mb-0">No divisions linked.</p>') +
+                    '</div>' +
+                    '<div class="border rounded p-3">' +
+                        '<p class="mb-2 small text-muted text-uppercase fw-semibold" style="letter-spacing:.04em">Members (' + (d.members || []).length + ')</p>' +
+                        (members
+                            ? '<ul class="list-group list-group-flush">' + members + '</ul>'
+                            : '<p class="text-muted fst-italic small mb-0">No members assigned.</p>') +
+                    '</div>' +
+                '</div>';
+        }
+
+        function renderDivision(d) {
+            document.getElementById('view-detail-title').textContent = 'Division Details';
+            document.getElementById('view-detail-subtitle').textContent = d.division_name || '';
+
+            var units = (d.units || []).map(function (u) {
+                return '<li class="list-group-item py-2 px-3 small">' + (u.unit_name || '—') + '</li>';
+            }).join('');
+
+            var members = (d.members || []).map(function (m) {
+                return '<li class="list-group-item d-flex justify-content-between align-items-center py-2 px-3">' +
+                    '<div>' +
+                    '<p class="mb-0 fw-semibold small">' + (m.full_name || '—') + '</p>' +
+                    '<p class="mb-0 text-muted" style="font-size:11px">' + (m.position || '') + '</p>' +
+                    '</div>' +
+                    '<span class="badge bg-secondary-subtle text-secondary-emphasis small">' + (m.role || '') + '</span>' +
+                    '</li>';
+            }).join('');
+
+            document.getElementById('vd-body').innerHTML =
+                '<div class="col-12 col-md-6">' +
+                    '<div class="border rounded p-3 h-100">' +
+                        '<p class="mb-2 small text-muted text-uppercase fw-semibold" style="letter-spacing:.04em">Division Info</p>' +
+                        '<div class="row">' +
+                            infoRow('Name', d.division_name) +
+                            infoRow('Head Position', d.division_head_position) +
+                            infoRow('Head', d.division_head_name) +
+                            infoRow('Parent Organization', d.organization_name) +
+                        '</div>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="col-12 col-md-6 d-flex flex-column gap-3">' +
+                    '<div class="border rounded p-3">' +
+                        '<p class="mb-2 small text-muted text-uppercase fw-semibold" style="letter-spacing:.04em">Units (' + (d.units || []).length + ')</p>' +
+                        (units
+                            ? '<ul class="list-group list-group-flush">' + units + '</ul>'
+                            : '<p class="text-muted fst-italic small mb-0">No units linked.</p>') +
+                    '</div>' +
+                    '<div class="border rounded p-3">' +
+                        '<p class="mb-2 small text-muted text-uppercase fw-semibold" style="letter-spacing:.04em">Members (' + (d.members || []).length + ')</p>' +
+                        (members
+                            ? '<ul class="list-group list-group-flush">' + members + '</ul>'
+                            : '<p class="text-muted fst-italic small mb-0">No members assigned.</p>') +
+                    '</div>' +
+                '</div>';
+        }
+
+        function renderUnit(d) {
+            document.getElementById('view-detail-title').textContent = 'Unit Details';
+            document.getElementById('view-detail-subtitle').textContent = d.unit_name || '';
+
+            var members = (d.members || []).map(function (m) {
+                return '<li class="list-group-item d-flex justify-content-between align-items-center py-2 px-3">' +
+                    '<div>' +
+                    '<p class="mb-0 fw-semibold small">' + (m.full_name || '—') + '</p>' +
+                    '<p class="mb-0 text-muted" style="font-size:11px">' + (m.position || '') + '</p>' +
+                    '</div>' +
+                    '<span class="badge bg-secondary-subtle text-secondary-emphasis small">' + (m.role || '') + '</span>' +
+                    '</li>';
+            }).join('');
+
+            document.getElementById('vd-body').innerHTML =
+                '<div class="col-12 col-md-6">' +
+                    '<div class="border rounded p-3 h-100">' +
+                        '<p class="mb-2 small text-muted text-uppercase fw-semibold" style="letter-spacing:.04em">Unit Info</p>' +
+                        '<div class="row">' +
+                            infoRow('Name', d.unit_name) +
+                            infoRow('Head Position', d.unit_head_position) +
+                            infoRow('Head', d.unit_head_name) +
+                            infoRow('Parent Division', d.division_name) +
+                            infoRow('Parent Organization', d.organization_name) +
+                        '</div>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="col-12 col-md-6">' +
+                    '<div class="border rounded p-3 h-100">' +
+                        '<p class="mb-2 small text-muted text-uppercase fw-semibold" style="letter-spacing:.04em">Members (' + (d.members || []).length + ')</p>' +
+                        (members
+                            ? '<ul class="list-group list-group-flush">' + members + '</ul>'
+                            : '<p class="text-muted fst-italic small mb-0">No members assigned.</p>') +
+                    '</div>' +
+                '</div>';
+        }
+
+        function openViewModal(type, id) {
+            showVDState('loading');
+            bsViewModal.show();
+
+            fetch('<?= site_url('configuration/details') ?>/' + type + '/' + id, {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(function (r) {
+                if (!r.ok) throw new Error('Server returned ' + r.status);
+                return r.json();
+            })
+            .then(function (j) {
+                if (!j.success) throw new Error(j.message || 'Unknown error.');
+                var d = j.data;
+                if (type === 'organization') renderOrganization(d);
+                else if (type === 'division')    renderDivision(d);
+                else                             renderUnit(d);
+                showVDState('content');
+            })
+            .catch(function (err) {
+                document.getElementById('vd-error-msg').textContent = err.message || 'Failed to load details.';
+                showVDState('error');
+            });
+        }
+
+        // Attach to all view buttons
+        document.querySelectorAll('.btn-view').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                openViewModal(this.dataset.type, this.dataset.id);
             });
         });
 
     });
 </script>
 
-<!-- STYLE -->
 <style>
-    .expand-toggle {
-        cursor: pointer;
-    }
-
-    .expand-toggle:hover {
-        background: #f8f9fa;
-    }
-
-    .toggle-icon {
-        transition: transform 0.2s ease;
-    }
+    .expand-toggle { cursor: pointer; }
+    .expand-toggle:hover { background: #f8f9fa; }
+    .toggle-icon { transition: transform 0.2s ease; }
 </style>
 
 <?= $this->endSection() ?>

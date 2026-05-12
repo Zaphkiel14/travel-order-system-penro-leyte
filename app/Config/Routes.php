@@ -46,7 +46,7 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         $routes->post('update-organization', [ConfigController::class, 'updateOrganization'], ['as' => 'update.organization']);
         $routes->post('add-division', [ConfigController::class, 'addDivision'], ['as' => 'add.division']);
         $routes->post('add-unit', [ConfigController::class, 'addUnit'], ['as' => 'add.unit']);
-        
+        $routes->get('details/(:segment)/(:num)', [ConfigController::class, 'detailsConfig'], ['as' => 'details.configuration']);
     });
     $routes->group('user-management', function ($routes) {
         $routes->get('/', [UserManagementController::class, 'index'], ['as' => 'view.user-management']);
@@ -80,11 +80,9 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         $routes->post('data', [TravelOrderController::class, 'processedTravelOrderData'], ['as' => 'data.processedTravelOrders']);
     });
 
-    $routes->group('Analytics', function ($routes) {
-
-    $routes->get('/', 'AnalyticsController::index', ['filter' => 'auth', 'as' => 'view.analytics']);
-
-    });
+    // $routes->group('Analytics', function ($routes) {
+    // $routes->get('/', 'AnalyticsController::index', ['filter' => 'auth', 'as' => 'view.analytics']);
+    // });
 
 
     $routes->post('approved-travel-orders/data', [TravelOrderController::class, 'approvedTravelOrderData'], ['as' => 'data.approvedTravelOrders']);

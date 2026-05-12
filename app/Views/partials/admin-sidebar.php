@@ -36,13 +36,13 @@
               </a>
             </li>
             <!-- end::Dashboard -->
-
+            <!-- 
             <li class="nav-item">
               <a href="<?= route_to('view.analytics') ?>" class="nav-link <?= ($page == 'Analytics') ? 'active' : '' ?>">
                 <i class="nav-icon bi bi-graph-up"></i>
                 <p>Analytics</p>
               </a>
-            </li>
+            </li> -->
 
             <!-- begin:: User Management -->
             <li class="nav-item">

@@ -113,6 +113,50 @@ class ConfigController extends BaseController
         ]);
     }
 
+    public function detailsConfig($type, $id)
+{
+    try {
+
+        switch ($type) {
+
+            case 'organization':
+                $model = new OrganizationModel();
+                break;
+
+            case 'division':
+                $model = new DivisionsModel();
+                break;
+
+            case 'unit':
+                $model = new UnitsModel();
+                break;
+
+            default:
+                throw new \Exception('Invalid type');
+        }
+
+        $data = $model->getDetails($id);
+
+        if (!$data) {
+            throw new \Exception(ucfirst($type) . ' not found');
+        }
+
+        return $this->response->setJSON([
+            'success' => true,
+            'data' => $data
+        ]);
+
+    } catch (\Exception $e) {
+
+        return $this->response->setJSON([
+            'success' => false,
+            'message' => $e->getMessage()
+        ]);
+    }
+}
+
+    
+
     //     public function viewOrganization($id)
     // {
     //     if (!session()->get('isLoggedIn')) {
