@@ -407,12 +407,14 @@ class SelectModel extends Model
             case 'penro':
                 $column = 'organization_id';
                 $statusColumn = 'organization_status';
+                $role = 'organization';
                 break;
 
             default:
                 return null;
         }
 
+     
         $count = $this->db->table('travel_orders')
             ->where('current_level', $role)
             ->where($statusColumn, 'pending')

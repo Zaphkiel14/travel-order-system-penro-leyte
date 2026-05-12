@@ -105,9 +105,7 @@
         </div>
     </div>
 </div>
-
-
-
+                                    
 <!-- BEGIN : Update Organization Modal -->
 <div class="modal fade" id="modal-update-organization">
     <div class="modal-dialog">
@@ -180,9 +178,7 @@
             </form>
         </div>
     </div>
-</div>
-<!--  -->
-
+</div>  
 
 <div class="modal fade" id="modal-add-division">
     <div class="modal-dialog">
