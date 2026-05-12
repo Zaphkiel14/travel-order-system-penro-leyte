@@ -48,10 +48,16 @@ git clone https://github.com/Zaphkiel14/travel-order-system-penro-leyte.git
 cd travel-order-system-penro-leyte
 ```
 
-### 2. Install Dependencies
+### 2.1 Install Dependencies
 
 ```bash
 composer install
+```
+
+### 2.2 Install for Hosting
+
+```bash
+composer install --no-dev --optimize-autoloader
 ```
 
 ### 3. Configure Environment

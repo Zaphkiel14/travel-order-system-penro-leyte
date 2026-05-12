@@ -11,7 +11,6 @@ use App\Services\PrintService;
 
 class TravelOrderController extends BaseController
 {
-
     public function index()
     {
         $userId = session()->get('user_id');
@@ -41,7 +40,6 @@ class TravelOrderController extends BaseController
             return redirect()->to('/login');
         }
     }
-
         private function getStatusBadge($status)
     {
         if (!$status) {
@@ -49,7 +47,6 @@ class TravelOrderController extends BaseController
         }
 
         $s = strtolower($status);
-
         if (str_starts_with($s, 'forwarded to')) {
             $class = 'bg-info-subtle text-info-emphasis';
         } elseif (str_starts_with($s, 'rejected by')) {
@@ -423,7 +420,7 @@ class TravelOrderController extends BaseController
             }
 
             try {
-                $fileName = $newTravelOrderNumber . '_' . $suffix . '.' . $file->getExtension();
+                $fileName = $newTravelOrderNumber . '-' . $suffix . '.' . $file->getExtension();
 
                 $fileId = $drive->uploadFileFromContent(
                     file_get_contents($file->getTempName()),
@@ -527,7 +524,7 @@ class TravelOrderController extends BaseController
             }
 
             try {
-                $fileName = $travelOrderNumber . '_' . $suffix . '.' . $file->getExtension();
+                $fileName = $travelOrderNumber . '-' . $suffix . '.' . $file->getExtension();
 
                 $fileId = $drive->uploadFileFromContent(
                     file_get_contents($file->getTempName()),
