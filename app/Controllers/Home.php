@@ -8,9 +8,8 @@ class Home extends BaseController
     {
         $session = session();
         if (!$session->get('isLoggedIn')) {
-            return redirect()->route('login');
+            return redirect()->to(base_url('login'));
         }
-
-        return redirect()->route('view.dashboard');
+        return redirect()->to(base_url('dashboard'));
     }
 }

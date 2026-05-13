@@ -81,7 +81,7 @@
                         data-last-column-width="100"
                         data-page-length="10"
                         data-order='[[0,"desc"]]'
-                        data-url="<?= route_to('data.travelOrders') ?>">
+                        data-url="<?= base_url('dashboard/mytravelorders') ?>">
                         <thead>
                             <tr>
                                 <th data-name="created_at">Date Submitted</th>
@@ -116,7 +116,7 @@
 <div class="modal fade" id="modal-add-travel-order">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <form action="<?= route_to('create.TravelOrder') ?>" method="POST" class="needs-validation" enctype="multipart/form-data" novalidate>
+            <form action="<?= base_url('dashboard/create-travel-order') ?>" method="POST" class="needs-validation" enctype="multipart/form-data" novalidate>
                 <?= csrf_field() ?>
                 <div class="modal-header">
                     <h4 class="modal-title">Travel Order Application Form</h4>
@@ -1389,7 +1389,7 @@ document.addEventListener('DOMContentLoaded', function () {
             printIframe.onload = function() {
                 printReady = true;
             };
-            printIframe.src = '<?= route_to('print.to', 0) ?>'.replace('/0', '/' + travel_order_id);
+            printIframe.src = '<?= base_url('dashboard/travel-orders/print/') ?>'+ travel_order_id;
         }
 
         function printTO() {

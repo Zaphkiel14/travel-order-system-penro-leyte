@@ -3,7 +3,7 @@
       <!--begin::Sidebar Brand-->
       <div class="sidebar-brand">
         <!--begin::Brand Link-->
-        <a href="<?= route_to('view.dashboard') ?>"
+        <a href="<?= base_url('dashboard') ?>"
           class="nav-link">
 
           <span class="brand-text fw-light">TRAVEL ORDER SYSTEM</span>
@@ -31,7 +31,7 @@
 
             <!-- begin::Dashboard -->
             <li class="nav-item">
-              <a href="<?= route_to('view.dashboard') ?>" class="nav-link <?= ($page == 'Dashboard') ? 'active' : '' ?>">
+              <a href="<?= base_url('dashboard') ?>" class="nav-link <?= ($page == 'Dashboard') ? 'active' : '' ?>">
                 <i class="nav-icon bi bi-house-door"></i>
                 <p>Dashboard</p>
               </a>
@@ -41,7 +41,7 @@
 
             <!-- begin:: PAR Management  -->
             <li class="nav-item">
-              <a href="<?= route_to('view.incomingTravelOrders') ?>" class="nav-link <?= ($page == 'Incoming Travel Orders') ? 'active' : '' ?>">
+              <a href="<?= base_url('incoming-travel-orders') ?>" class="nav-link <?= ($page == 'Incoming Travel Orders') ? 'active' : '' ?>">
                 <i class="nav-icon bi bi-envelope-arrow-down-fill"></i>
                 <p>Incoming Travel<br>Orders</p>
                 <?php $count = pending_count(); ?>
@@ -56,7 +56,7 @@
             <!-- end:: PAR Management  -->
             <!-- begin:: ICS Management  -->
             <li class="nav-item">
-              <a href="<?= route_to('view.processedTravelOrders') ?>" class="nav-link <?= ($page == 'Processed Travel Orders') ? 'active' : '' ?>">
+              <a href="<?= base_url('processed-travel-orders') ?>" class="nav-link <?= ($page == 'Processed Travel Orders') ? 'active' : '' ?>">
                 <i class="nav-icon bi bi-envelope-arrow-up-fill"></i>
                 <p>Processed Travel<br>Orders</p>
               </a>

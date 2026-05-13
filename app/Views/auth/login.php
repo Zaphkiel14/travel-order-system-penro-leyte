@@ -43,7 +43,7 @@
                     endif;
                 endif;
                 ?>
-                <form action="<?= route_to('auth.submit') ?>" method="post">
+                <form action="<?= base_url('login/auth') ?>" method="post">
                     <?= csrf_field() ?>
                     <div class="input-group mb-1">
                         <div class="form-floating">
@@ -92,7 +92,7 @@
                 </script>
                 <div class="social-auth-links text-center mb-3 d-grid gap-2">
                     <p>- OR -</p>
-                    <a class="btn btn-danger" href="<?= route_to('google.login') ?>">
+                    <a class="btn btn-danger" href="<?= base_url('google/login') ?>">
                         <i class="bi bi-google me-2"></i> Sign in using Google
                     </a>
                 </div>

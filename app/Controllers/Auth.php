@@ -17,7 +17,7 @@ class Auth extends BaseController
     {
         // Check if already logged in if so redirect to their dashboard
         if (session()->get('isLoggedIn')) {
-            return redirect()->to(route_to('view.dashboard'));
+            return redirect()->to(base_url('dashboard'));
         }
         return view('auth/login');
     }
@@ -124,7 +124,7 @@ class Auth extends BaseController
         // Role-based redirect
         if ($user['role'] === 'admin' || $user['role'] === 'user') {
             log_message('debug', 'Redirecting to dashboard.');
-            return redirect()->to(route_to('view.dashboard'));
+            return redirect()->to(base_url('dashboard'));
         } else {
             log_message('debug', 'Unauthorized role.');
             // Goes back to login
@@ -135,7 +135,7 @@ class Auth extends BaseController
             ];
 
             session()->setFlashdata('alert', $alert);
-            return redirect()->route('login');
+            return redirect()->to(base_url('login'));
         }
     }
     public function logout()
@@ -169,9 +169,9 @@ class Auth extends BaseController
                 'isLoggedIn' => true,
             ]);
             log_message('debug', 'Google login session: ' . json_encode(session()->get()));
-            return redirect()->to(route_to('view.dashboard'));
+            return redirect()->to(base_url('dashboard'));
         } catch (\Exception $e) {
-            return redirect()->route('login')->with('alert', [
+            return redirect()->to(base_url('login'))->with('alert', [
                 'type' => 'danger',
                 'title' => 'Google Login Failed',
                 'message' => $e->getMessage()

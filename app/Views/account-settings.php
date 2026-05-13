@@ -247,7 +247,7 @@ $layout = $layouts[$role];
                 <h5 class="modal-title" id="editFirstNameModalLabel">Edit First Name</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form id="editFirstNameForm" method="post" action="<?= route_to('update.firstname') ?>">
+            <form id="editFirstNameForm" method="post" action="<?= base_url('profile/update/first-name') ?>">
                 <?= csrf_field() ?>
                 <div class="modal-body">
                     <div class="mb-3">
@@ -272,7 +272,7 @@ $layout = $layouts[$role];
                 <h5 class="modal-title" id="editLastNameModalLabel">Edit Last Name</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form id="editLastNameForm" method="post" action="<?= route_to('update.lastname') ?>">
+            <form id="editLastNameForm" method="post" action="<?= base_url('profile/update/last-name') ?>">
                 <?= csrf_field() ?>
                 <div class="modal-body">
                     <div class="mb-3">
@@ -297,7 +297,7 @@ $layout = $layouts[$role];
                 <h5 class="modal-title" id="editEmailModalLabel">Edit Email Address</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form id="editEmailForm" method="post" action="<?= route_to('update.email') ?>">
+            <form id="editEmailForm" method="post" action="<?= base_url('profile/update/email') ?>">
                 <?= csrf_field() ?>
                 <div class="modal-body">
                     <div class="mb-3">
@@ -452,7 +452,7 @@ $layout = $layouts[$role];
         }
         formData.append(csrfTokenName, csrfTokenValue);
 
-        fetch('<?= route_to('user.update-profile-picture') ?>', {
+        fetch('<?= base_url('profile/update/profile-picture') ?>', {
                 method: 'POST',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
@@ -503,7 +503,7 @@ $layout = $layouts[$role];
             return;
         }
 
-        fetch('<?= route_to('user.change-password') ?>', {
+        fetch('<?= base_url('profile/update/change-password') ?>', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -540,7 +540,7 @@ $layout = $layouts[$role];
             return;
         }
 
-        fetch('<?= route_to('user.delete-account') ?>', {
+        fetch('<?= base_url('profile/update/delete-account') ?>', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -555,7 +555,7 @@ $layout = $layouts[$role];
                 if (data.success) {
                     showToast('success', data.message || 'Account deleted successfully');
                     setTimeout(() => {
-                        window.location.href = '<?= route_to('home') ?>';
+                        window.location.href = '<?= base_url('login') ?>';
                     }, 2000);
                 } else {
                     showToast('error', data.message || 'Failed to delete account');

@@ -65,17 +65,17 @@
                         </li>
                         <li class="user-footer">
                             <?php if ($isLoggedIn): ?>
-                                <a href="<?= site_url(route_to('account-settings')) ?>" class="btn btn-default btn-flat">
+                                <a href="<?= base_url('profile') ?>" class="btn btn-default btn-flat">
                                     Profile
                                 </a>
-                                <a href="<?= site_url(route_to('logout')) ?>" class="btn btn-default btn-flat float-end">
+                                <a href="<?= base_url('logout') ?>" class="btn btn-default btn-flat float-end">
                                     Sign out
                                 </a>
                             <?php else: ?>
                                 <button class="btn btn-default btn-flat" disabled>
                                     Profile
                                 </button>
-                                <a href="<?= site_url(route_to('login')) ?>" class="btn btn-default btn-flat float-end">
+                                <a href="<?= base_url('login') ?>" class="btn btn-default btn-flat float-end">
                                     Login
                                 </a>
                             <?php endif; ?>

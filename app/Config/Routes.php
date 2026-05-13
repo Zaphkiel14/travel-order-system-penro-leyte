@@ -20,7 +20,7 @@ use App\Controllers\Home;
 $routes->get('/', [Home::class, 'index'], ['as' => 'home']);
 
 //auth routes
-$routes->group('', ['filter' => 'noauth'], function ($routes) {
+$routes->group('', ['filter' => 'noauth'], function ($routes) { 
     $routes->get('login', [Auth::class, 'logIn'], ['as' => 'login']);
     $routes->post('login/auth', [Auth::class, 'auth'], ['as' => 'auth.submit']);
     $routes->get('google/login', [Auth::class, 'googleLogin'], ['as' => 'google.login']);
@@ -89,8 +89,8 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
 });
 
 
-$routes->set404Override(function () {
-    $errorHandler = new ErrorHandler();
+// $routes->set404Override(function () {
+//     $errorHandler = new ErrorHandler();
 
-    return view('error_page', $errorHandler->notFound());
-});
+//     return view('error_page', $errorHandler->notFound());
+// });

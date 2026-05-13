@@ -2,7 +2,7 @@
       <!--begin::Sidebar Brand-->
       <div class="sidebar-brand">
         <!--begin::Brand Link-->
-        <a href="<?= route_to('view.dashboard') ?>"
+        <a href="<?= base_url('dashboard') ?>"
           class="nav-link">
 
           <span class="brand-text fw-light">TRAVEL ORDER SYSTEM</span>
@@ -30,7 +30,7 @@
 
             <!-- begin::Dashboard -->
             <li class="nav-item">
-              <a href="<?= route_to('view.dashboard') ?>" class="nav-link <?= ($page == 'Dashboard') ? 'active' : '' ?>">
+              <a href="<?= base_url('dashboard') ?>" class="nav-link <?= ($page == 'Dashboard') ? 'active' : '' ?>">
                 <i class="nav-icon bi bi-house-door"></i>
                 <p>Dashboard</p>
               </a>

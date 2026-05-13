@@ -147,7 +147,7 @@
 <div class="modal fade" id="modal-update-organization">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form action="<?= route_to('update.organization') ?>" method="POST" class="needs-validation" novalidate>
+            <form action="<?= base_url('configuration/update-organization') ?>" method="POST" class="needs-validation" novalidate>
                 <div class="modal-header">
                     <h4 class="modal-title">Update Organization</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -218,7 +218,7 @@
 <div class="modal fade" id="modal-add-division">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form action="<?= route_to('add.division') ?>" method="POST" class="needs-validation" novalidate>
+            <form action="<?= base_url('configuration/add-division') ?>" method="POST" class="needs-validation" novalidate>
                 <div class="modal-header">
                     <h4 class="modal-title">Add Division</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -303,7 +303,7 @@
 <div class="modal fade" id="modal-add-unit">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form action="<?= route_to('add.unit') ?>" method="POST" class="needs-validation" novalidate>
+            <form action="<?= base_url('configuration/add-unit') ?>" method="POST" class="needs-validation" novalidate>
                 <div class="modal-header">
                     <h4 class="modal-title">Add Unit</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>

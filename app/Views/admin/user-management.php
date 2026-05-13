@@ -20,7 +20,7 @@
                         data-last-column-width="100"
                         data-page-length="10"
                         data-order='[[0,"desc"]]'
-                        data-url="<?= route_to('data.userManagement') ?>">
+                        data-url="<?= base_url('user-management/data') ?>">
                         <thead>
                             <tr>
                                 <th data-name="first_name">First Name</th>
@@ -57,7 +57,7 @@
 <div class="modal fade" id="modal-add-user-entry">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <form action="<?= route_to('register.user') ?>" method="POST" class="needs-validation" novalidate>
+            <form action="<?= base_url('user-management/add') ?>" method="POST" class="needs-validation" novalidate>
                 <div class="modal-header">
                     <h4 class="modal-title">Create New User</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>

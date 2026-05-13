@@ -1,10 +1,7 @@
 <?= $this->extend('layouts/supervisor-base') ?>
-
 <?= $this->section('content') ?>
 <div class="container-fluid">
-
-
-    <div class="row">
+        <div class="row">
         <div class="col-12 col-sm-6 col-md-3">
             <div class="info-box">
                 <span class="info-box-icon text-bg-primary shadow-sm">
@@ -63,8 +60,7 @@
             </div>
         </div>
     </div>
-
-
+    
     <div class="row">
         <div class="col-12">
             <div class="card mb-4">
@@ -77,7 +73,7 @@
                         data-last-column-width="100"
                         data-page-length="10"
                         data-order='[[0,"desc"]]'
-                        data-url="<?= route_to('data.incomingTravelOrders') ?>">
+                        data-url="<?= base_url('incoming-travel-orders/data') ?>">
                         <thead>
                             <tr>
                                 <th data-name="created_at">Date Submitted</th>
@@ -582,7 +578,7 @@
 
             // Print frame
             var iframe = document.getElementById('rv-print-frame');
-            iframe.src = '<?= route_to('print.to', 0) ?>'.replace('/0', '/' + d.travel_order_id);
+            iframe.src = '<?= base_url('dashboard/travel-orders/print/') ?>'+ travel_order_id;
         }
 
         // ── open modal ───────────────────────────────────────────────────────────

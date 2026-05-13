@@ -794,11 +794,11 @@ class TravelOrderController extends BaseController
 
     public function downloadAttachment(string $fileId)
     {
-        $userId = session()->get('user_id');
-        if (!$userId) {
-            return redirect()->route('login');
+        if (!session()->get('isLoggedIn')) {
+            return $this->renderError(
+                $this->errorHandler->unauthorized()
+            );
         }
-
         try {
             $drive = new GoogleDriveService();
             $drive->setUser($userId);

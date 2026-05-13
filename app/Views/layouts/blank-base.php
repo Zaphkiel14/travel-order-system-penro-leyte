@@ -33,7 +33,7 @@
             </div>
             <div class="col-sm-6">
               <ol class="breadcrumb float-sm-end">
-                <li class="breadcrumb-item"><a href="<?= route_to('view.dashboard') ?>">Home</a></li>
+                <li class="breadcrumb-item"><a href="<?= base_url('dashboard') ?>">Home</a></li>
                 <li class="breadcrumb-item active" aria-current="page"><?= $page ?></li>
               </ol>
             </div>
