@@ -9,10 +9,10 @@ class SelectModel extends Model
     function generateNextTravelOrderID()
     {
         $year  = date('Y');
-
-        $base = "TO#-{$year}";
+        $month = date('m');
+        $base = "TO#-{$year}-{$month}";
         $builder = $this->db->table('travel_orders');
-
+    
         $builder->select('travel_order_number');
         $builder->like('travel_order_number', $base, 'after');
         $builder->orderBy('travel_order_number', 'DESC');

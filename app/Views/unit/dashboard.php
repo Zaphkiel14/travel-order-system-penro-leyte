@@ -94,16 +94,6 @@
                         </thead>
                         <tbody>
                         </tbody>
-                        <tfoot>
-                            <tr>
-                                <th data-name="created_at">Date Submitted</th>
-                                <th data-name="travel_order_number">Travel Order<br>Number</th>
-                                <th data-name="destination">Destination</th>
-                                <th data-name="travel_dates">Travel Dates</th>
-                                <th data-name="status" data-orderable="false">Status</th>
-                                <th data-orderable="false" data-searchable="false">Actions</th>
-                            </tr>
-                        </tfoot>
                     </table>
                 </div>
             </div>

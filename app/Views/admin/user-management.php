@@ -34,17 +34,6 @@
                         </thead>
                         <tbody>
                         </tbody>
-                        <tfoot>
-                            <tr>
-                                <th data-name="first_name">First Name</th>
-                                <th data-name="last_name">Last Name</th>
-                                <th data-name="email">Email</th>
-                                <th data-name="position">Position</th>
-                                <th data-name="salary_grade">Salary Grade</th>
-                                <th data-name="role">Role</th>
-                                <th data-name="actions" data-orderable="false" data-searchable="false">Actions</th>
-                            </tr>
-                        </tfoot>
                     </table>
                 </div>
             </div>

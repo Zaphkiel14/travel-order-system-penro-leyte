@@ -67,6 +67,7 @@ class ConfigController extends BaseController
             'message' => "Division '{$data['division_name']}' created successfully"
         ]);
     }
+
     public function addUnit()
     {
         $data = [
@@ -113,252 +114,133 @@ class ConfigController extends BaseController
         ]);
     }
 
+    /**
+     * AJAX — fetch details for view modal
+     */
     public function detailsConfig($type, $id)
-{
-    try {
+    {
+        try {
+            switch ($type) {
+                case 'organization':
+                    $model = new OrganizationModel();
+                    break;
+                case 'division':
+                    $model = new DivisionsModel();
+                    break;
+                case 'unit':
+                    $model = new UnitsModel();
+                    break;
+                default:
+                    throw new \Exception('Invalid type');
+            }
 
-        switch ($type) {
+            $data = $model->getDetails($id);
 
-            case 'organization':
-                $model = new OrganizationModel();
-                break;
+            if (!$data) {
+                throw new \Exception(ucfirst($type) . ' not found');
+            }
 
-            case 'division':
-                $model = new DivisionsModel();
-                break;
+            return $this->response->setJSON([
+                'success' => true,
+                'data' => $data
+            ]);
 
-            case 'unit':
-                $model = new UnitsModel();
-                break;
-
-            default:
-                throw new \Exception('Invalid type');
+        } catch (\Exception $e) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => $e->getMessage()
+            ]);
         }
-
-        $data = $model->getDetails($id);
-
-        if (!$data) {
-            throw new \Exception(ucfirst($type) . ' not found');
-        }
-
-        return $this->response->setJSON([
-            'success' => true,
-            'data' => $data
-        ]);
-
-    } catch (\Exception $e) {
-
-        return $this->response->setJSON([
-            'success' => false,
-            'message' => $e->getMessage()
-        ]);
     }
-}
 
-    
+    /**
+     * AJAX — update organization / division / unit
+     */
+    public function updateConfig(string $type, int $id)
+    {
+        if (!$this->request->isAJAX()) {
+            return $this->response->setStatusCode(400)->setJSON([
+                'success' => false,
+                'message' => 'Invalid request.'
+            ]);
+        }
 
-    //     public function viewOrganization($id)
-    // {
-    //     if (!session()->get('isLoggedIn')) {
-    //         return $this->renderError($this->errorHandler->unauthorized());
-    //     }
+        if (!session()->get('isLoggedIn') || session()->get('role') !== 'admin') {
+            return $this->response->setStatusCode(403)->setJSON([
+                'success' => false,
+                'message' => 'Forbidden.'
+            ]);
+        }
 
-    //     $orgBuilder = $this->db->table('organization');
-    //     $organization = $orgBuilder
-    //         ->where('organization_id', $id)
-    //         ->get()
-    //         ->getRow();
+        try {
+            switch ($type) {
 
-    //     $divBuilder = $this->db->table('divisions');
-    //     $organization->divisions = $divBuilder
-    //         ->where('organization_id', $organization->organization_id)
-    //         ->get()
-    //         ->getResult();
+                // ── ORGANIZATION ──────────────────────────────────────────
+                case 'organization':
+                    $orgModel = new OrganizationModel();
+                    $orgModel->update($id, [
+                        'organization_name'          => $this->request->getPost('organization_name'),
+                        'organization_head_position' => $this->request->getPost('organization_head_position'),
+                        'organization_head_id'       => $this->request->getPost('organization_head') ?: null,
+                    ]);
 
-    //     foreach ($organization->divisions as $division) {
-    //         $unitBuilder = $this->db->table('units');
-    //         $division->units = $unitBuilder
-    //             ->where('division_id', $division->division_id)
-    //             ->get()
-    //             ->getResult();
-    //     }
+                    // Re-link selected divisions to this organization
+                    $linked = $this->request->getPost('linked_divisions') ?? [];
+                    if (!empty($linked)) {
+                        $batch = array_map(
+                            fn($did) => ['division_id' => (int)$did, 'organization_id' => $id],
+                            $linked
+                        );
+                        $this->db->table('divisions')->updateBatch($batch, 'division_id');
+                    }
+                    break;
 
-    //     $data = [
-    //         'title'        => 'Travel Order | View Organization',
-    //         'page'         => 'Configuration',
-    //         'organization' => $organization,
-    //     ];
+                // ── DIVISION ──────────────────────────────────────────────
+                case 'division':
+                    $divModel = new DivisionsModel();
+                    $divModel->update($id, [
+                        'division_name'          => $this->request->getPost('division_name'),
+                        'division_head_position' => $this->request->getPost('division_head_position'),
+                        'division_head_id'       => $this->request->getPost('division_head') ?: null,
+                        'organization_id'        => $this->request->getPost('parent_organization'),
+                    ]);
 
-    //     return view('admin/modals/view_organization', $data);
-    // }
+                    // Re-link selected units to this division
+                    $linked = $this->request->getPost('linked_units') ?? [];
+                    if (!empty($linked)) {
+                        $batch = array_map(
+                            fn($uid) => ['unit_id' => (int)$uid, 'division_id' => $id],
+                            $linked
+                        );
+                        $this->db->table('units')->updateBatch($batch, 'unit_id');
+                    }
+                    break;
 
-    // public function editOrganization($id)
-    // {
-    //     if (!session()->get('isLoggedIn')) {
-    //         return $this->renderError($this->errorHandler->unauthorized());
-    //     }
+                // ── UNIT ──────────────────────────────────────────────────
+                case 'unit':
+                    $unitModel = new UnitsModel();
+                    $unitModel->update($id, [
+                        'unit_name'          => $this->request->getPost('unit_name'),
+                        'unit_head_position' => $this->request->getPost('unit_head_position'),
+                        'unit_head_id'       => $this->request->getPost('unit_head') ?: null,
+                        'division_id'        => $this->request->getPost('parent_division'),
+                    ]);
+                    break;
 
-    //     $orgBuilder = $this->db->table('organization');
-    //     $organization = $orgBuilder
-    //         ->where('organization_id', $id)
-    //         ->get()
-    //         ->getRow();
+                default:
+                    throw new \Exception('Invalid type.');
+            }
 
-    //     $divBuilder = $this->db->table('divisions');
-    //     $organization->divisions = $divBuilder
-    //         ->where('organization_id', $organization->organization_id)
-    //         ->get()
-    //         ->getResult();
+            return $this->response->setJSON([
+                'success' => true,
+                'message' => ucfirst($type) . ' updated successfully.'
+            ]);
 
-    //     $data = [
-    //         'title'        => 'Travel Order | Edit Organization',
-    //         'page'         => 'Configuration',
-    //         'organization' => $organization,
-    //     ];
-
-    //     return view('admin/modals/edit_organization', $data);
-    // }
-
-    // public function viewDivision($id)
-    // {
-    //     if (!session()->get('isLoggedIn')) {
-    //         return $this->renderError($this->errorHandler->unauthorized());
-    //     }
-
-    //     $divBuilder = $this->db->table('divisions');
-    //     $division = $divBuilder
-    //         ->where('division_id', $id)
-    //         ->get()
-    //         ->getRow();
-
-    //     // Parent
-    //     $orgBuilder = $this->db->table('organization');
-    //     $division->organization = $orgBuilder
-    //         ->where('organization_id', $division->organization_id)
-    //         ->get()
-    //         ->getRow();
-
-    //     // Children
-    //     $unitBuilder = $this->db->table('units');
-    //     $division->units = $unitBuilder
-    //         ->where('division_id', $division->division_id)
-    //         ->get()
-    //         ->getResult();
-
-    //     $data = [
-    //         'title'    => 'Travel Order | View Division',
-    //         'page'     => 'Configuration',
-    //         'division' => $division,
-    //     ];
-
-    //     return view('admin/modals/view_division', $data);
-    // }
-
-    // public function editDivision($id)
-    // {
-    //     if (!session()->get('isLoggedIn')) {
-    //         return $this->renderError($this->errorHandler->unauthorized());
-    //     }
-
-    //     $divBuilder = $this->db->table('divisions');
-    //     $division = $divBuilder
-    //         ->where('division_id', $id)
-    //         ->get()
-    //         ->getRow();
-
-    //     // Parent — for dropdown or display
-    //     $orgBuilder = $this->db->table('organization');
-    //     $division->organization = $orgBuilder
-    //         ->where('organization_id', $division->organization_id)
-    //         ->get()
-    //         ->getRow();
-
-    //     // All organizations for dropdown
-    //     $allOrgsBuilder = $this->db->table('organization');
-    //     $organizations = $allOrgsBuilder->get()->getResult();
-
-    //     $data = [
-    //         'title'         => 'Travel Order | Edit Division',
-    //         'page'          => 'Configuration',
-    //         'division'      => $division,
-    //         'organizations' => $organizations,
-    //     ];
-
-    //     return view('admin/modals/edit_division', $data);
-    // }
-
-    // public function viewUnit($id)
-    // {
-    //     if (!session()->get('isLoggedIn')) {
-    //         return $this->renderError($this->errorHandler->unauthorized());
-    //     }
-
-    //     $unitBuilder = $this->db->table('units');
-    //     $unit = $unitBuilder
-    //         ->where('unit_id', $id)
-    //         ->get()
-    //         ->getRow();
-
-    //     // Parent division
-    //     $divBuilder = $this->db->table('divisions');
-    //     $unit->division = $divBuilder
-    //         ->where('division_id', $unit->division_id)
-    //         ->get()
-    //         ->getRow();
-
-    //     // Grandparent organization
-    //     $orgBuilder = $this->db->table('organization');
-    //     $unit->division->organization = $orgBuilder
-    //         ->where('organization_id', $unit->division->organization_id)
-    //         ->get()
-    //         ->getRow();
-
-    //     $data = [
-    //         'title' => 'Travel Order | View Unit',
-    //         'page'  => 'Configuration',
-    //         'unit'  => $unit,
-    //     ];
-
-    //     return view('admin/modals/view_unit', $data);
-    // }
-
-    // public function editUnit($id)
-    // {
-    //     if (!session()->get('isLoggedIn')) {
-    //         return $this->renderError($this->errorHandler->unauthorized());
-    //     }
-
-    //     $unitBuilder = $this->db->table('units');
-    //     $unit = $unitBuilder
-    //         ->where('unit_id', $id)
-    //         ->get()
-    //         ->getRow();
-
-    //     // Parent division
-    //     $divBuilder = $this->db->table('divisions');
-    //     $unit->division = $divBuilder
-    //         ->where('division_id', $unit->division_id)
-    //         ->get()
-    //         ->getRow();
-
-    //     // Grandparent organization
-    //     $orgBuilder = $this->db->table('organization');
-    //     $unit->division->organization = $orgBuilder
-    //         ->where('organization_id', $unit->division->organization_id)
-    //         ->get()
-    //         ->getRow();
-
-    //     // All divisions for dropdown
-    //     $allDivsBuilder = $this->db->table('divisions');
-    //     $divisions = $allDivsBuilder->get()->getResult();
-
-    //     $data = [
-    //         'title'     => 'Travel Order | Edit Unit',
-    //         'page'      => 'Configuration',
-    //         'unit'      => $unit,
-    //         'divisions' => $divisions,
-    //     ];
-
-    //     return view('admin/modals/edit_unit', $data);
-    // }
+        } catch (\Exception $e) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
 }
