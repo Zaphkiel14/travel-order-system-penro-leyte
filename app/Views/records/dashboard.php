@@ -17,7 +17,7 @@
                         data-last-column-width="100"
                         data-page-length="10"
                         data-order='[[0,"desc"]]'
-                        data-url="<?= route_to('data.approvedTravelOrders') ?>">
+                        data-url="<?= base_url('approved-travel-orders/data') ?>">
                         <thead>
                             <tr>
                                 <th data-name="created_at">Date Submitted</th>
@@ -676,7 +676,7 @@
             showState('loading');
             bsModal.show();
 
-            fetch('<?= site_url('dashboard/travel-orders/details') ?>/' + id, {
+            fetch('<?= base_url('dashboard/travel-orders/details') ?>/' + id, {
                     method: 'GET',
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest',
